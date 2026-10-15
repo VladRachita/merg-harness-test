@@ -1,0 +1,35 @@
+# Run the appsec-sentinel harness against an ALREADY-RUNNING videosanity
+# container, instead of the bundled demo-target.
+#
+# Assumes the videosanity app is up via its own compose project named
+# "videosanity" (so its container is "videosanity-videosanity-app-1" and its
+# default network is "videosanity_default"). Verify the network name with:
+#
+#     docker network ls | grep videosanity
+#
+# If it differs, change `name:` under networks below to match.
+#
+# Build the harness image and run one pass:
+#
+#     docker compose -f docker-compose.videosanity.yml run --build --rm sentinel
+#
+# The harness reaches the app by container name + port on the shared network —
+# exactly the "service name + port" model in the README. No ports need to be
+# published on the host for this to work.
+
+services:
+  sentinel:
+    build: .
+    environment:
+      SENTINEL_CONFIG: config/target.videosanity.yaml
+      # Quick overrides without editing the YAML, e.g.:
+      # SENTINEL_HOST: videosanity-app      # the compose SERVICE name also resolves
+      # SENTINEL_BASE_PATH: /api
+    command: ["run", "--target", "http", "--suite", "all", "--json", "/tmp/report.json"]
+    networks:
+      - videosanity_net
+
+networks:
+  videosanity_net:
+    external: true
+    name: videosanity_default   # <-- change if `docker network ls` shows another name

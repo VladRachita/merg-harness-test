@@ -1,0 +1,93 @@
+# Config to point appsec-sentinel at the running videosanity container.
+#
+#   image:     videosanity-videosanity-app:latest
+#   container: videosanity-videosanity-app-1   (compose project "videosanity")
+#   port:      8080
+#
+# ─────────────────────────────────────────────────────────────────────────────
+#  READ THIS FIRST — the values marked  # TODO(verify)  are GUESSES.
+#  The harness treats any non-2xx reply (incl. 404 on a wrong route) as
+#  "attack blocked", so a config whose routes don't match videosanity will
+#  print PASS while actually testing nothing. Replace every TODO below with
+#  videosanity's real routes / field names / token path / test accounts, or
+#  the results are meaningless. Run `scripts/preflight.py` (if added) or eyeball
+#  that a known route returns 2xx before trusting a green run.
+# ─────────────────────────────────────────────────────────────────────────────
+
+target:
+  scheme: http                       # videosanity serves plain HTTP on 8080? else https
+  host: videosanity-videosanity-app-1  # container name; resolves on the shared docker net
+  port: 8080
+  base_path: ""                      # TODO(verify): e.g. "/api" or "/api/v1" if routes are prefixed
+  verify_tls: false
+  timeout_s: 10
+
+# ── Route map — TODO(verify) EVERY LINE against videosanity's real API ──────
+# Format: "METHOD /path/with/{params}". Delete a line to fall back to the
+# default in sentinel/config.py (also a guess). An unmatched route 404s and is
+# silently counted as "blocked", so wrong routes = false PASS.
+endpoints:
+  login:           "POST /auth/login"            # TODO(verify)
+  logout:          "POST /auth/logout"           # TODO(verify)
+  refresh:         "POST /auth/refresh"          # TODO(verify)
+  register:        "POST /auth/register"         # TODO(verify)
+  admin_users:     "GET /admin/users"            # TODO(verify)
+  admin_delete:    "DELETE /admin/users/{target}"# TODO(verify)
+  resource:        "GET /resources/{owner_id}"   # TODO(verify)
+  object:          "GET /{kind}s/{id}"           # TODO(verify)
+  change_password: "POST /account/password"      # TODO(verify)
+  sensitive:       "POST /account/payout"        # TODO(verify) — a step-up-guarded action
+  change_email:    "POST /account/email"         # TODO(verify)
+  media:           "GET /media/{path}"           # TODO(verify)
+  upload:          "POST /upload"                # TODO(verify) — likely for a video app
+  reset_request:   "POST /auth/reset/request"    # TODO(verify)
+  reset_confirm:   "POST /auth/reset/confirm"    # TODO(verify)
+  oauth_authorize: "GET /oauth/authorize"        # TODO(verify) — only if videosanity does OAuth
+  oauth_token:     "POST /oauth/token"           # TODO(verify)
+  buggy:           "GET /health"                 # TODO(verify): any endpoint that echoes/parses input
+
+# ── Request field names videosanity expects ── TODO(verify) ─────────────────
+fields:
+  username: username        # TODO(verify): maybe "email" or "user"
+  password: password        # TODO(verify)
+  otp: otp                  # TODO(verify): remove if no 2FA
+  email: email              # TODO(verify)
+  token: token              # TODO(verify)
+  new_password: newPassword # TODO(verify)
+
+# ── How the access token comes back and how to send it ── TODO(verify) ──────
+token_json_path: "access_token"    # TODO(verify): dot-path into the login JSON, e.g. "data.accessToken"
+refresh_json_path: "refresh_token" # TODO(verify)
+auth_header: "Authorization: Bearer {token}"  # TODO(verify): videosanity may use a session cookie instead
+
+# ── Real test accounts that EXIST in the videosanity test instance ──────────
+# TODO(verify): these MUST be real or every authenticated test silently "passes".
+# Use throwaway accounts on a disposable instance — the suite mutates them
+# (changes passwords, email, etc.).
+users:
+  user:  { username: alice, password: alice-pw, id: 1, email: alice@example.test }  # TODO(verify)
+  user2: { username: bob,   password: bob-pw,   id: 2, email: bob@example.test }    # TODO(verify)
+  admin: { username: admin, password: admin-pw, id: 3, email: admin@example.test }  # TODO(verify)
+
+# JWT iss/aud so forged-token tests fail on the alg, not on an iss/aud mismatch.
+jwt_iss: "https://auth.example"    # TODO(verify)
+jwt_aud: "api"                     # TODO(verify)
+# jwks_url: "http://videosanity-videosanity-app-1:8080/.well-known/jwks.json"  # uncomment if present
+
+# ── Which optional features videosanity actually has ────────────────────────
+# Attacks for a feature NOT listed here are SKIPPED (honest) rather than faked.
+# A video app almost certainly has uploads; oauth is a guess — drop it if absent.
+features: [media_upload]           # TODO(verify): add "oauth" only if videosanity exposes OAuth
+
+# ── Gray-box test hooks — leave null for a true black-box run ────────────────
+# videosanity would have to expose these in a TEST build. Null => the dependent
+# ~8 checks report SKIPPED (honest), not a fake pass.
+hooks:
+  reset: null             # IMPORTANT: without this, state bleeds between attacks (see notes)
+  user_admin: null
+  other_aud_token: null
+  db_probe: null
+  reset_introspect: false
+
+suites: [access_control, media_injection]
+fail_on_leak: true
