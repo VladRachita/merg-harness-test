@@ -1,0 +1,78 @@
+# Template for pointing the harness at YOUR backend. Copy to target.yaml and edit.
+# Anything omitted falls back to a sensible default (see sentinel/config.py).
+# Every value can also be set via env var, e.g. SENTINEL_PORT, SENTINEL_HOST.
+
+target:
+  scheme: https            # http | https
+  host: your-backend       # hostname or docker-compose service name
+  port: 8443               # <-- port
+  base_path: /api/v1       # <-- base path prefix for all endpoints
+  verify_tls: true
+  timeout_s: 10
+
+# If your backend publishes a JWKS, set this to enable the RS256->HS256 test (C2)
+jwks_url: "https://your-backend:8443/.well-known/jwks.json"
+jwt_iss: "https://your-issuer"
+jwt_aud: "your-api-audience"
+
+# Map the abstract operations to your real routes: "METHOD /path/with/{params}"
+endpoints:
+  login:           "POST /auth/login"
+  logout:          "POST /auth/logout"
+  refresh:         "POST /auth/refresh"
+  register:        "POST /auth/register"
+  admin_users:     "GET /admin/users"
+  admin_delete:    "DELETE /admin/users/{target}"
+  resource:        "GET /resources/{owner_id}"
+  object:          "GET /{kind}s/{id}"
+  change_password: "POST /account/password"
+  sensitive:       "POST /account/payout"
+  change_email:    "POST /account/email"
+  media:           "GET /media/{path}"
+  upload:          "POST /upload"
+  reset_request:   "POST /auth/reset/request"
+  reset_confirm:   "POST /auth/reset/confirm"
+  oauth_authorize: "GET /oauth/authorize"
+  oauth_token:     "POST /oauth/token"
+  buggy:           "GET /debug/parse"
+
+# Request field names your backend expects
+fields:
+  username: username
+  password: password
+  otp: otp
+  email: email
+  token: token
+  new_password: newPassword
+
+# How the access token comes back and how to send it
+token_json_path: "access_token"      # dot-path into the login JSON, e.g. "data.accessToken"
+refresh_json_path: "refresh_token"
+auth_header: "Authorization: Bearer {token}"
+
+# Seed accounts that already exist in the test backend
+users:
+  user:  { username: alice, password: alice-pw, id: 1, email: alice@x.com }
+  user2: { username: bob,   password: bob-pw,   id: 2, email: bob@x.com }
+  admin: { username: admin, password: admin-pw, id: 3, email: admin@x.com }
+
+oauth:
+  client_id: public-app
+  redirect_uri: https://app.example/cb
+  other_client_id: other-app
+  other_redirect_uri: https://other.example/cb
+
+# Features your backend has; attacks for a disabled feature are SKIPPED
+features: [oauth, media_upload]
+
+# Gray-box hooks — only in a TEST build of your backend. Leave null/false in prod;
+# the dependent attacks then report SKIPPED instead of failing.
+hooks:
+  reset: null                                   # e.g. "POST /test/reset"
+  user_admin: null                              # e.g. "POST /test/users/{username}"
+  other_aud_token: null                         # e.g. "GET /test/token?aud={aud}&username={username}"
+  db_probe: null                                # e.g. "GET /test/injected?marker={marker}"
+  reset_introspect: false                       # true if reset response echoes the link in test mode
+
+suites: [access_control, media_injection]
+fail_on_leak: true

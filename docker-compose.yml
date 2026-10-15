@@ -1,0 +1,35 @@
+# Two containers on one network: the harness points at the backend by
+# service name + port — exactly how you'll point it at YOUR backend.
+#
+#   docker compose up --build --abort-on-container-exit
+#
+# To test YOUR backend instead of the demo:
+#   1. delete the `demo-target` service (or leave it; it's harmless)
+#   2. add your backend as a service, or point config at an external host
+#   3. edit config/target.<yours>.yaml (host/port/base_path/endpoints) and set
+#      SENTINEL_CONFIG on the `sentinel` service to it.
+
+services:
+  # --- the backend under test (here, the bundled demo; swap for yours) ---
+  demo-target:
+    build: .
+    entrypoint: ["python", "demo_target/server.py"]
+    environment:
+      DEMO_MODE: secure        # set to "vulnerable" to watch the harness find flaws
+      PORT: "8080"
+    healthcheck:
+      test: ["CMD", "python", "-c",
+             "import urllib.request; urllib.request.urlopen('http://localhost:8080/health')"]
+      interval: 3s
+      timeout: 3s
+      retries: 10
+
+  # --- the security harness ---
+  sentinel:
+    build: .
+    depends_on:
+      demo-target:
+        condition: service_healthy
+    environment:
+      SENTINEL_CONFIG: config/target.demo.yaml
+    command: ["run", "--target", "http", "--suite", "all", "--json", "/tmp/report.json"]
