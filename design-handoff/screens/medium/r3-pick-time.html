@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Book idea B · who + when on one screen</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+
+
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+button{font:inherit;color:inherit;cursor:pointer}
+button:disabled{cursor:default}
+a{color:inherit}
+.rail{scrollbar-width:none}
+.rail::-webkit-scrollbar{display:none}
+</style>
+
+<div style="width: 390px; height: 844px; box-sizing: border-box; display: flex; flex-direction: column; overflow: hidden; background: #F7F5FB; color: #1D1B22; font-family: Roboto, system-ui, -apple-system, 'Segoe UI', sans-serif">
+
+  <div style="height: 56px; padding: 0 6px; display: flex; align-items: center; gap: 4px; flex-shrink: 0">
+    <a href="r2-video.html" aria-label="Back" style="width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; border-radius: 22px; color: #1D1B22">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5"></path><path d="M11 18l-6-6 6-6"></path></svg>
+    </a>
+    <h1 style="margin: 0; flex: 1 1 auto; min-width: 0; font-size: 18px; font-weight: 500">Book Haircut</h1>
+    <span style="margin-right: 10px; display: flex; align-items: center; gap: 10px; font-size: 13px; color: #5F5B68; white-space: nowrap">
+      <span style="display: flex; align-items: center; gap: 4px"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg>60 min</span>
+      <span style="display: flex; align-items: center; gap: 4px; color: #1D1B22; font-weight: 600"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="6" width="20" height="12" rx="2"></rect><circle cx="12" cy="12" r="2"></circle><path d="M6 12h.01M18 12h.01"></path></svg>120 RON</span>
+    </span>
+  </div>
+
+  <div style="flex: 1 1 auto; min-height: 0; overflow: hidden; padding: 4px 16px 0; display: flex; flex-direction: column">
+
+    <h2 id="who" style="margin: 4px 0 0 4px; font-size: 15px; font-weight: 600">Who</h2>
+    <div role="group" aria-labelledby="who" style="margin-top: 12px; display: flex; align-items: flex-end; gap: 12px">
+      <button type="button" aria-pressed="true" style="flex: 0 0 72px; display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 0; background: transparent; border: 0">
+        <span style="position: relative; width: 48px; height: 48px; border-radius: 50%; background: #3B3347; color: #FFFFFF; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 600; box-shadow: 0 0 0 2px #F7F5FB, 0 0 0 4px #1D1B22">
+          A
+          <span aria-hidden="true" style="position: absolute; right: -6px; bottom: -6px; width: 20px; height: 20px; box-sizing: border-box; border-radius: 50%; border: 2px solid #F7F5FB; background: #1D1B22; display: flex; align-items: center; justify-content: center"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"></path></svg></span>
+        </span>
+        <span style="margin-top: 2px; font-size: 12px; font-weight: 600">Andrei</span>
+        <span style="font-size: 11px; color: #5F5B68">14:30</span>
+      </button>
+      <span aria-hidden="true" style="align-self: stretch; width: 1px; margin-top: 26px; background: #E2DEE9"></span>
+      <div role="group" aria-labelledby="who-alt" style="min-width: 0; display: flex; flex-direction: column; gap: 8px">
+        <span id="who-alt" style="display: flex; align-items: center; gap: 5px; font-size: 12px; font-weight: 600; color: #5F5B68">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 3L4 7l4 4"></path><path d="M4 7h16"></path><path d="M16 21l4-4-4-4"></path><path d="M20 17H4"></path></svg>
+          Can replace Andrei
+        </span>
+        <div style="display: flex; gap: 6px">
+          <button type="button" aria-pressed="false" style="flex: 0 0 72px; display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 0; background: transparent; border: 0">
+            <span style="width: 48px; height: 48px; border-radius: 50%; background: #E2DEE9; color: #3A3742; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 600">R</span>
+            <span style="margin-top: 2px; font-size: 12px; font-weight: 500; color: #3A3742">Radu</span>
+            <span style="font-size: 11px; color: #5F5B68">16:15</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-top: 14px; height: 44px; display: flex; align-items: center; justify-content: space-between">
+      <h2 style="margin: 0 0 0 4px; font-size: 15px; font-weight: 600">When · October 2026</h2>
+      <span style="display: flex">
+        <button type="button" aria-label="Previous week" disabled style="width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; background: transparent; border: 0; padding: 0; color: #B9B4C2">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 6l-6 6 6 6"></path></svg>
+        </button>
+        <button type="button" aria-label="Next week" style="width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; background: transparent; border: 0; padding: 0">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"></path></svg>
+        </button>
+      </span>
+    </div>
+
+    <div role="group" aria-label="Day" style="margin-top: 4px; display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 6px">
+      <button type="button" aria-pressed="true" aria-label="Thursday 22, free slots" style="height: 62px; border: 0; border-radius: 14px; background: #1D1B22; color: #FFFFFF; padding: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px">
+        <span style="font-size: 11px; color: rgba(255,255,255,0.8)">Thu</span>
+        <span style="font-size: 17px; font-weight: 600">22</span>
+        <span style="width: 5px; height: 5px; border-radius: 50%; background: #5ED39A"></span>
+      </button>
+      <button type="button" aria-pressed="false" aria-label="Friday 23, free slots" style="height: 62px; border: 1px solid #E2DEE9; border-radius: 14px; background: #FFFFFF; padding: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px">
+        <span style="font-size: 11px; color: #5F5B68">Fri</span>
+        <span style="font-size: 17px; font-weight: 600">23</span>
+        <span style="width: 5px; height: 5px; border-radius: 50%; background: #1F8A55"></span>
+      </button>
+      <button type="button" aria-pressed="false" aria-label="Saturday 24, free slots" style="height: 62px; border: 1px solid #E2DEE9; border-radius: 14px; background: #FFFFFF; padding: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px">
+        <span style="font-size: 11px; color: #5F5B68">Sat</span>
+        <span style="font-size: 17px; font-weight: 600">24</span>
+        <span style="width: 5px; height: 5px; border-radius: 50%; background: #1F8A55"></span>
+      </button>
+      <button type="button" disabled aria-label="Sunday 25, closed" style="height: 62px; border: 0; border-radius: 14px; background: #ECE9F2; color: #9B97A3; padding: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px">
+        <span style="font-size: 11px">Sun</span>
+        <span style="font-size: 17px; font-weight: 600; text-decoration: line-through">25</span>
+        <span style="width: 5px; height: 5px"></span>
+      </button>
+      <button type="button" aria-pressed="false" aria-label="Monday 26, free slots" style="height: 62px; border: 1px solid #E2DEE9; border-radius: 14px; background: #FFFFFF; padding: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px">
+        <span style="font-size: 11px; color: #5F5B68">Mon</span>
+        <span style="font-size: 17px; font-weight: 600">26</span>
+        <span style="width: 5px; height: 5px; border-radius: 50%; background: #1F8A55"></span>
+      </button>
+      <button type="button" disabled aria-label="Tuesday 27, fully booked" style="height: 62px; border: 0; border-radius: 14px; background: #ECE9F2; color: #9B97A3; padding: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px">
+        <span style="font-size: 11px">Tue</span>
+        <span style="font-size: 17px; font-weight: 600; text-decoration: line-through">27</span>
+        <span style="width: 5px; height: 5px"></span>
+      </button>
+      <button type="button" aria-pressed="false" aria-label="Wednesday 28, free slots" style="height: 62px; border: 1px solid #E2DEE9; border-radius: 14px; background: #FFFFFF; padding: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px">
+        <span style="font-size: 11px; color: #5F5B68">Wed</span>
+        <span style="font-size: 17px; font-weight: 600">28</span>
+        <span style="width: 5px; height: 5px; border-radius: 50%; background: #1F8A55"></span>
+      </button>
+    </div>
+
+    <div style="margin-top: 16px; padding: 0 4px; font-size: 12.5px; font-weight: 500; color: #5F5B68">Afternoon</div>
+    <div role="group" aria-label="Afternoon times" style="margin-top: 8px; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px">
+      <button type="button" disabled style="height: 44px; border: 0; border-radius: 12px; background: #ECE9F2; color: #9B97A3; font-size: 14px; font-weight: 500; text-decoration: line-through">13:00</button>
+      <button type="button" aria-pressed="true" style="height: 44px; border: 0; border-radius: 12px; background: #1D1B22; color: #FFFFFF; font-size: 14px; font-weight: 600">14:30</button>
+      <button type="button" aria-pressed="false" style="height: 44px; border: 1px solid #DCD7E4; border-radius: 12px; background: #FFFFFF; font-size: 14px; font-weight: 500">15:30</button>
+      <button type="button" disabled style="height: 44px; border: 0; border-radius: 12px; background: #ECE9F2; color: #9B97A3; font-size: 14px; font-weight: 500; text-decoration: line-through">16:30</button>
+    </div>
+
+    <div style="margin-top: 14px; padding: 0 4px; font-size: 12.5px; font-weight: 500; color: #5F5B68">Evening</div>
+    <div role="group" aria-label="Evening times" style="margin-top: 8px; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px">
+      <button type="button" aria-pressed="false" style="height: 44px; border: 1px solid #DCD7E4; border-radius: 12px; background: #FFFFFF; font-size: 14px; font-weight: 500">17:30</button>
+      <button type="button" aria-pressed="false" style="height: 44px; border: 1px solid #DCD7E4; border-radius: 12px; background: #FFFFFF; font-size: 14px; font-weight: 500">18:30</button>
+      <button type="button" disabled style="height: 44px; border: 0; border-radius: 12px; background: #ECE9F2; color: #9B97A3; font-size: 14px; font-weight: 500; text-decoration: line-through">19:30</button>
+    </div>
+  </div>
+
+  <div style="flex-shrink: 0; padding: 10px 16px 24px; background: #FFFFFF; border-top: 1px solid #E7E3ED; display: flex; align-items: center; justify-content: space-between; gap: 12px">
+    <span style="display: flex; flex-direction: column; gap: 2px">
+      <span style="font-size: 12.5px; color: #5F5B68">Thu, 22 Oct · with Andrei</span>
+      <span style="font-size: 17px; font-weight: 700">14:30 – 15:30</span>
+    </span>
+    <button type="button" style="height: 48px; padding: 0 30px; border: 0; border-radius: 16px; background: #1D1B22; color: #FFFFFF; font-size: 16px; font-weight: 500">Confirm</button>
+  </div>
+</div>
+
+
+</body>
+</html>

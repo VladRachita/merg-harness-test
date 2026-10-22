@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Rooms · Video · 360×640</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+
+
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+button{font:inherit;color:inherit;cursor:pointer}
+a{color:inherit}
+</style>
+
+<div style="position: relative; width: 360px; height: 640px; overflow: hidden; background: linear-gradient(160deg, #5A4A63 0%, #2E2535 50%, #141016 100%); color: #FFFFFF; font-family: Roboto, system-ui, -apple-system, 'Segoe UI', sans-serif">
+  <span aria-hidden="true" style="position: absolute; left: 0; right: 0; top: 0; height: 140px; background: linear-gradient(to bottom, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0) 100%)"></span>
+  <span aria-hidden="true" style="position: absolute; left: 0; right: 0; bottom: 0; height: 420px; background: linear-gradient(to bottom, rgba(0,0,0,0) 0%, rgba(0,0,0,0.35) 35%, rgba(0,0,0,0.8) 100%)"></span>
+
+  <a href="pa1-profile-rooms.html" aria-label="Close video" style="position: absolute; top: 40px; left: 8px; width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; color: #FFFFFF">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true" style="filter: drop-shadow(0 1px 2px rgba(0,0,0,0.5))"><path d="M6 6l12 12"></path><path d="M18 6L6 18"></path></svg>
+  </a>
+  <button type="button" aria-label="Mute" style="position: absolute; top: 40px; right: 8px; width: 44px; height: 44px; padding: 0; border: 0; background: transparent; display: flex; align-items: center; justify-content: center">
+    <span style="width: 38px; height: 38px; border-radius: 50%; background: rgba(0,0,0,0.35); display: flex; align-items: center; justify-content: center">
+      <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 5L6 9H3v6h3l5 4z"></path><path d="M15.5 8.5a5 5 0 0 1 0 7"></path><path d="M18.5 5.5a9 9 0 0 1 0 13"></path></svg>
+    </span>
+  </button>
+
+  <div style="position: absolute; right: 8px; bottom: 120px; width: 60px; display: flex; flex-direction: column; align-items: center; gap: 12px">
+    <button type="button" aria-label="Like, 0 likes" style="width: 60px; padding: 0; border: 0; background: transparent; color: #FFFFFF; display: flex; flex-direction: column; align-items: center; gap: 4px">
+      <span style="width: 44px; height: 44px; border-radius: 50%; background: rgba(0,0,0,0.4); display: flex; align-items: center; justify-content: center">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7z"></path></svg>
+      </span>
+      <span style="font-size: 12px; font-weight: 500; text-shadow: 0 1px 2px rgba(0,0,0,0.6)">0</span>
+    </button>
+    <button type="button" style="width: 60px; padding: 0; border: 0; background: transparent; color: #FFFFFF; display: flex; flex-direction: column; align-items: center; gap: 4px">
+      <span style="width: 44px; height: 44px; border-radius: 50%; background: rgba(0,0,0,0.4); display: flex; align-items: center; justify-content: center">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M6.6 10.8a15.1 15.1 0 0 0 6.6 6.6l2.2-2.2a1 1 0 0 1 1-.25 11.4 11.4 0 0 0 3.6.57 1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.25.2 2.45.57 3.57a1 1 0 0 1-.25 1z"></path></svg>
+      </span>
+      <span style="font-size: 12px; font-weight: 500; text-shadow: 0 1px 2px rgba(0,0,0,0.6)">Call</span>
+    </button>
+    <button type="button" aria-label="More" style="width: 60px; padding: 0; border: 0; background: transparent; color: #FFFFFF; display: flex; justify-content: center">
+      <span style="width: 44px; height: 44px; border-radius: 50%; background: rgba(0,0,0,0.4); display: flex; align-items: center; justify-content: center">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="5.5" r="1.8"></circle><circle cx="12" cy="12" r="1.8"></circle><circle cx="12" cy="18.5" r="1.8"></circle></svg>
+      </span>
+    </button>
+  </div>
+
+  <div style="position: absolute; left: 16px; right: 84px; bottom: 116px; display: flex; flex-direction: column; gap: 8px; text-shadow: 0 1px 3px rgba(0,0,0,0.5)">
+    <div style="display: flex; align-items: center; gap: 10px">
+      <span style="width: 36px; height: 36px; flex-shrink: 0; border-radius: 50%; background: #3F5079; display: flex; align-items: center; justify-content: center; font-size: 15px; font-weight: 600; text-shadow: none">S</span>
+      <span style="min-width: 0; display: flex; flex-direction: column">
+        <span style="font-size: 14px; font-weight: 600">Stay Host Brasov</span>
+        <span style="font-size: 12px; color: rgba(255,255,255,0.8)">@stay_host_brasov</span>
+      </span>
+    </div>
+    <p style="margin: 0; font-size: 14px; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden">Bright double room in the centre of Brașov, 5 minutes from the old town.</p>
+    <div aria-label="Included: Wi-Fi, parking and 16 more" style="display: flex; flex-wrap: wrap; align-items: center; gap: 6px; text-shadow: none">
+      <span style="height: 28px; padding: 0 10px 0 8px; border-radius: 14px; background: rgba(0,0,0,0.45); display: flex; align-items: center; gap: 5px; font-size: 12.5px; font-weight: 500; white-space: nowrap"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#5ED39A" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6L9 17l-5-5"></path></svg>Wi-Fi</span>
+      <span style="height: 28px; padding: 0 10px 0 8px; border-radius: 14px; background: rgba(0,0,0,0.45); display: flex; align-items: center; gap: 5px; font-size: 12.5px; font-weight: 500; white-space: nowrap"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#5ED39A" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6L9 17l-5-5"></path></svg>Parking</span>
+      <a href="pa3-room-included.html" aria-label="See all 18 included" style="height: 44px; margin: -8px 0; display: flex; align-items: center; text-decoration: none; color: #1D1B22">
+        <span style="height: 28px; padding: 0 8px 0 10px; border-radius: 14px; background: rgba(255,255,255,0.94); display: flex; align-items: center; gap: 2px; font-size: 12.5px; font-weight: 600; white-space: nowrap">+16 more<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"></path></svg></span>
+      </a>
+    </div>
+    <span style="font-size: 12px; color: rgba(255,255,255,0.75)">5 views · Oct 21, 2026</span>
+  </div>
+
+  <div aria-label="Double Room, 2 guests, 250 RON per night" style="position: absolute; left: 12px; right: 12px; bottom: 28px; height: 64px; box-sizing: border-box; padding: 0 16px; border-radius: 18px; background: #FFFFFF; color: #1D1B22; display: flex; flex-direction: column; justify-content: center; gap: 4px; box-shadow: 0 4px 16px rgba(0,0,0,0.25)">
+    <span style="font-size: 15px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">Double Room</span>
+    <span style="display: flex; align-items: center; gap: 10px; font-size: 12.5px; color: #5F5B68; white-space: nowrap">
+      <span style="display: flex; align-items: center; gap: 4px"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M22 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>2 guests</span>
+      <span style="display: flex; align-items: center; gap: 4px; color: #1D1B22; font-weight: 600"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="6" width="20" height="12" rx="2"></rect><circle cx="12" cy="12" r="2"></circle><path d="M6 12h.01M18 12h.01"></path></svg>250 RON<span style="font-weight: 400; color: #5F5B68">/ night</span></span>
+    </span>
+  </div>
+</div>
+
+
+</body>
+</html>
