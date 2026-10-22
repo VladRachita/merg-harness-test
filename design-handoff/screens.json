@@ -1,0 +1,730 @@
+{
+  "canvas": "https://claude.ai/artifact/5317zoDgLoVqdsUCq6HUpd",
+  "sizes": {
+    "small": {
+      "width": 360,
+      "height": 640
+    },
+    "medium": {
+      "width": 390,
+      "height": 844
+    },
+    "large": {
+      "width": 430,
+      "height": 932
+    }
+  },
+  "screens": [
+    {
+      "id": "HP-profile",
+      "area": "host-profile",
+      "title": "Host profile · Quick Actions",
+      "purpose": "The host's own profile with the Quick Actions icon grid.",
+      "source": "Main.dc.html",
+      "files": {
+        "small": {
+          "html": "screens/small/hp-profile.html",
+          "png": "screenshots/small/hp-profile.png",
+          "width": 360,
+          "height": 640
+        },
+        "medium": {
+          "html": "screens/medium/hp-profile.html",
+          "png": "screenshots/medium/hp-profile.png",
+          "width": 390,
+          "height": 844
+        },
+        "large": {
+          "html": "screens/large/hp-profile.html",
+          "png": "screenshots/large/hp-profile.png",
+          "width": 430,
+          "height": 932
+        }
+      },
+      "links_to": []
+    },
+    {
+      "id": "HS1-services-list",
+      "area": "host-services",
+      "title": "Host · Services list",
+      "purpose": "Host manages services; each card opens Edit; \"New service\" starts with a video.",
+      "source": "V-List-B.dc.html",
+      "files": {
+        "small": {
+          "html": "screens/small/hs1-services-list.html",
+          "png": "screenshots/small/hs1-services-list.png",
+          "width": 360,
+          "height": 640
+        },
+        "medium": {
+          "html": "screens/medium/hs1-services-list.html",
+          "png": "screenshots/medium/hs1-services-list.png",
+          "width": 390,
+          "height": 844
+        },
+        "large": {
+          "html": "screens/large/hs1-services-list.html",
+          "png": "screenshots/large/hs1-services-list.png",
+          "width": 430,
+          "height": 932
+        }
+      },
+      "links_to": [
+        "hs2-add-video",
+        "hs4-edit-service"
+      ]
+    },
+    {
+      "id": "HS2-add-video",
+      "area": "host-services",
+      "title": "Host · Add a video (service)",
+      "purpose": "Pick one clip from the gallery (no recording, no editing).",
+      "source": "V-Upload.dc.html",
+      "files": {
+        "small": {
+          "html": "screens/small/hs2-add-video.html",
+          "png": "screenshots/small/hs2-add-video.png",
+          "width": 360,
+          "height": 640
+        },
+        "medium": {
+          "html": "screens/medium/hs2-add-video.html",
+          "png": "screenshots/medium/hs2-add-video.png",
+          "width": 390,
+          "height": 844
+        },
+        "large": {
+          "html": "screens/large/hs2-add-video.html",
+          "png": "screenshots/large/hs2-add-video.png",
+          "width": 430,
+          "height": 932
+        }
+      },
+      "links_to": [
+        "hs1-services-list",
+        "hs3-service-details"
+      ]
+    },
+    {
+      "id": "HS3-service-details",
+      "area": "host-services",
+      "title": "Host · Service details (create)",
+      "purpose": "Everything the customer sees on the video: name, description, price, duration, people, included, not included, not allowed, who does it.",
+      "source": "V-Details.dc.html",
+      "files": {
+        "small": {
+          "html": "screens/small/hs3-service-details.html",
+          "png": "screenshots/small/hs3-service-details.png",
+          "width": 360,
+          "height": 980
+        },
+        "medium": {
+          "html": "screens/medium/hs3-service-details.html",
+          "png": "screenshots/medium/hs3-service-details.png",
+          "width": 390,
+          "height": 940
+        },
+        "large": {
+          "html": "screens/large/hs3-service-details.html",
+          "png": "screenshots/large/hs3-service-details.png",
+          "width": 430,
+          "height": 940
+        }
+      },
+      "links_to": [
+        "hs1-services-list",
+        "hs2-add-video"
+      ]
+    },
+    {
+      "id": "HS4-edit-service",
+      "area": "host-services",
+      "title": "Host · Edit service (no video yet)",
+      "purpose": "Same fields as create; Add video tile; delete in the header.",
+      "source": "V-Edit.dc.html",
+      "files": {
+        "small": {
+          "html": "screens/small/hs4-edit-service.html",
+          "png": "screenshots/small/hs4-edit-service.png",
+          "width": 360,
+          "height": 900
+        },
+        "medium": {
+          "html": "screens/medium/hs4-edit-service.html",
+          "png": "screenshots/medium/hs4-edit-service.png",
+          "width": 390,
+          "height": 860
+        },
+        "large": {
+          "html": "screens/large/hs4-edit-service.html",
+          "png": "screenshots/large/hs4-edit-service.png",
+          "width": 430,
+          "height": 860
+        }
+      },
+      "links_to": [
+        "hs1-services-list",
+        "hs2-add-video"
+      ]
+    },
+    {
+      "id": "HR1-rooms-list",
+      "area": "host-rooms",
+      "title": "Host · Rooms list",
+      "purpose": "Accommodation host manages rooms.",
+      "source": "H-Rooms-List.dc.html",
+      "files": {
+        "small": {
+          "html": "screens/small/hr1-rooms-list.html",
+          "png": "screenshots/small/hr1-rooms-list.png",
+          "width": 360,
+          "height": 640
+        },
+        "medium": {
+          "html": "screens/medium/hr1-rooms-list.html",
+          "png": "screenshots/medium/hr1-rooms-list.png",
+          "width": 390,
+          "height": 844
+        },
+        "large": {
+          "html": "screens/large/hr1-rooms-list.html",
+          "png": "screenshots/large/hr1-rooms-list.png",
+          "width": 430,
+          "height": 932
+        }
+      },
+      "links_to": [
+        "hr2-add-video",
+        "hr4-edit-room"
+      ]
+    },
+    {
+      "id": "HR2-add-video",
+      "area": "host-rooms",
+      "title": "Host · Add a video (room)",
+      "purpose": "Pick one clip that shows the room.",
+      "source": "H-Room-Upload.dc.html",
+      "files": {
+        "small": {
+          "html": "screens/small/hr2-add-video.html",
+          "png": "screenshots/small/hr2-add-video.png",
+          "width": 360,
+          "height": 640
+        },
+        "medium": {
+          "html": "screens/medium/hr2-add-video.html",
+          "png": "screenshots/medium/hr2-add-video.png",
+          "width": 390,
+          "height": 844
+        },
+        "large": {
+          "html": "screens/large/hr2-add-video.html",
+          "png": "screenshots/large/hr2-add-video.png",
+          "width": 430,
+          "height": 932
+        }
+      },
+      "links_to": [
+        "hr1-rooms-list",
+        "hr3-room-details"
+      ]
+    },
+    {
+      "id": "HR3-room-details",
+      "area": "host-rooms",
+      "title": "Host · Room details (create)",
+      "purpose": "Name, description, price per night, guests, included, not included, not allowed.",
+      "source": "H-Room-Details.dc.html",
+      "files": {
+        "small": {
+          "html": "screens/small/hr3-room-details.html",
+          "png": "screenshots/small/hr3-room-details.png",
+          "width": 360,
+          "height": 760
+        },
+        "medium": {
+          "html": "screens/medium/hr3-room-details.html",
+          "png": "screenshots/medium/hr3-room-details.png",
+          "width": 390,
+          "height": 844
+        },
+        "large": {
+          "html": "screens/large/hr3-room-details.html",
+          "png": "screenshots/large/hr3-room-details.png",
+          "width": 430,
+          "height": 932
+        }
+      },
+      "links_to": [
+        "hr1-rooms-list",
+        "hr2-add-video"
+      ]
+    },
+    {
+      "id": "HR4-edit-room",
+      "area": "host-rooms",
+      "title": "Host · Edit room (no video yet)",
+      "purpose": "Same fields as create; Add video tile; delete in the header.",
+      "source": "H-Room-Edit.dc.html",
+      "files": {
+        "small": {
+          "html": "screens/small/hr4-edit-room.html",
+          "png": "screenshots/small/hr4-edit-room.png",
+          "width": 360,
+          "height": 720
+        },
+        "medium": {
+          "html": "screens/medium/hr4-edit-room.html",
+          "png": "screenshots/medium/hr4-edit-room.png",
+          "width": 390,
+          "height": 844
+        },
+        "large": {
+          "html": "screens/large/hr4-edit-room.html",
+          "png": "screenshots/large/hr4-edit-room.png",
+          "width": 430,
+          "height": 932
+        }
+      },
+      "links_to": [
+        "hr1-rooms-list",
+        "hr2-add-video"
+      ]
+    },
+    {
+      "id": "PA1-profile-rooms",
+      "area": "public-accommodation",
+      "title": "Public · Accommodation profile · Rooms",
+      "purpose": "Customer view of an accommodation: About (map), Call, rooms grid.",
+      "source": "P-Rooms-B.dc.html",
+      "files": {
+        "small": {
+          "html": "screens/small/pa1-profile-rooms.html",
+          "png": "screenshots/small/pa1-profile-rooms.png",
+          "width": 360,
+          "height": 1080
+        },
+        "medium": {
+          "html": "screens/medium/pa1-profile-rooms.html",
+          "png": "screenshots/medium/pa1-profile-rooms.png",
+          "width": 390,
+          "height": 1080
+        },
+        "large": {
+          "html": "screens/large/pa1-profile-rooms.html",
+          "png": "screenshots/large/pa1-profile-rooms.png",
+          "width": 430,
+          "height": 1120
+        }
+      },
+      "links_to": [
+        "pa2-room-video"
+      ]
+    },
+    {
+      "id": "PA2-room-video",
+      "area": "public-accommodation",
+      "title": "Public · Room video",
+      "purpose": "Full-screen room video: Call on the side rail, info bar, included chips.",
+      "source": "P-Video-Call.dc.html",
+      "files": {
+        "small": {
+          "html": "screens/small/pa2-room-video.html",
+          "png": "screenshots/small/pa2-room-video.png",
+          "width": 360,
+          "height": 640
+        },
+        "medium": {
+          "html": "screens/medium/pa2-room-video.html",
+          "png": "screenshots/medium/pa2-room-video.png",
+          "width": 390,
+          "height": 844
+        },
+        "large": {
+          "html": "screens/large/pa2-room-video.html",
+          "png": "screenshots/large/pa2-room-video.png",
+          "width": 430,
+          "height": 932
+        }
+      },
+      "links_to": [
+        "pa1-profile-rooms",
+        "pa3-room-included"
+      ]
+    },
+    {
+      "id": "PA3-room-included",
+      "area": "public-accommodation",
+      "title": "Public · Room · What is included (sheet)",
+      "purpose": "Full list over the video: included (grouped), not included, not allowed.",
+      "source": "P-Included.dc.html",
+      "files": {
+        "small": {
+          "html": "screens/small/pa3-room-included.html",
+          "png": "screenshots/small/pa3-room-included.png",
+          "width": 360,
+          "height": 640
+        },
+        "medium": {
+          "html": "screens/medium/pa3-room-included.html",
+          "png": "screenshots/medium/pa3-room-included.png",
+          "width": 390,
+          "height": 844
+        },
+        "large": {
+          "html": "screens/large/pa3-room-included.html",
+          "png": "screenshots/large/pa3-room-included.png",
+          "width": 430,
+          "height": 932
+        }
+      },
+      "links_to": [
+        "pa2-room-video"
+      ]
+    },
+    {
+      "id": "PS1-profile-services",
+      "area": "public-services",
+      "title": "Public · Services profile",
+      "purpose": "Customer view of a salon/barber: About, Book now, services grid.",
+      "source": "P-Profile-Svc.dc.html",
+      "files": {
+        "small": {
+          "html": "screens/small/ps1-profile-services.html",
+          "png": "screenshots/small/ps1-profile-services.png",
+          "width": 360,
+          "height": 1080
+        },
+        "medium": {
+          "html": "screens/medium/ps1-profile-services.html",
+          "png": "screenshots/medium/ps1-profile-services.png",
+          "width": 390,
+          "height": 1080
+        },
+        "large": {
+          "html": "screens/large/ps1-profile-services.html",
+          "png": "screenshots/large/ps1-profile-services.png",
+          "width": 430,
+          "height": 1120
+        }
+      },
+      "links_to": [
+        "f2-video",
+        "f3-choose-stylist"
+      ]
+    },
+    {
+      "id": "PF1-profile-fnb",
+      "area": "public-fnb",
+      "title": "Public · Food & Beverage profile",
+      "purpose": "Header + About + Book now only (no content tabs).",
+      "source": "P-Profile-FnB.dc.html",
+      "files": {
+        "small": {
+          "html": "screens/small/pf1-profile-fnb.html",
+          "png": "screenshots/small/pf1-profile-fnb.png",
+          "width": 360,
+          "height": 580
+        },
+        "medium": {
+          "html": "screens/medium/pf1-profile-fnb.html",
+          "png": "screenshots/medium/pf1-profile-fnb.png",
+          "width": 390,
+          "height": 580
+        },
+        "large": {
+          "html": "screens/large/pf1-profile-fnb.html",
+          "png": "screenshots/large/pf1-profile-fnb.png",
+          "width": 430,
+          "height": 580
+        }
+      },
+      "links_to": []
+    },
+    {
+      "id": "R1-services-stylist-picked",
+      "area": "salon-regular",
+      "title": "Regular · Services (stylist picked)",
+      "purpose": "Team filter on a stylist: only their services; others greyed.",
+      "source": "S-Services.dc.html",
+      "files": {
+        "small": {
+          "html": "screens/small/r1-services-stylist-picked.html",
+          "png": "screenshots/small/r1-services-stylist-picked.png",
+          "width": 360,
+          "height": 640
+        },
+        "medium": {
+          "html": "screens/medium/r1-services-stylist-picked.html",
+          "png": "screenshots/medium/r1-services-stylist-picked.png",
+          "width": 390,
+          "height": 844
+        },
+        "large": {
+          "html": "screens/large/r1-services-stylist-picked.html",
+          "png": "screenshots/large/r1-services-stylist-picked.png",
+          "width": 430,
+          "height": 932
+        }
+      },
+      "links_to": [
+        "f1-services-everyone",
+        "r2-video",
+        "r3-pick-time"
+      ]
+    },
+    {
+      "id": "R2-video",
+      "area": "salon-regular",
+      "title": "Regular · Service video",
+      "purpose": "Book on the side rail goes straight to the calendar.",
+      "source": "S-Book-A.dc.html",
+      "files": {
+        "small": {
+          "html": "screens/small/r2-video.html",
+          "png": "screenshots/small/r2-video.png",
+          "width": 360,
+          "height": 640
+        },
+        "medium": {
+          "html": "screens/medium/r2-video.html",
+          "png": "screenshots/medium/r2-video.png",
+          "width": 390,
+          "height": 844
+        },
+        "large": {
+          "html": "screens/large/r2-video.html",
+          "png": "screenshots/large/r2-video.png",
+          "width": 430,
+          "height": 932
+        }
+      },
+      "links_to": [
+        "r1-services-stylist-picked",
+        "r3-pick-time",
+        "sv-included"
+      ]
+    },
+    {
+      "id": "R3-pick-time",
+      "area": "salon-regular",
+      "title": "Regular · Pick a time",
+      "purpose": "Picked stylist highlighted, replacements visible, earliest time preselected.",
+      "source": "S-Book-B.dc.html",
+      "files": {
+        "small": {
+          "html": "screens/small/r3-pick-time.html",
+          "png": "screenshots/small/r3-pick-time.png",
+          "width": 360,
+          "height": 640
+        },
+        "medium": {
+          "html": "screens/medium/r3-pick-time.html",
+          "png": "screenshots/medium/r3-pick-time.png",
+          "width": 390,
+          "height": 844
+        },
+        "large": {
+          "html": "screens/large/r3-pick-time.html",
+          "png": "screenshots/large/r3-pick-time.png",
+          "width": 430,
+          "height": 932
+        }
+      },
+      "links_to": [
+        "r2-video"
+      ]
+    },
+    {
+      "id": "SV-included",
+      "area": "salon-regular",
+      "title": "Service · What is included (sheet)",
+      "purpose": "Opened from \"+8 more\" on R2/F2.",
+      "source": "S-Included.dc.html",
+      "files": {
+        "small": {
+          "html": "screens/small/sv-included.html",
+          "png": "screenshots/small/sv-included.png",
+          "width": 360,
+          "height": 640
+        },
+        "medium": {
+          "html": "screens/medium/sv-included.html",
+          "png": "screenshots/medium/sv-included.png",
+          "width": 390,
+          "height": 844
+        },
+        "large": {
+          "html": "screens/large/sv-included.html",
+          "png": "screenshots/large/sv-included.png",
+          "width": 430,
+          "height": 932
+        }
+      },
+      "links_to": [
+        "f2-video"
+      ]
+    },
+    {
+      "id": "F1-services-everyone",
+      "area": "salon-first-visit",
+      "title": "First visit · Services (Everyone)",
+      "purpose": "All services; stylists greyed.",
+      "source": "S-Services-New.dc.html",
+      "files": {
+        "small": {
+          "html": "screens/small/f1-services-everyone.html",
+          "png": "screenshots/small/f1-services-everyone.png",
+          "width": 360,
+          "height": 640
+        },
+        "medium": {
+          "html": "screens/medium/f1-services-everyone.html",
+          "png": "screenshots/medium/f1-services-everyone.png",
+          "width": 390,
+          "height": 844
+        },
+        "large": {
+          "html": "screens/large/f1-services-everyone.html",
+          "png": "screenshots/large/f1-services-everyone.png",
+          "width": 430,
+          "height": 932
+        }
+      },
+      "links_to": [
+        "f2-video",
+        "f3-choose-stylist",
+        "r1-services-stylist-picked"
+      ]
+    },
+    {
+      "id": "F2-video",
+      "area": "salon-first-visit",
+      "title": "First visit · Service video",
+      "purpose": "Book on the side rail opens Choose a stylist.",
+      "source": "S-Video-1.dc.html",
+      "files": {
+        "small": {
+          "html": "screens/small/f2-video.html",
+          "png": "screenshots/small/f2-video.png",
+          "width": 360,
+          "height": 640
+        },
+        "medium": {
+          "html": "screens/medium/f2-video.html",
+          "png": "screenshots/medium/f2-video.png",
+          "width": 390,
+          "height": 844
+        },
+        "large": {
+          "html": "screens/large/f2-video.html",
+          "png": "screenshots/large/f2-video.png",
+          "width": 430,
+          "height": 932
+        }
+      },
+      "links_to": [
+        "f1-services-everyone",
+        "f3-choose-stylist",
+        "sv-included"
+      ]
+    },
+    {
+      "id": "F3-choose-stylist",
+      "area": "salon-first-visit",
+      "title": "First visit · Choose a stylist",
+      "purpose": "Anyone or a stylist, with role, specialties, rating, languages, next free.",
+      "source": "S-First-Stylist.dc.html",
+      "files": {
+        "small": {
+          "html": "screens/small/f3-choose-stylist.html",
+          "png": "screenshots/small/f3-choose-stylist.png",
+          "width": 360,
+          "height": 640
+        },
+        "medium": {
+          "html": "screens/medium/f3-choose-stylist.html",
+          "png": "screenshots/medium/f3-choose-stylist.png",
+          "width": 390,
+          "height": 844
+        },
+        "large": {
+          "html": "screens/large/f3-choose-stylist.html",
+          "png": "screenshots/large/f3-choose-stylist.png",
+          "width": 430,
+          "height": 932
+        }
+      },
+      "links_to": [
+        "f2-video",
+        "f4-pick-time"
+      ]
+    },
+    {
+      "id": "F4-pick-time",
+      "area": "salon-first-visit",
+      "title": "First visit · Pick a time",
+      "purpose": "Same calendar as R3.",
+      "source": "S-Pro-Cal.dc.html",
+      "files": {
+        "small": {
+          "html": "screens/small/f4-pick-time.html",
+          "png": "screenshots/small/f4-pick-time.png",
+          "width": 360,
+          "height": 640
+        },
+        "medium": {
+          "html": "screens/medium/f4-pick-time.html",
+          "png": "screenshots/medium/f4-pick-time.png",
+          "width": 390,
+          "height": 844
+        },
+        "large": {
+          "html": "screens/large/f4-pick-time.html",
+          "png": "screenshots/large/f4-pick-time.png",
+          "width": 430,
+          "height": 932
+        }
+      },
+      "links_to": [
+        "f3-choose-stylist"
+      ]
+    },
+    {
+      "id": "CE1-coupons-events",
+      "area": "coupons",
+      "title": "Public · Coupons & Events tab",
+      "purpose": "Ticket cards, 3 per row, photo-tile filter.",
+      "source": "C-Idea-A.dc.html",
+      "files": {
+        "small": {
+          "html": "screens/small/ce1-coupons-events.html",
+          "png": "screenshots/small/ce1-coupons-events.png",
+          "width": 360,
+          "height": 570
+        },
+        "medium": {
+          "html": "screens/medium/ce1-coupons-events.html",
+          "png": "screenshots/medium/ce1-coupons-events.png",
+          "width": 390,
+          "height": 600
+        },
+        "large": {
+          "html": "screens/large/ce1-coupons-events.html",
+          "png": "screenshots/large/ce1-coupons-events.png",
+          "width": 430,
+          "height": 650
+        }
+      },
+      "links_to": []
+    }
+  ],
+  "reference": {
+    "icon-set": {
+      "html": "screens/reference/icon-set.html",
+      "png": "screenshots/reference/icon-set.png",
+      "width": 1340,
+      "height": 360
+    }
+  }
+}

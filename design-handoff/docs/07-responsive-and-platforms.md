@@ -1,0 +1,54 @@
+# 07 · Small / medium / large phones, iOS and Android
+
+Every screen has a reference at three sizes (points/dp):
+
+| Size | Reference | Typical devices |
+|---|---|---|
+| Small | 360 × 640 | iPhone SE (375 × 667), compact Android |
+| Medium | 390 × 844 | iPhone 13/14/15, most Android phones |
+| Large | 430 × 932 | iPhone Pro Max / Plus, large Android |
+
+Do **not** build three fixed layouts. Build one flexible layout that produces these three references.
+
+## What stays constant
+- Screen side padding 16, grid gaps, radii, icon sizes, text sizes (except the small-screen compactions below).
+- Touch targets ≥ 44.
+- Column counts: 2 columns for service/room cards (public and host), 3 for coupon tickets and the video picker, 4 for time slots, 7 for the week strip, 4 for Quick Actions.
+
+## What scales with width
+Card heights keep their aspect ratio with the column width:
+
+| Card | Ratio (height ÷ column width) | Small | Medium | Large |
+|---|---|---|---|---|
+| Public video card | 1.676 | 265 | 290 | 324 |
+| Host video card | 1.769 | 279 | 306 | 341 |
+| Coupon ticket | 1.807 (stub fixed 50, media = rest) | 188 | 206 | 229 |
+| Video picker tile | 1.337 | 159 | 172 | 190 |
+
+Column width = (screen width − 2×16 − gaps) ÷ columns. Inside cards, keep top content anchored to the top, pills/panels anchored to the bottom, and the play button centred on the media area.
+
+## Small-screen compactions (screen width < 375)
+- Card bottom pills (Details / guests / time): font 12, gap 6, padding `0 8 0 10`.
+- Price pill: font 12, gap 4.
+- Coupon facts row: font 10.5, gap 5.
+- Chip rows may wrap to a second line (e.g. "+8 more" on the video).
+
+## Height
+- Lists, videos and calendars show one screen; content below scrolls (see small references: the calendar's Evening row and the Included sheet continue under the fold).
+- Bottom action bars (Book/Confirm/Save) and the host nav **stay pinned**.
+- Bottom sheets: height = content, **max = screen height − 64**, then scroll inside.
+- Long forms (HS3/HS4/HR3/HR4) scroll; their reference boards are drawn taller to show the full form.
+
+## Safe areas
+- Replace the fixed 24 px bottom padding of bottom bars with the real bottom safe-area inset (home indicator / Android gesture bar), minimum 16.
+- On video screens the X and mute buttons sit below the status bar (top inset + 0–8). The side rail and info bar keep their distance from the bottom inset.
+- Draw video and dark screens edge-to-edge behind the status bar with light status-bar icons; light screens use dark status-bar icons.
+
+## iOS and Android
+- Fonts: **Roboto** on Android, **system font (SF Pro)** on iOS, same sizes and weights.
+- Keep the designed look on both platforms (do not swap in Material or Cupertino default components). Native touch feedback (ripple / highlight) and haptics on selection are welcome.
+- **Glass panel**: iOS `UIVisualEffectView` / SwiftUI `.ultraThinMaterial` + the dark tint; Android 12+ `RenderEffect.createBlurEffect` (Compose `Modifier.blur` on the background layer) + tint; older Android: tint only (`rgba(22,20,28,.55)`), still readable.
+- Bottom sheet: native modal sheet behaviour (drag to dismiss, tap-outside to dismiss) with the designed visuals.
+- Dialer: `tel:` intent/URL for Call. Copy address: system clipboard + short toast/snackbar "Address copied".
+- Dynamic Type / font scale: allow up to ~130 % without overlap — titles clamp, pills keep one line, rows grow.
+- Maps: OpenStreetMap tiles (e.g. MapLibre / osmdroid / MapKit with OSM tiles). Show the "© OpenStreetMap" attribution. No routing.
