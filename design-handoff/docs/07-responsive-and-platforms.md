@@ -32,12 +32,16 @@ Column width = (screen width − 2×16 − gaps) ÷ columns. Inside cards, keep 
 - Price pill: font 12, gap 4.
 - Coupon facts row: font 10.5, gap 5.
 - Chip rows may wrap to a second line (e.g. "+8 more" on the video).
+- Booking bottom bars (TB1, TB2, F4): button horizontal padding 16 (table) / 18 (F4 Confirm) so time + offer sticker + button stay on one row.
+- Guests card (TB2): gap 6 and value width 26, so "Location maximum capacity · 40" stays on one line.
+- Offer card subtitles may wrap to 2 lines (the card grows).
 
 ## Height
 - Lists, videos and calendars show one screen; content below scrolls (see small references: the calendar's Evening row and the Included sheet continue under the fold).
 - Bottom action bars (Book/Confirm/Save) and the host nav **stay pinned**.
 - Bottom sheets: height = content, **max = screen height − 64**, then scroll inside.
 - Long forms (HS3/HS4/HR3/HR4) scroll; their reference boards are drawn taller to show the full form.
+- Booking steps (TB1–TB3, F4 with offers) scroll under their pinned bottom bar at every size. On small phones the end of the content is under the fold in the references; that is expected.
 
 ## Safe areas
 - Replace the fixed 24 px bottom padding of bottom bars with the real bottom safe-area inset (home indicator / Android gesture bar), minimum 16.

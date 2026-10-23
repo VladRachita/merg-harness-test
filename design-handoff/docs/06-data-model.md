@@ -72,7 +72,36 @@ Slot { start: "14:30", end: "15:30", state: "FREE" | "TAKEN" }
 Offer {
   id, type: "COUPON" | "EVENT", title: "Lunch menu",
   discount?: { type: "PERCENT", value: 20 } | { type: "AMOUNT", value: 10, currency: "RON" },  // coupons only
-  startsAt?, endsAt, quantityLeft: 50, video?: Video
+  startsAt?, endsAt, quantityLeft: 50, video?: Video,
+  // Booking (table booking TB1–TB3 and salon F4): offers repeat over several days and several time windows a day.
+  appliesTo: "TABLE" | { serviceIds: string[] },
+  windows: { date: "2026-10-26", from: "12:00", to: "14:00" }[],                 // coupons: when the discount applies
+  sittings?: { id, date: "2026-10-26", from: "19:00", to: "20:30", seatsLeft: 12 }[],   // events: bookable sittings / spots
+  minGuests?, maxGuests?
+}
+```
+
+## Restaurant booking (FOOD_BEVERAGE)
+```ts
+RestaurantBookingSettings {
+  capacity: 40,                         // "Location maximum capacity · 40"; guests stepper max
+  bookingHorizonMonths: 6,              // last month reachable with "next month" on TB1
+  tableHoldMin: 90,                     // "Tables are held for 1 h 30 min" → time range "20:00 – 21:30"
+  slotStepMin: 30,
+  services: [{ name: "Lunch", from: "12:00", to: "16:00" }, { name: "Dinner", from: "17:30", to: "23:00" }]
+}
+DayAvailability { date, state: "FREE" | "FEW_LEFT" | "FULL" | "CLOSED" }        // TB1 tint, TB2 week-strip dot
+TimeSlot { start: "20:00", state: "FREE" | "TAKEN" }                             // per service period, for the guest count
+```
+
+## Booking request
+```ts
+TableBookingRequest {
+  businessId, date: "2026-10-26", from: "20:00", to: "21:30", guests: 2,
+  offerId?: string, sittingId?: string,          // Any time = neither
+  firstName: string, lastName: string,           // two fields, both required
+  phone: { country: "RO", number: string }, email: string,
+  specialRequests?: string                       // optional, max 1000
 }
 ```
 
@@ -88,3 +117,10 @@ Offer {
 | Duration | "60 min" |
 | Included chips on video | first 2 `included` items + "+N more" where N = total − 2 |
 | Included count | "What's included · N" where N = included count |
+| Offer windows (offer card sub) | that day's windows, "HH:MM – HH:MM" joined by " · " |
+| Offer sticker | coupon → discount text ("20% OFF", "10 RON OFF"); event → event title |
+| Seats / spots | "N seats left" (tables) / "N spots left" (services), localised plural; hide a sitting when seatsLeft < guests |
+| Booking time range | start + `tableHoldMin` (tables) or service duration (salon): "20:00 – 21:30" |
+| Coupon reminder (TB3) | "Valid <window containing the picked time> · applied at the restaurant" |
+| Event reminder (TB3) | "Sitting <from – to> · <guests> seats held for you" |
+| Month calendar | FREE → green tint, FEW_LEFT → amber tint, FULL/CLOSED → grey + line-through, past → light text; no offer marks in cells |
