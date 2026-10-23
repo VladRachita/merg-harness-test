@@ -29,6 +29,9 @@ Build these once and reuse them. Values are for the **medium** phone (390 × 844
 | Can replace | `arrow-left-right` | Video / no video | `video` |
 | Check-in | `log-in` | Bookings | `clipboard-check` |
 | Customers | `book-user` | Settings | `settings` |
+| Coupon offer (badge, sticker) | `percent` | Event offer (badge, sticker) | custom 3-person "group" path (see `11-table-booking.md` §5) |
+| Special requests | `message-square` | Add to calendar | `calendar-plus` |
+| Email | `mail` | Info note | `info` |
 | Home / Search / Map / Profile (nav) | `home` / `search` / `map-pin` / `user` | Videos tab | `square-play` |
 
 Stroke 1.8 at 20–26 px, 2–2.4 at 12–16 px. Filled: play, phone, star, more dots.
@@ -159,7 +162,9 @@ Full-bleed vertical video, video top & bottom scrims.
 - **Times** grouped by part of day ("Morning / Afternoon / Evening" 12.5/500 secondary). **Hide a part of day with no free times.** Slots 4 columns, gap 8, 44 tall radius 12: free = white + 1px `line.outline` 14/500; selected = ink, white 600; taken = `bg.soft`, `text.disabled`, line-through, disabled.
 - Bottom bar: summary ("Thu, 22 Oct · with Andrei" 12.5 secondary / "14:30 – 15:30" 17/700) + **Confirm** (ink 48, radius 16).
 - Defaults: picked stylist preselected; **earliest free slot preselected** so a regular customer can just tap Confirm.
-- Seen in: R3, F4.
+- **F4 adds C20 "Choose an offer"** between When and the times. The times then follow the chosen offer (Any time / coupon windows / event spots), and the bottom bar shows the offer sticker. R3 has no offers yet.
+- The **When** area (header + week strip) is reused unchanged on table booking TB2.
+- Seen in: R3, F4, F4C, F4E, TB2.
 
 ## 15. Stylist choice (first visit)
 - Header "Choose a stylist"; summary line 13 (Haircut 600 · `clock` 60 min · `banknote` 120 RON).
@@ -192,3 +197,32 @@ Full-bleed vertical video, video top & bottom scrims.
 ## 18. Host profile — Quick Actions (HP)
 Avatar 96 with 2.5 `brand.accent` ring + 30 edit badge · name 22/400 + verified badge · handle 13 + pencil · stats (Posts · Followers · Following) · "Quick Actions" 16/500 · **4-column grid** of tiles 56 (radius 18, `bg.soft`, icon 26 ink) with label 12/500: Calendar · Bookings · Hours · Services · Coupons · Customers · Team · icon-only content tabs (Videos · Reviews · Events, 46 tall, 22 × 2 underline) · bottom nav.
 Optional "Brand" tone: tile `#EEEAFD`, icon `#5B3FD6`. Default is Mono.
+
+## 19. Month calendar (availability)
+- Month header 16/600 + previous/next month (44). Weekday row 11.5/500 secondary, 7 columns.
+- Day cells 48 tall, radius 10, gap 4, date 15/600, tinted by availability: free `calendar.freeBg`, few left `calendar.fewBg`, full/closed `bg.soft` + line-through (disabled), past `calendar.pastText` (disabled), today = inset 1.5 ink ring, selected = ink.
+- **No icons or dots in cells.** Legend below (Free · Few left · Full / closed).
+- Followed by the **Events & coupons list** (date badge 46 × 40 · title 14/600 · sub 12.5 · offer badge 28).
+- Seen in: TB1. Full spec: `11-table-booking.md` §2.
+
+## 20. Offer cards ("Choose an offer")
+- Radio cards (min 60, radius 16): badge 30 (Any time `clock` on `bg.soft`; coupon `percent` on `offer.coupon`; event group icon on `offer.event`), title 14.5, the day's windows 12.5 secondary, radio 22.
+- Selected = selection ring; others greyed 0.4 (tappable). Any time always first.
+- Seen in: TB2, F4. Full spec: `11-table-booking.md` §5–6.
+
+## 21. Guests stepper
+- Card (radius 16): "Guests" 15/600 + "Location maximum capacity · N" 12 secondary · − / value 18/700 / + (44 outlined circles). Limits 1…capacity.
+- Seen in: TB2.
+
+## 22. Sitting / spot buttons (events)
+- 2 columns, 60 tall, radius 14: group icon 16 + "19:00 – 20:30" 14.5/600 + "N seats left" 12. Unselected `offer.eventTint` / `offer.eventText`; selected ink.
+- Seen in: TB2E, F4E.
+
+## 23. Booking summary card
+- Day tile 52 × 60 (ink, weekday / day / month) · time range 17/700 · guests + duration 13 · Change.
+- Optional offer strip at the bottom: coupon (green tint) or event (purple tint), badge 30 + title 14.5/700 + one line 12.5.
+- Seen in: TB3, TB3C, TB3E.
+
+## 24. Booking form
+- One card, rows ≥ 56: **First name | Last name** on one row with a 1 × 28 divider · phone with country button · email · special requests (textarea, 1000 max, counter).
+- Seen in: TB3.

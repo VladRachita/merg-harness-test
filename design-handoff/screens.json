@@ -439,7 +439,9 @@
           "height": 580
         }
       },
-      "links_to": []
+      "links_to": [
+        "tb1-pick-date"
+      ]
     },
     {
       "id": "R1-services-stylist-picked",
@@ -663,8 +665,8 @@
     {
       "id": "F4-pick-time",
       "area": "salon-first-visit",
-      "title": "First visit · Pick a time",
-      "purpose": "Same calendar as R3.",
+      "title": "First visit · Pick a time · Any time",
+      "purpose": "Who and When as R3, plus Choose an offer (Any time selected) and all free times.",
       "source": "S-Pro-Cal.dc.html",
       "files": {
         "small": {
@@ -687,7 +689,76 @@
         }
       },
       "links_to": [
-        "f3-choose-stylist"
+        "f3-choose-stylist",
+        "f4-pick-time",
+        "f4c-pick-time-coupon",
+        "f4e-pick-time-event"
+      ]
+    },
+    {
+      "id": "F4C-pick-time-coupon",
+      "area": "salon-first-visit",
+      "title": "First visit · Pick a time · coupon offer",
+      "purpose": "Coupon chosen: only its time windows, each with the green \"15% OFF\" sticker.",
+      "source": "S-Pro-Cal-Coupon.dc.html",
+      "files": {
+        "small": {
+          "html": "screens/small/f4c-pick-time-coupon.html",
+          "png": "screenshots/small/f4c-pick-time-coupon.png",
+          "width": 360,
+          "height": 640
+        },
+        "medium": {
+          "html": "screens/medium/f4c-pick-time-coupon.html",
+          "png": "screenshots/medium/f4c-pick-time-coupon.png",
+          "width": 390,
+          "height": 844
+        },
+        "large": {
+          "html": "screens/large/f4c-pick-time-coupon.html",
+          "png": "screenshots/large/f4c-pick-time-coupon.png",
+          "width": 430,
+          "height": 932
+        }
+      },
+      "links_to": [
+        "f3-choose-stylist",
+        "f4-pick-time",
+        "f4c-pick-time-coupon",
+        "f4e-pick-time-event"
+      ]
+    },
+    {
+      "id": "F4E-pick-time-event",
+      "area": "salon-first-visit",
+      "title": "First visit · Pick a time · event offer",
+      "purpose": "Event chosen: its spots (start – end, spots left) instead of times.",
+      "source": "S-Pro-Cal-Event.dc.html",
+      "files": {
+        "small": {
+          "html": "screens/small/f4e-pick-time-event.html",
+          "png": "screenshots/small/f4e-pick-time-event.png",
+          "width": 360,
+          "height": 640
+        },
+        "medium": {
+          "html": "screens/medium/f4e-pick-time-event.html",
+          "png": "screenshots/medium/f4e-pick-time-event.png",
+          "width": 390,
+          "height": 844
+        },
+        "large": {
+          "html": "screens/large/f4e-pick-time-event.html",
+          "png": "screenshots/large/f4e-pick-time-event.png",
+          "width": 430,
+          "height": 932
+        }
+      },
+      "links_to": [
+        "f3-choose-stylist",
+        "f4-pick-time",
+        "f4c-pick-time-coupon",
+        "f4e-pick-time-event"
       ]
     },
     {
@@ -717,6 +788,264 @@
         }
       },
       "links_to": []
+    },
+    {
+      "id": "TB1-pick-date",
+      "area": "table-booking",
+      "title": "Book a table · 1 · Pick a date",
+      "purpose": "Month calendar tinted by availability + the month's events & coupons list.",
+      "source": "T-Cal-D.dc.html",
+      "files": {
+        "small": {
+          "html": "screens/small/tb1-pick-date.html",
+          "png": "screenshots/small/tb1-pick-date.png",
+          "width": 360,
+          "height": 640
+        },
+        "medium": {
+          "html": "screens/medium/tb1-pick-date.html",
+          "png": "screenshots/medium/tb1-pick-date.png",
+          "width": 390,
+          "height": 844
+        },
+        "large": {
+          "html": "screens/large/tb1-pick-date.html",
+          "png": "screenshots/large/tb1-pick-date.png",
+          "width": 430,
+          "height": 932
+        }
+      },
+      "links_to": [
+        "pf1-profile-fnb",
+        "tb2-guests-time-any",
+        "tb2c-guests-time-coupon",
+        "tb2e-guests-time-event"
+      ]
+    },
+    {
+      "id": "TB2-guests-time-any",
+      "area": "table-booking",
+      "title": "Book a table · 2 · Guests & time · Any time",
+      "purpose": "When week strip, guests stepper, Choose an offer (Any time), all Lunch and Dinner times.",
+      "source": "T-Time-Any.dc.html",
+      "files": {
+        "small": {
+          "html": "screens/small/tb2-guests-time-any.html",
+          "png": "screenshots/small/tb2-guests-time-any.png",
+          "width": 360,
+          "height": 640
+        },
+        "medium": {
+          "html": "screens/medium/tb2-guests-time-any.html",
+          "png": "screenshots/medium/tb2-guests-time-any.png",
+          "width": 390,
+          "height": 844
+        },
+        "large": {
+          "html": "screens/large/tb2-guests-time-any.html",
+          "png": "screenshots/large/tb2-guests-time-any.png",
+          "width": 430,
+          "height": 932
+        }
+      },
+      "links_to": [
+        "tb1-pick-date",
+        "tb2-guests-time-any",
+        "tb2c-guests-time-coupon",
+        "tb2e-guests-time-event",
+        "tb3-details-any"
+      ]
+    },
+    {
+      "id": "TB2C-guests-time-coupon",
+      "area": "table-booking",
+      "title": "Book a table · 2 · Guests & time · coupon",
+      "purpose": "Coupon chosen: only its time windows, each with the green \"20% OFF\" sticker.",
+      "source": "T-Time-Coupon.dc.html",
+      "files": {
+        "small": {
+          "html": "screens/small/tb2c-guests-time-coupon.html",
+          "png": "screenshots/small/tb2c-guests-time-coupon.png",
+          "width": 360,
+          "height": 640
+        },
+        "medium": {
+          "html": "screens/medium/tb2c-guests-time-coupon.html",
+          "png": "screenshots/medium/tb2c-guests-time-coupon.png",
+          "width": 390,
+          "height": 844
+        },
+        "large": {
+          "html": "screens/large/tb2c-guests-time-coupon.html",
+          "png": "screenshots/large/tb2c-guests-time-coupon.png",
+          "width": 430,
+          "height": 932
+        }
+      },
+      "links_to": [
+        "tb1-pick-date",
+        "tb2-guests-time-any",
+        "tb2c-guests-time-coupon",
+        "tb2e-guests-time-event",
+        "tb3c-details-coupon"
+      ]
+    },
+    {
+      "id": "TB2E-guests-time-event",
+      "area": "table-booking",
+      "title": "Book a table · 2 · Guests & time · event",
+      "purpose": "Event chosen: its sittings (start – end, seats left) instead of times.",
+      "source": "T-Time-Event.dc.html",
+      "files": {
+        "small": {
+          "html": "screens/small/tb2e-guests-time-event.html",
+          "png": "screenshots/small/tb2e-guests-time-event.png",
+          "width": 360,
+          "height": 640
+        },
+        "medium": {
+          "html": "screens/medium/tb2e-guests-time-event.html",
+          "png": "screenshots/medium/tb2e-guests-time-event.png",
+          "width": 390,
+          "height": 844
+        },
+        "large": {
+          "html": "screens/large/tb2e-guests-time-event.html",
+          "png": "screenshots/large/tb2e-guests-time-event.png",
+          "width": 430,
+          "height": 932
+        }
+      },
+      "links_to": [
+        "tb1-pick-date",
+        "tb2-guests-time-any",
+        "tb2c-guests-time-coupon",
+        "tb2e-guests-time-event",
+        "tb3e-details-event"
+      ]
+    },
+    {
+      "id": "TB3-details-any",
+      "area": "table-booking",
+      "title": "Book a table · 3 · Your details · Any time",
+      "purpose": "Summary (day tile, time, guests, length) + first/last name, phone, email, requests.",
+      "source": "T-Details.dc.html",
+      "files": {
+        "small": {
+          "html": "screens/small/tb3-details-any.html",
+          "png": "screenshots/small/tb3-details-any.png",
+          "width": 360,
+          "height": 640
+        },
+        "medium": {
+          "html": "screens/medium/tb3-details-any.html",
+          "png": "screenshots/medium/tb3-details-any.png",
+          "width": 390,
+          "height": 844
+        },
+        "large": {
+          "html": "screens/large/tb3-details-any.html",
+          "png": "screenshots/large/tb3-details-any.png",
+          "width": 430,
+          "height": 932
+        }
+      },
+      "links_to": [
+        "tb2-guests-time-any",
+        "tb4-booked"
+      ]
+    },
+    {
+      "id": "TB3C-details-coupon",
+      "area": "table-booking",
+      "title": "Book a table · 3 · Your details · coupon",
+      "purpose": "Same form; the summary ends with the green coupon strip (final reminder).",
+      "source": "T-Details-Coupon.dc.html",
+      "files": {
+        "small": {
+          "html": "screens/small/tb3c-details-coupon.html",
+          "png": "screenshots/small/tb3c-details-coupon.png",
+          "width": 360,
+          "height": 640
+        },
+        "medium": {
+          "html": "screens/medium/tb3c-details-coupon.html",
+          "png": "screenshots/medium/tb3c-details-coupon.png",
+          "width": 390,
+          "height": 844
+        },
+        "large": {
+          "html": "screens/large/tb3c-details-coupon.html",
+          "png": "screenshots/large/tb3c-details-coupon.png",
+          "width": 430,
+          "height": 932
+        }
+      },
+      "links_to": [
+        "tb2c-guests-time-coupon",
+        "tb4-booked"
+      ]
+    },
+    {
+      "id": "TB3E-details-event",
+      "area": "table-booking",
+      "title": "Book a table · 3 · Your details · event",
+      "purpose": "Same form; the summary ends with the purple event strip (sitting, seats held).",
+      "source": "T-Details-Event.dc.html",
+      "files": {
+        "small": {
+          "html": "screens/small/tb3e-details-event.html",
+          "png": "screenshots/small/tb3e-details-event.png",
+          "width": 360,
+          "height": 640
+        },
+        "medium": {
+          "html": "screens/medium/tb3e-details-event.html",
+          "png": "screenshots/medium/tb3e-details-event.png",
+          "width": 390,
+          "height": 844
+        },
+        "large": {
+          "html": "screens/large/tb3e-details-event.html",
+          "png": "screenshots/large/tb3e-details-event.png",
+          "width": 430,
+          "height": 932
+        }
+      },
+      "links_to": [
+        "tb2e-guests-time-event",
+        "tb4-booked"
+      ]
+    },
+    {
+      "id": "TB4-booked",
+      "area": "table-booking",
+      "title": "Book a table · 4 · Booked",
+      "purpose": "Confirmation: summary, address (copy), call, Add to calendar, Done.",
+      "source": "T-Done.dc.html",
+      "files": {
+        "small": {
+          "html": "screens/small/tb4-booked.html",
+          "png": "screenshots/small/tb4-booked.png",
+          "width": 360,
+          "height": 640
+        },
+        "medium": {
+          "html": "screens/medium/tb4-booked.html",
+          "png": "screenshots/medium/tb4-booked.png",
+          "width": 390,
+          "height": 844
+        },
+        "large": {
+          "html": "screens/large/tb4-booked.html",
+          "png": "screenshots/large/tb4-booked.png",
+          "width": 430,
+          "height": 932
+        }
+      },
+      "links_to": [
+        "pf1-profile-fnb"
+      ]
     }
   ],
   "reference": {

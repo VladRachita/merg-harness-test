@@ -32,3 +32,9 @@ Use this for every screen before calling it done.
 - [ ] **F3**: Anyone first; one selection; bottom bar updates with name + next free.
 - [ ] **CE1**: discount sticker only on coupons (percent or amount); time left red at Today/1 day; tear line at media bottom; 1-line titles.
 - [ ] **HP**: 4-column Quick Actions grid with labels; brand tone off by default.
+- [ ] **F4/F4C/F4E**: Choose an offer sits between When and the times; switching offers changes only times, note and bottom bar; coupon windows carry the green sticker; event spots show "N spots left".
+- [ ] **TB1**: availability tints only (no icons in cells); today ring; past/closed/full not tappable; list rows show date badge + offer badge; previous month disabled on the current month.
+- [ ] **TB2**: When strip identical to F4; guests 1…capacity; offers greyed 0.4 when not chosen; sittings with fewer seats than guests hidden; Continue goes to the TB3 state of the chosen offer.
+- [ ] **TB3**: day tile summary; coupon/event strip only for that offer; First name | Last name on one row; Special requests optional with 0 / 1000 counter.
+- [ ] **TB4**: summary rows, copy address, Call the restaurant, Add to calendar, Done → PF1.
+- [ ] Everything in `11-table-booking.md` §12 (definition of done).

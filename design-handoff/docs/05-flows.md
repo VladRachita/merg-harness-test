@@ -46,7 +46,7 @@ flowchart LR
 Rules:
 1. The **side-rail Book** is the only way to book from a video. The info bar on the video is not tappable.
 2. **Regular**: R3 opens with the picked stylist highlighted and the **earliest free slot preselected**. The people who can replace that stylist for this service are shown under "Can replace <name>" with their next free time; tapping one switches the calendar to them.
-3. **First visit**: F3 must be passed (Anyone or a stylist) before the calendar. F4 = R3 layout.
+3. **First visit**: F3 must be passed (Anyone or a stylist) before the calendar. F4 = R3 layout **plus Choose an offer** (Any time / coupon / event), which switches F4 ↔ F4C ↔ F4E in place.
 4. "Anyone" = the earliest free time among everyone who does this service; the summary must then name the assigned stylist.
 5. Services without a video skip the video step (go straight to R3/F3).
 6. Back navigation returns to the previous screen (video → list, calendar → video or stylist step, sheet → video).
@@ -74,4 +74,23 @@ Filter tiles (All / Events / Coupons) filter the grid in place. Tapping a ticket
 |---|---|---|
 | Accommodation | Call → dialer | Call |
 | Services | Book now (target not designed) | Book |
-| Food & Beverage | Book now (target not designed) | — |
+| Food & Beverage | Book now → **TB1 table booking** | — |
+
+## F. Table booking (Food & Beverage)
+
+```mermaid
+flowchart LR
+  PF1[PF1 F&B profile] -- Book now --> TB1[TB1 Pick a date]
+  TB1 -- Choose a time --> TB2[TB2 Guests & time]
+  TB1 -- event / coupon row --> TB2
+  TB2 -- Continue --> TB3[TB3 Your details]
+  TB3 -- Confirm reservation --> TB4[TB4 Booked]
+  TB4 -- Done / X --> PF1
+  TB3 -- Back / Change --> TB2
+  TB2 -- Back --> TB1
+```
+
+Rules (details in `11-table-booking.md` §1):
+1. Date first (month calendar, months ahead), then guests + offer + time on **one** screen, then details, then the confirmation.
+2. The chosen offer (Any time, a coupon or an event) decides which times are shown and is carried to TB3 (summary strip) and the booking request.
+3. Back and Change never lose a pick. A row in TB1's list opens TB2 with that day and offer chosen.

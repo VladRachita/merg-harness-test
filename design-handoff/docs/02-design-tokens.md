@@ -34,6 +34,13 @@ Machine-readable values: [`../tokens.json`](../tokens.json). Map them once into 
 | `dark.pickerBg` | `#0E0D11` | Video picker screen |
 | `dark.navBar` | `#111113` | Bottom navigation bar (host) |
 | `dark.videoGradient` | `160deg #5A4A63 → #2E2535 → #141016` | Placeholder for video content in mocks only |
+| `calendar.freeBg` / `freeBorder` | `#E7F4EC` / `#BFE3CD` | Month calendar: day with free tables (border only on the legend swatch) |
+| `calendar.fewBg` / `fewBorder` | `#FDF1D8` / `#F1D79A` | Month calendar: day with few tables left |
+| `calendar.pastText` | `#C4BFCC` | Month calendar: past days |
+| `calendar.arrowDisabled` | `#B9B4C2` | Previous month/week arrow when disabled |
+| `offer.coupon` / `couponTint` / `couponText` | `#1F8A55` / `#E7F4EC` / `#11673F` | Coupon badge and sticker / coupon strip in the booking summary |
+| `offer.event` / `eventTint` / `eventText` | `#7155E0` / `#EEEAFD` / `#5B3FD6` | Event badge and sticker / sitting buttons and event strip |
+| `offer.eventSubText` / `eventOnDark` | `#6A55C8` / `#C9BCFF` | "N seats left" on a sitting / event icon on the selected (ink) sitting |
 
 ## Typography
 - Family: **Roboto** on Android, **system (SF Pro)** on iOS. Weights 400 / 500 / 600 / 700 / 800.
@@ -42,7 +49,7 @@ Machine-readable values: [`../tokens.json`](../tokens.json). Map them once into 
 - Support Dynamic Type / font scale: let text wrap or clamp, never overlap. Pills keep `nowrap`.
 
 ## Radius
-Sheet 24 · video card 22 · white section card 18 · 36-high pills 18 · primary buttons and glass panel 16 · ticket card, Follow/Call, day buttons 14 · category tiles, price pill 13 · time slots, thumbnails 12 · date tile 9 · discount sticker 6 · avatars, icon buttons: round.
+Sheet 24 · video card 22 · white section card 18 · 36-high pills 18 · primary buttons and glass panel 16 · offer cards, guests card 16 · ticket card, Follow/Call, day buttons, day tile, sittings 14 · category tiles, price pill 13 · time slots, thumbnails 12 · month calendar cells 10 · date tile / list date badge 9 · discount sticker, offer sticker 6 · avatars, icon buttons: round.
 
 ## Spacing
 Screen side padding **16**. Grid gap **12** (2 columns), **8** (3-column coupons), **2** (video picker). Section gaps 12–16. Header 56 (64 with a two-line title). Bottom action bar padding `10 16 24 16` (24 = home-indicator area; replace with the real safe-area inset). Host bottom nav 72. Minimum touch target **44**.

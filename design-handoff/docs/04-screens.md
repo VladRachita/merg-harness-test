@@ -99,12 +99,12 @@ Same structure as PA1:
 Links:
 - Haircut → F2.
 - Beard trim → F3, because there's no video.
-- Book now → not designed (see open questions).
+- Book now → not designed for services (see open questions).
 
 ### PF1-profile-fnb · Food & Beverage profile
 Header + About only:
 - Header: @maestro_bistro, "Food & Beverage · Restaurant".
-- CTA **Book now**.
+- CTA **Book now** → **TB1** (table booking).
 - About: utensils pin, "**Closes soon** · Until 22:30" in amber, Expensive.
 - **No tabs and no content grid** for this category.
 
@@ -160,7 +160,13 @@ C15:
 - Back → F2.
 
 ### F4-pick-time · Pick a time (first visit)
-Identical to R3 (C14). Back → F3.
+R3 layout (C14) plus **C20 Choose an offer** between When and the times. **Any time** is selected and Afternoon/Evening slots are shown. Back → F3. The content scrolls under the pinned bar.
+
+### F4C-pick-time-coupon · Pick a time · coupon chosen
+"15% OFF" selected. Times grouped by window: **14:00 – 16:00** (14:30 selected, 15:30) and **18:00 – 19:00** (18:30), each with the green sticker. Bottom bar: "14:30 – 15:30" + "15% OFF". Note: "The discount is applied at the salon when you pay."
+
+### F4E-pick-time-event · Pick a time · event chosen
+"Late cuts" selected. "Spots · 60 min": **19:00 – 20:00 · 1 spot left** (selected), 20:00 – 21:00 · 2 spots left (C22). Bottom bar: "19:00 – 20:00" + purple "Late cuts". Note: "Your spot is held for the whole hour.
 
 ---
 
@@ -181,3 +187,27 @@ Identical to R3 (C14). Back → F3.
 | Any dessert | coupon | 5 days | 100 | 15% OFF |
 
 - Tap card → coupon/event video — **not designed yet** (see open questions).
+
+---
+
+## Table booking (Food & Beverage)
+
+Full spec, sizes and states: [`11-table-booking.md`](11-table-booking.md). Summary:
+
+### TB1-pick-date · Pick a date
+C19 month calendar (October 2026; today Fri 23; **Mon 26 selected**; Sun closed; Wed 28 full; Sat 24 and Fri 30 few left), legend, "Events & coupons in October": Live jazz night (Fri 23), 10 RON OFF dinner (Sat 24), **Wine tasting** (Mon 26), **20% OFF lunch** (Mon 26 – Fri 30), Halloween night (Sat 31). Bottom: "Your date · Mon, 26 Oct" + **Choose a time** → TB2. Wine tasting row → TB2E, 20% OFF lunch row → TB2C. Back → PF1.
+
+### TB2-guests-time-any · Guests & time · Any time
+When week strip (Today 23 … Thu 29, Mon 26 selected) · C21 Guests (2, capacity 40) · C20 offers: **Any time** / 20% OFF (12:00 – 14:00 · 17:30 – 18:30) / Wine tasting (19:00 – 20:30 · 21:00 – 22:30) · Lunch and Dinner slots (**20:00** selected) · "Tables are held for 1 h 30 min." · bottom "Mon, 26 Oct · 2 guests / 20:00 – 21:30" + **Continue** → TB3.
+
+### TB2C-guests-time-coupon · Guests & time · coupon
+As TB2 with **20% OFF** chosen: windows 12:00 – 14:00 (12:00, **12:30**, 13:00 taken, 13:30) and 17:30 – 18:30 (17:30, 18:00), each with the sticker. Bottom "12:30 – 14:00" + "20% OFF" → TB3C.
+
+### TB2E-guests-time-event · Guests & time · event
+As TB2 with **Wine tasting** chosen: "Sittings · 1 h 30 min": **19:00 – 20:30 · 12 seats left** (selected), 21:00 – 22:30 · 6 seats left. Bottom "19:00 – 20:30" + purple "Wine tasting" → TB3E.
+
+### TB3-details-any / TB3C-details-coupon / TB3E-details-event · Your details
+C23 summary (day tile Mon 26 Oct · time · 2 guests · 1 h 30 min · Change), plus the coupon strip ("20% OFF your bill · Valid 12:00 – 14:00 · applied at the restaurant") or the event strip ("Wine tasting · Sitting 19:00 – 20:30 · 2 seats held for you"). C24 form: First name | Last name, RO +40 phone, Email, Special requests (optional, 0 / 1000). Info note. **Confirm reservation** → TB4. Back and Change → the same TB2 state.
+
+### TB4-booked · Booked
+Success check, title (copy to confirm), "Maestro Bistro is expecting you.", summary rows (date · time, guests, address with copy, Call the restaurant), **Add to calendar** + **Done** (→ PF1). X → PF1.
