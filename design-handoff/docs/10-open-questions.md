@@ -27,3 +27,11 @@
 | 23 | Invitee side | TM2 | How an invite is received and accepted (notification, accept / decline screen) is not designed. |
 | 24 | Stylist profile fields | TM3, F3 | Role, experience, specialties and languages (shown on F3 "Choose a stylist") are not edited on TM3. Who edits them (the member on their own profile?) is not designed. |
 | 25 | Search results | TM2 | Proposal: people already in the team are not listed. Privacy / discoverability of usernames to confirm. |
+| 26 | Customer groups | CR1 | Proposal: Regulars = 3+ visits, New = 1 visit, Away = no visit in 60 days (all time). Confirm, and whether hosts can change them. |
+| 27 | Reward scope | CR2, CR7 | Any service, or only some? Can it be combined with a coupon/offer in the same booking? Not decided. |
+| 28 | Several rewards per person | CR1 | Proposal: a person can hold several, one is used per booking. |
+| 29 | Customer details | CR1 | Phone, email and visit history moved out of the list; a customer details screen is not designed. |
+| 30 | "Other" discount and RON presets | CR2, CR7 | The custom value input and the RON chip values (proposal: 10 · 20 · 30 · 50 RON) are not designed. |
+| 31 | Confirmations | CR9, CR10 | Delete rule and Stop reward confirmations are not designed (use the platform's destructive dialog). |
+| 32 | Customer side | — | How a customer is told about a new reward (push, "My activity") is not designed here. |
+| 33 | Send time | CR5 | Time of day for automatic sends is not shown. Proposal: 10:00 in the business's time zone. |

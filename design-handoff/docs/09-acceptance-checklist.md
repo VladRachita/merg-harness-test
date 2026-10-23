@@ -42,3 +42,8 @@ Use this for every screen before calling it done.
 - [ ] **TM2**: sheet max height screen − 64; Invite → "✓ Invited" and the invite appears on TM1.
 - [ ] **TM3**: Active / Paused radio cards; services checklist mirrors "Who does it"; Remove in danger red; Save changes pinned.
 - [ ] Everything in `12-team.md` §8 (definition of done).
+- [ ] **CR1/CR4**: two tabs; group tiles with the 0.4 rule; no phone/email; Send reward disabled with nobody selected.
+- [ ] **CR2/CR7**: live ticket; message max 40 shown on ≤ 2 lines; stacked duration chips fit RO/DE at 360.
+- [ ] **CR5–CR8**: progress bar without step text; F4 week strip; Who counted in the month before each send; summary sentence; Change returns to the step.
+- [ ] **CR9/CR10**: switch, stats, rule rows, delete in the header; Stop reward in danger red.
+- [ ] Everything in `13-customers-rewards.md` §13 (definition of done).

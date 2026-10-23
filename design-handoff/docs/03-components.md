@@ -239,3 +239,31 @@ Optional "Brand" tone: tile `#EEEAFD`, icon `#5B3FD6`. Default is Mono.
 ## 27. Service checklist
 - One card, rows min 60: service name 15/500 + "duration · price" 12.5 secondary + check 26 (on: `status.success` circle with white check; off: 2px `line.strong` ring). Rows are checkboxes.
 - Seen in: TM3 (same data as "Who does it" on HS3/HS4).
+
+## 28. Reward ticket (wide)
+- 108 tall, radius 16: green stub 104 (`offer.coupon`, value 28/800 + unit 12/700), dashed tear line with two notches, then business 12 · title 16/600 (**max 2 lines**, it is the host's message) · "Single use · until <date>" 12.5.
+- Seen in: CR2, CR3, CR7–CR10. Full spec: `13-customers-rewards.md` §9.
+
+## 29. Customer row (pick)
+- Min 68: avatar 44 · name 15/600 · "N visits · last <date>" · optional unused-reward chip · check 26 (ink when selected). Whole row toggles. No phone/email.
+- Seen in: CR1.
+
+## 30. Switch
+- Track 48 × 28 (on `status.success`, off `line.strong`), white knob 22, 44 hit area. Native switch with these colours.
+- Seen in: CR4, CR6, CR9.
+
+## 31. Duration chips
+- 4 per row, 56 tall, radius 12: number 17/700 above unit 12/500. Unit never wraps. Fits RO/DE at 360.
+- Seen in: CR2, CR7.
+
+## 32. Step progress bar
+- 4 segments, 4 tall, gap 4, radius 2 under the header; done + current `text.primary`, rest `line.divider`. No "Step x of y" text.
+- Seen in: CR5–CR8.
+
+## 33. Automatic rule card
+- Calendar icon · name + "Every month on the <Nth>" · switch · sticker + "valid <length>" + who · status "Next: <date> · N people" (`status.successText`).
+- Seen in: CR4.
+
+## 34. Stat tiles
+- 3 equal white tiles (radius 14): value 22/700 + label 12 secondary.
+- Seen in: CR9, CR10.

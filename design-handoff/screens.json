@@ -387,6 +387,322 @@
       ]
     },
     {
+      "id": "CR1-customers",
+      "area": "host-rewards",
+      "title": "Host · Customers · People",
+      "purpose": "Customers who booked in the app, filtered by group; pick people; one Send reward button.",
+      "source": "RW-A-Customers.dc.html",
+      "files": {
+        "small": {
+          "html": "screens/small/cr1-customers.html",
+          "png": "screenshots/small/cr1-customers.png",
+          "width": 360,
+          "height": 640
+        },
+        "medium": {
+          "html": "screens/medium/cr1-customers.html",
+          "png": "screenshots/medium/cr1-customers.png",
+          "width": 390,
+          "height": 844
+        },
+        "large": {
+          "html": "screens/large/cr1-customers.html",
+          "png": "screenshots/large/cr1-customers.png",
+          "width": 430,
+          "height": 932
+        }
+      },
+      "links_to": [
+        "cr1-customers",
+        "cr2-new-reward",
+        "cr4-rewards-tab",
+        "hp-profile"
+      ]
+    },
+    {
+      "id": "CR2-new-reward",
+      "area": "host-rewards",
+      "title": "Host · New reward (by hand)",
+      "purpose": "Who it goes to, live ticket preview, discount, message (40 chars), valid for.",
+      "source": "RW-Compose.dc.html",
+      "files": {
+        "small": {
+          "html": "screens/small/cr2-new-reward.html",
+          "png": "screenshots/small/cr2-new-reward.png",
+          "width": 360,
+          "height": 640
+        },
+        "medium": {
+          "html": "screens/medium/cr2-new-reward.html",
+          "png": "screenshots/medium/cr2-new-reward.png",
+          "width": 390,
+          "height": 844
+        },
+        "large": {
+          "html": "screens/large/cr2-new-reward.html",
+          "png": "screenshots/large/cr2-new-reward.png",
+          "width": 430,
+          "height": 932
+        }
+      },
+      "links_to": [
+        "cr1-customers",
+        "cr3-reward-sent"
+      ]
+    },
+    {
+      "id": "CR3-reward-sent",
+      "area": "host-rewards",
+      "title": "Host · Reward sent",
+      "purpose": "Confirmation with the ticket; See rewards or Done.",
+      "source": "RW-Sent.dc.html",
+      "files": {
+        "small": {
+          "html": "screens/small/cr3-reward-sent.html",
+          "png": "screenshots/small/cr3-reward-sent.png",
+          "width": 360,
+          "height": 640
+        },
+        "medium": {
+          "html": "screens/medium/cr3-reward-sent.html",
+          "png": "screenshots/medium/cr3-reward-sent.png",
+          "width": 390,
+          "height": 844
+        },
+        "large": {
+          "html": "screens/large/cr3-reward-sent.html",
+          "png": "screenshots/large/cr3-reward-sent.png",
+          "width": 430,
+          "height": 932
+        }
+      },
+      "links_to": [
+        "cr1-customers",
+        "cr4-rewards-tab"
+      ]
+    },
+    {
+      "id": "CR4-rewards-tab",
+      "area": "host-rewards",
+      "title": "Host · Customers · Rewards",
+      "purpose": "Automatic rules with on/off, an idea to start, and the rewards sent this month with \"Used by\".",
+      "source": "RW-Rewards.dc.html",
+      "files": {
+        "small": {
+          "html": "screens/small/cr4-rewards-tab.html",
+          "png": "screenshots/small/cr4-rewards-tab.png",
+          "width": 360,
+          "height": 640
+        },
+        "medium": {
+          "html": "screens/medium/cr4-rewards-tab.html",
+          "png": "screenshots/medium/cr4-rewards-tab.png",
+          "width": 390,
+          "height": 844
+        },
+        "large": {
+          "html": "screens/large/cr4-rewards-tab.html",
+          "png": "screenshots/large/cr4-rewards-tab.png",
+          "width": 430,
+          "height": 932
+        }
+      },
+      "links_to": [
+        "cr1-customers",
+        "cr10-reward-details",
+        "cr4-rewards-tab",
+        "cr5-auto-when",
+        "cr9-auto-edit",
+        "hp-profile"
+      ]
+    },
+    {
+      "id": "CR5-auto-when",
+      "area": "host-rewards",
+      "title": "Host · New automatic reward · When",
+      "purpose": "Pick the first send on the week strip; it repeats every month on that day.",
+      "source": "RW-Auto-1.dc.html",
+      "files": {
+        "small": {
+          "html": "screens/small/cr5-auto-when.html",
+          "png": "screenshots/small/cr5-auto-when.png",
+          "width": 360,
+          "height": 640
+        },
+        "medium": {
+          "html": "screens/medium/cr5-auto-when.html",
+          "png": "screenshots/medium/cr5-auto-when.png",
+          "width": 390,
+          "height": 844
+        },
+        "large": {
+          "html": "screens/large/cr5-auto-when.html",
+          "png": "screenshots/large/cr5-auto-when.png",
+          "width": 430,
+          "height": 932
+        }
+      },
+      "links_to": [
+        "cr4-rewards-tab",
+        "cr6-auto-who"
+      ]
+    },
+    {
+      "id": "CR6-auto-who",
+      "area": "host-rewards",
+      "title": "Host · New automatic reward · Who",
+      "purpose": "Visits in the month before the send (exactly / or more), how often a person can get it, skip unused.",
+      "source": "RW-Auto-2.dc.html",
+      "files": {
+        "small": {
+          "html": "screens/small/cr6-auto-who.html",
+          "png": "screenshots/small/cr6-auto-who.png",
+          "width": 360,
+          "height": 640
+        },
+        "medium": {
+          "html": "screens/medium/cr6-auto-who.html",
+          "png": "screenshots/medium/cr6-auto-who.png",
+          "width": 390,
+          "height": 844
+        },
+        "large": {
+          "html": "screens/large/cr6-auto-who.html",
+          "png": "screenshots/large/cr6-auto-who.png",
+          "width": 430,
+          "height": 932
+        }
+      },
+      "links_to": [
+        "cr5-auto-when",
+        "cr7-auto-reward"
+      ]
+    },
+    {
+      "id": "CR7-auto-reward",
+      "area": "host-rewards",
+      "title": "Host · New automatic reward · Reward",
+      "purpose": "Ticket preview, message (40 chars), discount, valid for.",
+      "source": "RW-Auto-3.dc.html",
+      "files": {
+        "small": {
+          "html": "screens/small/cr7-auto-reward.html",
+          "png": "screenshots/small/cr7-auto-reward.png",
+          "width": 360,
+          "height": 640
+        },
+        "medium": {
+          "html": "screens/medium/cr7-auto-reward.html",
+          "png": "screenshots/medium/cr7-auto-reward.png",
+          "width": 390,
+          "height": 844
+        },
+        "large": {
+          "html": "screens/large/cr7-auto-reward.html",
+          "png": "screenshots/large/cr7-auto-reward.png",
+          "width": 430,
+          "height": 932
+        }
+      },
+      "links_to": [
+        "cr6-auto-who",
+        "cr8-auto-check"
+      ]
+    },
+    {
+      "id": "CR8-auto-check",
+      "area": "host-rewards",
+      "title": "Host · New automatic reward · Check and turn on",
+      "purpose": "The rule as one sentence, When / Who / Reward with Change, Turn on.",
+      "source": "RW-Auto-4.dc.html",
+      "files": {
+        "small": {
+          "html": "screens/small/cr8-auto-check.html",
+          "png": "screenshots/small/cr8-auto-check.png",
+          "width": 360,
+          "height": 640
+        },
+        "medium": {
+          "html": "screens/medium/cr8-auto-check.html",
+          "png": "screenshots/medium/cr8-auto-check.png",
+          "width": 390,
+          "height": 844
+        },
+        "large": {
+          "html": "screens/large/cr8-auto-check.html",
+          "png": "screenshots/large/cr8-auto-check.png",
+          "width": 430,
+          "height": 932
+        }
+      },
+      "links_to": [
+        "cr4-rewards-tab",
+        "cr5-auto-when",
+        "cr6-auto-who",
+        "cr7-auto-reward"
+      ]
+    },
+    {
+      "id": "CR9-auto-edit",
+      "area": "host-rewards",
+      "title": "Host · Edit automatic reward",
+      "purpose": "On/off, results, ticket, rule rows to change, delete, Save changes.",
+      "source": "RW-Auto-B.dc.html",
+      "files": {
+        "small": {
+          "html": "screens/small/cr9-auto-edit.html",
+          "png": "screenshots/small/cr9-auto-edit.png",
+          "width": 360,
+          "height": 640
+        },
+        "medium": {
+          "html": "screens/medium/cr9-auto-edit.html",
+          "png": "screenshots/medium/cr9-auto-edit.png",
+          "width": 390,
+          "height": 884
+        },
+        "large": {
+          "html": "screens/large/cr9-auto-edit.html",
+          "png": "screenshots/large/cr9-auto-edit.png",
+          "width": 430,
+          "height": 932
+        }
+      },
+      "links_to": [
+        "cr4-rewards-tab"
+      ]
+    },
+    {
+      "id": "CR10-reward-details",
+      "area": "host-rewards",
+      "title": "Host · Reward details",
+      "purpose": "Ticket, Sent / Used / Not used yet, who used it, Stop reward.",
+      "source": "RW-B-Detail.dc.html",
+      "files": {
+        "small": {
+          "html": "screens/small/cr10-reward-details.html",
+          "png": "screenshots/small/cr10-reward-details.png",
+          "width": 360,
+          "height": 640
+        },
+        "medium": {
+          "html": "screens/medium/cr10-reward-details.html",
+          "png": "screenshots/medium/cr10-reward-details.png",
+          "width": 390,
+          "height": 844
+        },
+        "large": {
+          "html": "screens/large/cr10-reward-details.html",
+          "png": "screenshots/large/cr10-reward-details.png",
+          "width": 430,
+          "height": 932
+        }
+      },
+      "links_to": [
+        "cr4-rewards-tab"
+      ]
+    },
+    {
       "id": "PA1-profile-rooms",
       "area": "public-accommodation",
       "title": "Public · Accommodation profile · Rooms",
