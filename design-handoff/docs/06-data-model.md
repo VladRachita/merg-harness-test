@@ -52,10 +52,16 @@ Suggestion (not designed): offer hosts a checklist of common amenities per group
 ```ts
 TeamMember {
   id, name: "Andrei", initials: "A", avatarUrl?, avatarColor,
+  username: "andrei.barber",                     // shown as "@andrei.barber" (TM1, TM3)
+  status: "ACTIVE" | "PAUSED", isOwner: boolean, joinedAt,
   role: "Barber", yearsExperience: 8, specialties: string[],
   languages: ["RO","EN"], rating: 4.9, reviewsCount: 38
 }
+TeamInvite { id, username: "ioana.nails", invitedAt, state: "PENDING" | "ACCEPTED" | "DECLINED" | "CANCELLED" }
 ```
+- A person's services = every `Service` whose `teamMemberIds` contains them (TM1 "N services", TM3 checklist). Editing either side edits the same list.
+- `PAUSED` members are left out of the R1 team filter, F3, "Can replace" and "Anyone"; their existing bookings stay.
+- TM1 lists `PENDING` invites only. The owner is `isOwner` and always `ACTIVE`.
 
 ## Availability (calendar)
 ```ts

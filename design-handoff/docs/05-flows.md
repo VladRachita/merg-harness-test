@@ -94,3 +94,16 @@ Rules (details in `11-table-booking.md` §1):
 1. Date first (month calendar, months ahead), then guests + offer + time on **one** screen, then details, then the confirmation.
 2. The chosen offer (Any time, a coupon or an event) decides which times are shown and is carried to TB3 (summary strip) and the booking request.
 3. Back and Change never lose a pick. A row in TB1's list opens TB2 with that day and offer chosen.
+
+## G. Host — team
+
+```mermaid
+flowchart LR
+  HP[HP Host profile] -- Team tile --> TM1[TM1 Team]
+  TM1 -- Invite to team --> TM2[TM2 Invite sheet]
+  TM2 -- close --> TM1
+  TM1 -- a person --> TM3[TM3 Team member]
+  TM3 -- Save changes / Back --> TM1
+  TM3 -- Remove from team --> DEL((confirm — not designed))
+```
+Rules (details in `12-team.md` §1): invites wait under **Invites** until accepted; **Paused** people are hidden from booking (R1, F3, "Can replace", "Anyone") but keep their bookings; TM3 services = "Who does it" on each service; the owner cannot be paused or removed.

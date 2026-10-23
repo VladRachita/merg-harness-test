@@ -226,3 +226,16 @@ Optional "Brand" tone: tile `#EEEAFD`, icon `#5B3FD6`. Default is Mono.
 ## 24. Booking form
 - One card, rows ≥ 56: **First name | Last name** on one row with a 1 × 28 divider · phone with country button · email · special requests (textarea, 1000 max, counter).
 - Seen in: TB3.
+
+## 25. Team member row
+- Min 76, padding `12 8 12 14`: avatar 48 + status dot 14 (Active `status.success`, Paused `status.warning`, 2.5 white border) · name 15/600 (+ Owner chip, `brand.tintBg` / `brand.tintIcon`) · "@username · Role" 12.5 secondary · status word 12.5/600 + `scissors` "N services" · chevron. Whole row opens the person.
+- Invite variant: dashed avatar · "@username" · "Invited · waiting for an answer" tertiary · Cancel text button.
+- Seen in: TM1. Full spec: `12-team.md` §2.
+
+## 26. Username search (invite sheet)
+- Bottom sheet (C13 visuals). Search field 52, radius 14, focused border 1.5 ink, `at-sign` 20 + clear `x`. Result rows: avatar 40 · name 15/600 · "@username" 12.5 · **Invite** (ink 36, radius 12) → "✓ Invited" (`status.successText`).
+- Seen in: TM2.
+
+## 27. Service checklist
+- One card, rows min 60: service name 15/500 + "duration · price" 12.5 secondary + check 26 (on: `status.success` circle with white check; off: 2px `line.strong` ring). Rows are checkboxes.
+- Seen in: TM3 (same data as "Who does it" on HS3/HS4).

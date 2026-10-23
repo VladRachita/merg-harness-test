@@ -292,6 +292,101 @@
       ]
     },
     {
+      "id": "TM1-team-list",
+      "area": "host-team",
+      "title": "Host · Team",
+      "purpose": "Everyone who works with the host, grouped Active / Paused / Invites; one Invite to team button.",
+      "source": "TM-A-List.dc.html",
+      "files": {
+        "small": {
+          "html": "screens/small/tm1-team-list.html",
+          "png": "screenshots/small/tm1-team-list.png",
+          "width": 360,
+          "height": 640
+        },
+        "medium": {
+          "html": "screens/medium/tm1-team-list.html",
+          "png": "screenshots/medium/tm1-team-list.png",
+          "width": 390,
+          "height": 844
+        },
+        "large": {
+          "html": "screens/large/tm1-team-list.html",
+          "png": "screenshots/large/tm1-team-list.png",
+          "width": 430,
+          "height": 932
+        }
+      },
+      "links_to": [
+        "hp-profile",
+        "tm2-invite",
+        "tm3-team-member"
+      ]
+    },
+    {
+      "id": "TM2-invite",
+      "area": "host-team",
+      "title": "Host · Invite to team (sheet)",
+      "purpose": "Search by username; Invite / Invited states; they join after they accept.",
+      "source": "TM-A-Invite.dc.html",
+      "files": {
+        "small": {
+          "html": "screens/small/tm2-invite.html",
+          "png": "screenshots/small/tm2-invite.png",
+          "width": 360,
+          "height": 640
+        },
+        "medium": {
+          "html": "screens/medium/tm2-invite.html",
+          "png": "screenshots/medium/tm2-invite.png",
+          "width": 390,
+          "height": 844
+        },
+        "large": {
+          "html": "screens/large/tm2-invite.html",
+          "png": "screenshots/large/tm2-invite.png",
+          "width": 430,
+          "height": 932
+        }
+      },
+      "links_to": [
+        "hp-profile",
+        "tm1-team-list",
+        "tm2-invite",
+        "tm3-team-member"
+      ]
+    },
+    {
+      "id": "TM3-team-member",
+      "area": "host-team",
+      "title": "Host · Team member",
+      "purpose": "Status (Active / Paused), the services they do, remove from team, Save changes.",
+      "source": "TM-Member.dc.html",
+      "files": {
+        "small": {
+          "html": "screens/small/tm3-team-member.html",
+          "png": "screenshots/small/tm3-team-member.png",
+          "width": 360,
+          "height": 640
+        },
+        "medium": {
+          "html": "screens/medium/tm3-team-member.html",
+          "png": "screenshots/medium/tm3-team-member.png",
+          "width": 390,
+          "height": 844
+        },
+        "large": {
+          "html": "screens/large/tm3-team-member.html",
+          "png": "screenshots/large/tm3-team-member.png",
+          "width": 430,
+          "height": 932
+        }
+      },
+      "links_to": [
+        "tm1-team-list"
+      ]
+    },
+    {
       "id": "PA1-profile-rooms",
       "area": "public-accommodation",
       "title": "Public · Accommodation profile · Rooms",

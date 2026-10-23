@@ -27,7 +27,8 @@ Machine-readable values: [`../tokens.json`](../tokens.json). Map them once into 
 | `status.successText` | `#11673F` | "Open now", next free time text |
 | `status.successBg` | `#DDF5E8` | Tick circle background (services included list) |
 | `status.successOnDark` | `#5ED39A` | Ticks on video chips, selected-day dot |
-| `status.warning` / `warningText` | `#E0A21B` / `#8A5A00` | "Closes soon" |
+| `status.warning` / `warningText` | `#E0A21B` / `#8A5A00` | "Closes soon", Paused status (dot / text) |
+| `status.warningBg` | `#FDF1D8` | Paused status chip (team member) |
 | `status.dangerOnDark` | `#FFB4AB` | Urgent text on dark glass |
 | `dark.card` | `#1D1B22` | Video card base under media |
 | `dark.noVideo` | `#2E2B36` | Placeholder when an item has no video |
