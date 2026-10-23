@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Reservations</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+
+
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+button,input,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+a{color:inherit}
+::placeholder{color:#6E6A78;opacity:1}
+input:focus,textarea:focus{outline:none}
+.col{scrollbar-width:none}
+.col::-webkit-scrollbar{display:none}
+.col > *{flex-shrink:0}
+</style>
+
+<div style="position: relative; width: 390px; height: 844px; box-sizing: border-box; display: flex; flex-direction: column; overflow: hidden; background: #F7F5FB; color: #1D1B22; font-family: Roboto, system-ui, -apple-system, 'Segoe UI', sans-serif">
+  <div style="height: 8px; flex-shrink: 0"></div>
+<div style="margin: 0 16px; border-top: 1px solid #E2DEE9; border-bottom: 1px solid #E2DEE9; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); flex-shrink: 0">
+      <button type="button" aria-label="Videos" aria-pressed="false" style="height: 46px; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; gap: 8px; background: transparent; border: 0; padding: 0; color: #8E8A96">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="6" width="13" height="12" rx="2"></rect><path d="M16 10.5l5-3v9l-5-3"></path></svg>
+        <span style="width: 22px; height: 2px; border-radius: 1px; background: transparent"></span>
+      </button>
+      <button type="button" aria-label="Reviews" aria-pressed="false" style="height: 46px; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; gap: 8px; background: transparent; border: 0; padding: 0; color: #8E8A96">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 3.5l2.6 5.3 5.9.9-4.3 4.1 1 5.8L12 16.8l-5.2 2.8 1-5.8-4.3-4.1 5.9-.9z"></path></svg>
+        <span style="width: 22px; height: 2px; border-radius: 1px; background: transparent"></span>
+      </button>
+      <button type="button" aria-label="Reservations, 2 requests" aria-pressed="true" style="height: 46px; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; gap: 8px; background: transparent; border: 0; padding: 0; color: #1D1B22; position: relative">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4.5" width="18" height="16.5" rx="2.5"></rect><path d="M3 9.5h18"></path><path d="M8 2.5v4"></path><path d="M16 2.5v4"></path></svg>
+        <span aria-hidden="true" style="position: absolute; top: 2px; left: 50%; margin-left: 6px; min-width: 18px; height: 18px; box-sizing: border-box; padding: 0 5px; border-radius: 9px; border: 2px solid #F7F5FB; background: #E0A21B; color: #1D1B22; font-size: 10.5px; font-weight: 700; line-height: 14px; text-align: center">2</span><span style="width: 22px; height: 2px; border-radius: 1px; background: #1D1B22"></span>
+      </button>
+    </div>
+  <div class="col" style="flex: 1 1 auto; min-height: 0; overflow-y: auto; padding: 0 16px 20px; display: flex; flex-direction: column">
+    <a href="rv2-requests.html" style="margin-top: 14px; padding: 12px 10px 12px 14px; border-radius: 18px; background: #FDF1D8; display: flex; align-items: center; gap: 12px; text-decoration: none; color: #1D1B22">
+      <span style="width: 40px; height: 40px; flex-shrink: 0; border-radius: 50%; background: #E0A21B; color: #1D1B22; display: flex; align-items: center; justify-content: center"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg></span>
+      <span style="flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; gap: 2px"><span style="font-size: 16px; font-weight: 700">2 requests to answer</span><span style="font-size: 12.5px; color: #8A5A00">Oldest: 2 h ago</span></span>
+      <span style="flex-shrink: 0; height: 36px; padding: 0 12px; border-radius: 12px; background: #1D1B22; color: #FFFFFF; display: flex; align-items: center; font-size: 14px; font-weight: 500">Answer</span>
+    </a>
+    <div style="margin: 18px 4px 8px; display: flex; align-items: baseline; justify-content: space-between; gap: 8px"><h2 style="margin: 0; font-size: 15px; font-weight: 600">Today · Fri, 23 Oct</h2><span style="font-size: 12px; color: #5F5B68">3 reservations · 1 done</span></div>
+    <div style="background: #FFFFFF; border: 1px solid #E7E3ED; border-radius: 18px; overflow: hidden">
+      <a href="rv6-after-visit.html" style="min-height: 68px; padding: 10px 8px 10px 14px; display: flex; align-items: center; gap: 12px; text-decoration: none; color: #1D1B22">
+        <span style="width: 50px; flex-shrink: 0; display: flex; flex-direction: column; gap: 2px"><span style="font-size: 16px; font-weight: 700">11:00</span><span style="font-size: 12px; color: #8E8A96">12:00</span></span>
+        <span aria-hidden="true" style="align-self: stretch; width: 3px; border-radius: 2px; background: #CFC9DA"></span>
+        <span style="flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; gap: 4px"><span style="display: flex; align-items: center; justify-content: space-between; gap: 8px"><span style="min-width: 0; font-size: 15px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">Mihai Ionescu</span><span style="height: 22px; flex-shrink: 0; padding: 0 8px; border-radius: 11px; background: #ECE9F2; color: #5F5B68; display: inline-flex; align-items: center; gap: 4px; font-size: 11.5px; font-weight: 600; white-space: nowrap">Done</span></span><span style="display: flex; align-items: center; gap: 6px; min-width: 0; font-size: 12.5px; color: #5F5B68; white-space: nowrap"><span style="overflow: hidden; text-overflow: ellipsis">Haircut</span><span aria-hidden="true">·</span><span style="flex-shrink: 0; display: flex; align-items: center; gap: 4px"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M22 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>1 person</span></span></span>
+        <span style="flex-shrink: 0; display: flex; color: #8E8A96"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"></path></svg></span>
+      </a>
+      <a href="rv5-confirmed.html" style="min-height: 68px; padding: 10px 8px 10px 14px; border-top: 1px solid #EEEBF2; display: flex; align-items: center; gap: 12px; text-decoration: none; color: #1D1B22">
+        <span style="width: 50px; flex-shrink: 0; display: flex; flex-direction: column; gap: 2px"><span style="font-size: 16px; font-weight: 700">13:00</span><span style="font-size: 12px; color: #8E8A96">14:30</span></span>
+        <span aria-hidden="true" style="align-self: stretch; width: 3px; border-radius: 2px; background: #1F8A55"></span>
+        <span style="flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; gap: 4px"><span style="display: flex; align-items: center; justify-content: space-between; gap: 8px"><span style="min-width: 0; font-size: 15px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">Cristina Marin</span><span style="height: 22px; flex-shrink: 0; padding: 0 8px; border-radius: 11px; background: #DDF5E8; color: #11673F; display: inline-flex; align-items: center; gap: 4px; font-size: 11.5px; font-weight: 600; white-space: nowrap">Confirmed</span></span><span style="display: flex; align-items: center; gap: 6px; min-width: 0; font-size: 12.5px; color: #5F5B68; white-space: nowrap"><span style="overflow: hidden; text-overflow: ellipsis">Table</span><span aria-hidden="true">·</span><span style="flex-shrink: 0; display: flex; align-items: center; gap: 4px"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M22 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>4 people</span></span></span>
+        <span style="flex-shrink: 0; display: flex; color: #8E8A96"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"></path></svg></span>
+      </a>
+      <a href="rv5-confirmed.html" style="min-height: 68px; padding: 10px 8px 10px 14px; border-top: 1px solid #EEEBF2; display: flex; align-items: center; gap: 12px; text-decoration: none; color: #1D1B22">
+        <span style="width: 50px; flex-shrink: 0; display: flex; flex-direction: column; gap: 2px"><span style="font-size: 16px; font-weight: 700">19:00</span><span style="font-size: 12px; color: #8E8A96">20:30</span></span>
+        <span aria-hidden="true" style="align-self: stretch; width: 3px; border-radius: 2px; background: #1F8A55"></span>
+        <span style="flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; gap: 4px"><span style="display: flex; align-items: center; justify-content: space-between; gap: 8px"><span style="min-width: 0; font-size: 15px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">Ioana Radu</span><span style="height: 22px; flex-shrink: 0; padding: 0 8px; border-radius: 11px; background: #DDF5E8; color: #11673F; display: inline-flex; align-items: center; gap: 4px; font-size: 11.5px; font-weight: 600; white-space: nowrap">Confirmed</span></span><span style="display: flex; align-items: center; gap: 6px; min-width: 0; font-size: 12.5px; color: #5F5B68; white-space: nowrap"><span style="overflow: hidden; text-overflow: ellipsis">Wine tasting</span><span aria-hidden="true">·</span><span style="flex-shrink: 0; display: flex; align-items: center; gap: 4px"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M22 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>2 people</span></span></span>
+        <span style="flex-shrink: 0; display: flex; color: #8E8A96"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"></path></svg></span>
+      </a>
+    </div>
+    <div style="margin: 18px 4px 8px; display: flex; align-items: baseline; justify-content: space-between; gap: 8px"><h2 style="margin: 0; font-size: 15px; font-weight: 600">Tomorrow · Sat, 24 Oct</h2><span style="font-size: 12px; color: #5F5B68">2 reservations</span></div>
+    <div style="background: #FFFFFF; border: 1px solid #E7E3ED; border-radius: 18px; overflow: hidden">
+      <a href="rv5-confirmed.html" style="min-height: 68px; padding: 10px 8px 10px 14px; display: flex; align-items: center; gap: 12px; text-decoration: none; color: #1D1B22">
+        <span style="width: 50px; flex-shrink: 0; display: flex; flex-direction: column; gap: 2px"><span style="font-size: 16px; font-weight: 700">10:00</span><span style="font-size: 12px; color: #8E8A96">11:30</span></span>
+        <span aria-hidden="true" style="align-self: stretch; width: 3px; border-radius: 2px; background: #1F8A55"></span>
+        <span style="flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; gap: 4px"><span style="display: flex; align-items: center; justify-content: space-between; gap: 8px"><span style="min-width: 0; font-size: 15px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">Sorin Matei</span><span style="height: 22px; flex-shrink: 0; padding: 0 8px; border-radius: 11px; background: #DDF5E8; color: #11673F; display: inline-flex; align-items: center; gap: 4px; font-size: 11.5px; font-weight: 600; white-space: nowrap">Confirmed</span></span><span style="display: flex; align-items: center; gap: 6px; min-width: 0; font-size: 12.5px; color: #5F5B68; white-space: nowrap"><span style="overflow: hidden; text-overflow: ellipsis">Couples massage</span><span aria-hidden="true">·</span><span style="flex-shrink: 0; display: flex; align-items: center; gap: 4px"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M22 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>2 people</span></span></span>
+        <span style="flex-shrink: 0; display: flex; color: #8E8A96"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"></path></svg></span>
+      </a>
+      <a href="rv5-confirmed.html" style="min-height: 68px; padding: 10px 8px 10px 14px; border-top: 1px solid #EEEBF2; display: flex; align-items: center; gap: 12px; text-decoration: none; color: #1D1B22">
+        <span style="width: 50px; flex-shrink: 0; display: flex; flex-direction: column; gap: 2px"><span style="font-size: 16px; font-weight: 700">12:30</span><span style="font-size: 12px; color: #8E8A96">14:00</span></span>
+        <span aria-hidden="true" style="align-self: stretch; width: 3px; border-radius: 2px; background: #1F8A55"></span>
+        <span style="flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; gap: 4px"><span style="display: flex; align-items: center; justify-content: space-between; gap: 8px"><span style="min-width: 0; font-size: 15px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">Alina Dobre</span><span style="height: 22px; flex-shrink: 0; padding: 0 8px; border-radius: 11px; background: #DDF5E8; color: #11673F; display: inline-flex; align-items: center; gap: 4px; font-size: 11.5px; font-weight: 600; white-space: nowrap">Confirmed</span></span><span style="display: flex; align-items: center; gap: 6px; min-width: 0; font-size: 12.5px; color: #5F5B68; white-space: nowrap"><span style="overflow: hidden; text-overflow: ellipsis">Table</span><span aria-hidden="true">·</span><span style="flex-shrink: 0; display: flex; align-items: center; gap: 4px"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M22 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>2 people</span></span></span>
+        <span style="flex-shrink: 0; display: flex; color: #8E8A96"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"></path></svg></span>
+      </a>
+    </div>
+  </div>
+  <nav aria-label="Main" style="flex-shrink: 0; height: 72px; box-sizing: border-box; padding: 6px 4px 12px; background: #111113; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); align-items: center">
+    <button type="button" style="display: flex; flex-direction: column; align-items: center; gap: 4px; background: transparent; border: 0; padding: 4px 0; color: #A19EA8">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 10.5L12 3l9 7.5"></path><path d="M5 9v11h5v-6h4v6h5V9"></path></svg>
+      <span style="font-size: 10.5px">Home</span>
+    </button>
+    <button type="button" style="display: flex; flex-direction: column; align-items: center; gap: 4px; background: transparent; border: 0; padding: 4px 0; color: #A19EA8">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20 20l-4-4"></path></svg>
+      <span style="font-size: 10.5px">Search</span>
+    </button>
+    <button type="button" aria-label="Create post" style="display: flex; align-items: center; justify-content: center; background: transparent; border: 0; padding: 0; color: #FFFFFF">
+      <span style="width: 44px; height: 44px; border-radius: 50%; background: #2B2A31; display: flex; align-items: center; justify-content: center">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg>
+      </span>
+    </button>
+    <button type="button" style="display: flex; flex-direction: column; align-items: center; gap: 4px; background: transparent; border: 0; padding: 4px 0; color: #A19EA8">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z"></path><circle cx="12" cy="9.5" r="2.5"></circle></svg>
+      <span style="font-size: 10.5px">Map</span>
+    </button>
+    <button type="button" aria-current="page" style="display: flex; flex-direction: column; align-items: center; gap: 4px; background: transparent; border: 0; padding: 4px 0; color: #FFFFFF">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"></circle><path d="M4 21a8 8 0 0 1 16 0"></path></svg>
+      <span style="font-size: 10.5px; font-weight: 500">Profile</span>
+    </button>
+  </nav>
+</div>
+
+
+</body>
+</html>

@@ -8,6 +8,7 @@ Each screen: id → files, then top-to-bottom content, actions and data. "C#" re
 
 ### HP-profile · Host profile with Quick Actions
 Top bar (back, settings) → C18 profile block → **Quick Actions** 4-column grid (Calendar, Bookings, Hours, Services, Coupons, Customers, Team) → icon tabs (Videos, Reviews, Events) → C9 bottom nav (Profile active).
+- The third icon tab (calendar) is **Reservations** → RV1, with the C35 amber badge = waiting requests (see `14-reservations.md`).
 - Services tile → HS1 (services hosts) or HR1 (accommodation hosts, label "Rooms").
 - Team tile → TM1 (not linked in the canvas prototype; implement it).
 - Customers tile → CR1 (not linked in the canvas prototype; implement it).
@@ -102,6 +103,30 @@ Trash in the header · Come back soon (On, switch) · 3 times sent · 27 people 
 
 ### CR10-reward-details · Reward details
 Ticket · 8 sent · 3 used · 5 not used yet · people with "Used · 14 Oct" / "Not used yet" · **Stop reward**.
+
+---
+
+## Host — reservations
+
+Full spec, sizes and states: [`14-reservations.md`](14-reservations.md). The same screens serve services, tables and events. Summary:
+
+### RV1-reservations · Reservations tab
+HP icon tabs with the calendar tab selected and an amber **2** badge → amber banner **2 requests to answer · Oldest: 2 h ago · Answer** (→ RV2) → **Today · Fri, 23 Oct** (3 reservations · 1 done): 11:00 Mihai Ionescu · Haircut · 1 person · **Done** (→ RV6), 13:00 Cristina Marin · Table · 4 people · **Confirmed**, 19:00 Ioana Radu · Wine tasting · 2 people · **Confirmed** (→ RV5) → **Tomorrow · Sat, 24 Oct**: Sorin Matei · Couples massage · 2 people, Alina Dobre · Table · 2 people → C9 nav. No calendar strip.
+
+### RV2-requests · Requests to answer
+"Requests · 2" → note "Oldest first. Answer within 24 hours…" → C39 cards: Elena Popescu · Mon 26 Oct · 14:30 – 15:30 · Haircut · 1 person · 15% OFF · 6 visits · "Please keep it short on the sides." (2 h ago); Dan Stoica · Tue 27 Oct · 19:00 – 20:30 · Table · 6 people · New customer · "Birthday dinner, a cake at 21:00 please." (20 min ago). Each with **Decline** (→ RV4) / **Accept** (→ RV5); card head → RV3.
+
+### RV3-request · Reservation request
+C40 summary (Mon 26 Oct · 14:30 – 15:30 · Waiting for you · Haircut · 1 person · 60 min · 120 RON · With Andrei) + coupon strip "15% OFF coupon · Pays 102 RON instead of 120 RON" → **Customer** (C41: Elena Popescu, 6 visits · last 12 Oct, phone with Call, email with Copy) → **Special requests** → requested-at note → pinned **Decline** / **Accept**.
+
+### RV4-decline · Decline (sheet)
+C42 over RV3: "Decline Elena’s request?" · "Mon, 26 Oct · 14:30 · Haircut. Pick a reason. We let them know so they can book another time." · **Fully booked** (selected) / **Closed that day** · red **Decline request** → RV2.
+
+### RV5-confirmed · Reservation confirmed
+Green "Accepted. Elena got a confirmation." → C40 with the dark date tile and **Confirmed** → Customer → Special requests → **Cancel reservation** (danger) + "If you cancel, Elena gets a message right away."
+
+### RV6-after-visit · After the visit
+Summary (Today 23 Oct · 11:00 – 12:00 · Haircut) → Mihai Ionescu (4 visits · last 9 Oct) → C43 "Did Mihai come?" **No-show** / **Yes, done** (→ RV1) → "If you do not answer, it is marked as done the next day."
 
 ---
 

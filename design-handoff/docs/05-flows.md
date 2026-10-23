@@ -122,3 +122,20 @@ flowchart LR
   CR4 -- a sent reward --> CR10[CR10 Details]
 ```
 Rules (details in `13-customers-rewards.md` §1): only people who booked in the app; rewards are single use (one booking); automatic rewards are monthly, Who is decided at each send from visits in the month before; switching off stops future sends only; Stop reward removes it for people who have not used it.
+
+## I. Host — reservations
+
+```mermaid
+flowchart LR
+  HP[HP Host profile] -- calendar tab --> RV1[RV1 Reservations]
+  RV1 -- requests banner --> RV2[RV2 Requests]
+  RV2 -- card --> RV3[RV3 Request]
+  RV2 & RV3 -- Decline --> RV4[RV4 Reason sheet] -- Decline request --> RV2
+  RV2 & RV3 -- Accept --> RV5[RV5 Confirmed]
+  RV1 -- confirmed row --> RV5
+  RV1 -- past row --> RV6[RV6 Did they come?] -- No-show / Yes, done --> RV1
+```
+Rules (details in `14-reservations.md` §1): every booking made in the app is a request (**Waiting for you**) until the host answers; oldest first; no answer in 24 hours → declined automatically; Decline needs one of two reasons (Fully booked, Closed that day) and has no message; after the end time a reservation is **Done** unless the host marks **No-show** (done by itself the next day); only done reservations count as visits for customers & rewards (§H). The same screens serve services, tables and events.
+
+Bookings that arrive here come from F4 / R3 (services) and TB3 (tables and events): after **Confirm** / **Confirm reservation** the customer's booking is a request, not yet confirmed (see `10-open-questions.md` #36).
+

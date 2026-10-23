@@ -115,7 +115,7 @@ TableBookingRequest {
 ```ts
 Customer {
   id, name: "Elena Popescu", initials: "E", avatarColor, avatarUrl?,
-  visitsCount: 6, lastVisitAt,                     // from bookings made in the app
+  visitsCount: 6, lastVisitAt,                     // DONE reservations with this business (RV6); no-shows don't count
   groups: ("REGULAR" | "NEW" | "AWAY")[],          // REGULAR: 3+ visits · NEW: 1 visit · AWAY: no visit in 60 days (proposal)
   unusedRewardIds: string[]                        // CR1 chip "10 RON OFF · not used"
   // phone / email exist but are not shown in the list
@@ -149,7 +149,31 @@ RewardRule {
 ```
 - At each send: candidates = customers whose visits between the same day last month and the day before the send match `visits`; remove those already granted (ONCE) and, if `skipIfUnused`, those with a NOT_USED grant from this rule; create one Reward with a grant per person.
 
-## Display rules
+## Reservation (host side, every category)
+```ts
+Reservation {
+  id, businessId, customerId,
+  kind: "SERVICE" | "TABLE" | "EVENT",
+  what: "Haircut" | "Table" | "Wine tasting",     // service name · "Table" · event title
+  people: 1,
+  date: "2026-10-26", from: "14:30", to: "15:30",
+  durationMin?: 60, price?: { amount: 120, currency: "RON" },   // services only
+  teamMemberId?: string,                          // "With Andrei"; only when the business assigns one
+  offer?: { type: "COUPON", couponId, discount, pays: 102 }      // "Pays 102 RON instead of 120 RON"
+        | { type: "EVENT", eventId, sittingId },
+  specialRequests?: string,
+  requestedAt, answerBy,                          // answerBy = requestedAt + 24 h
+  state: "WAITING" | "CONFIRMED" | "DECLINED" | "CANCELLED" | "DONE" | "NO_SHOW",
+  declineReason?: "FULLY_BOOKED" | "CLOSED_THAT_DAY" | "NO_ANSWER",   // NO_ANSWER = declined automatically
+  answeredAt?, cancelledAt?, checkedAt?
+}
+```
+- Created from a `TableBookingRequest` (TB3) or a services booking (F4 / R3) in state WAITING.
+- WAITING → CONFIRMED (Accept) · DECLINED (Decline with a reason, or `answerBy` passed → NO_ANSWER).
+- CONFIRMED → CANCELLED (host cancels) · NO_SHOW (host) · DONE (host, or automatically at the start of the day after `date` if still CONFIRMED).
+- RV1 day lists: CONFIRMED / DONE (and NO_SHOW) for today and tomorrow, by `from`. RV2: WAITING by `requestedAt` ascending. Tab badge = count of WAITING.
+- Visible to the host only: the customer's phone and email (RV3, RV5).
+
 | Rule | Output |
 |---|---|
 | Discount | PERCENT → "20% OFF"; AMOUNT → "10 RON OFF" |
@@ -168,3 +192,7 @@ RewardRule {
 | Coupon reminder (TB3) | "Valid <window containing the picked time> · applied at the restaurant" |
 | Event reminder (TB3) | "Sitting <from – to> · <guests> seats held for you" |
 | Month calendar | FREE → green tint, FEW_LEFT → amber tint, FULL/CLOSED → grey + line-through, past → light text; no offer marks in cells |
+| Reservation status chip | WAITING → "Waiting for you" (amber) · CONFIRMED → "Confirmed" (green) · DONE → "Done" (grey) |
+| Requested ago (RV2) | < 60 min → "N min ago"; otherwise "N h ago" |
+| Reservation facts | "what · N people"; add "60 min", "120 RON", "With <name>" only when the reservation has them |
+| Visits (RV2/RV3) | 0 done → "New customer" / "New customer · first visit"; else "N visits" / "N visits · last <d Mon>" |

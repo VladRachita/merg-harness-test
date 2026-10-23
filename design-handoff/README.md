@@ -1,4 +1,4 @@
-# Design handoff — Video-first profiles, booking, table booking, team, customer rewards and host tools
+# Design handoff — Video-first profiles, booking, table booking, team, customer rewards, reservations and host tools
 
 Everything an implementing agent needs to build the screens designed in the **Profile Quick Actions** design canvas, for **Android and iOS**, on **small, medium and large phones**, so the result looks exactly like the designs.
 
@@ -21,7 +21,8 @@ Read in this order, then build:
 10. [`docs/09-acceptance-checklist.md`](docs/09-acceptance-checklist.md) — how to verify the build matches the designs.
 11. [`docs/12-team.md`](docs/12-team.md) — the full spec of the **Team** page (team list → invite by username → team member) with its own definition of done.
 12. [`docs/13-customers-rewards.md`](docs/13-customers-rewards.md) — the full spec of the **Customers & rewards** page (send a reward by hand, monthly automatic rewards, results) with its own definition of done.
-13. [`docs/10-open-questions.md`](docs/10-open-questions.md) — what is **not** designed yet. Do not invent these; ask.
+13. [`docs/14-reservations.md`](docs/14-reservations.md) — the full spec of the **Reservations** page (requests to answer → accept / decline with a reason → the day → did they come), the same for services, tables and events, with its own definition of done.
+14. [`docs/10-open-questions.md`](docs/10-open-questions.md) — what is **not** designed yet. Do not invent these; ask.
 
 ## What is in this folder
 
@@ -37,17 +38,27 @@ Read in this order, then build:
 
 ## What's new in this update
 
-- **Customers & rewards (host)** — a new page that replaces the current Customers / Send Loyalty Reward screens: `CR1` customers with group tiles and selection → `CR2` new reward with a live ticket preview (40-character message, stacked "Valid for" chips that fit other languages) → `CR3` sent; `CR4` Rewards tab with **monthly automatic rewards** (on/off) and what was sent; `CR5`–`CR8` a 4-step rule set-up (When · Who · Reward · Check); `CR9` edit a rule; `CR10` who used a reward. Spec: [`docs/13-customers-rewards.md`](docs/13-customers-rewards.md). Small / medium / large references; components C28–C34.
+- **Reservations (host)** — a new page for answering bookings, inside the host profile's calendar tab (amber badge = requests waiting):
+  - `RV1` the tab: a requests banner, then **Today** and **Tomorrow**. No calendar strip.
+  - `RV2` requests to answer, oldest first, with **Decline / Accept** on each card.
+  - `RV3` one request with everything: offer used, customer with Call / Copy email, special requests.
+  - `RV4` decline sheet with two reasons only, **Fully booked** and **Closed that day**, and no message.
+  - `RV5` confirmed, with Cancel reservation.
+  - `RV6` after the visit: **No-show / Yes, done**.
+
+  Same screens for services, tables and events (what · people · optional team member), and no gendered copy. Spec: [`docs/14-reservations.md`](docs/14-reservations.md). Small / medium / large references; components C35–C43; the new *Reservation* data model.
+  - Visits are now defined as done reservations (used by Customers & rewards).
 
 ### Earlier updates
 
+- **Customers & rewards (host)** — a new page that replaces the current Customers / Send Loyalty Reward screens: `CR1` customers with group tiles and selection → `CR2` new reward with a live ticket preview (40-character message, stacked "Valid for" chips that fit other languages) → `CR3` sent; `CR4` Rewards tab with **monthly automatic rewards** (on/off) and what was sent; `CR5`–`CR8` a 4-step rule set-up (When · Who · Reward · Check); `CR9` edit a rule; `CR10` who used a reward. Spec: [`docs/13-customers-rewards.md`](docs/13-customers-rewards.md). Small / medium / large references; components C28–C34.
 - **Team (host)** — a new page that replaces the current Team screen: `TM1` team grouped Active / Paused / Invites with one **Invite to team** button → `TM2` invite by username (sheet) → `TM3` team member (Active / Paused status, the services they do, remove). Spec: [`docs/12-team.md`](docs/12-team.md). Small / medium / large references; new token `status.warningBg`; components C25–C27.
 - **Table booking (Food & Beverage)** — a new page: `TB1` month calendar (book weeks or months ahead) → `TB2` guests, offer and time on one screen (Any time / coupon / event states) → `TB3` your details with an offer reminder (three states) → `TB4` booked. Book now on `PF1` now opens `TB1`.
 - **Offers in the salon calendar** — `F4` gets the same *Choose an offer* section, with coupon (`F4C`) and event (`F4E`) states.
 - Small / medium / large references for all of the above; new tokens `color.calendar.*`, `color.offer.*` and radii for calendar cells, day tile and offer cards.
 - Booking form: **First name and Last name are two fields** on one row (never "Full name").
 
-## Screen inventory (46 screens × 3 sizes)
+## Screen inventory (52 screens × 3 sizes)
 
 | Area | Screens |
 |---|---|
@@ -56,6 +67,7 @@ Read in this order, then build:
 | Host — rooms (video first) | `HR1-rooms-list`, `HR2-add-video`, `HR3-room-details`, `HR4-edit-room` |
 | Host — team | `TM1-team-list`, `TM2-invite`, `TM3-team-member` |
 | Host — customers & rewards | `CR1-customers`, `CR2-new-reward`, `CR3-reward-sent`, `CR4-rewards-tab`, `CR5-auto-when`, `CR6-auto-who`, `CR7-auto-reward`, `CR8-auto-check`, `CR9-auto-edit`, `CR10-reward-details` |
+| Host — reservations | `RV1-reservations`, `RV2-requests`, `RV3-request`, `RV4-decline`, `RV5-confirmed`, `RV6-after-visit` |
 | Public — accommodation | `PA1-profile-rooms`, `PA2-room-video`, `PA3-room-included` |
 | Public — services & F&B profiles | `PS1-profile-services`, `PF1-profile-fnb` |
 | Salon booking — regular customer | `R1-services-stylist-picked`, `R2-video`, `R3-pick-time`, `SV-included` |
@@ -80,12 +92,12 @@ Copy this as the first message, adjusted for your app's repository:
 You are implementing new screens in our mobile app (Android + iOS). The complete design
 handoff is in design-handoff/ (README.md first). Follow it exactly:
 
-1. Read design-handoff/README.md and every file in design-handoff/docs/ (01–13) before writing code.
+1. Read design-handoff/README.md and every file in design-handoff/docs/ (01–14) before writing code.
 2. Map tokens.json into the app's theme (colours, type, radii, spacing). Do not add new values.
-3. Build the shared components from docs/03-components.md first (C1–C34), then the screens from
+3. Build the shared components from docs/03-components.md first (C1–C43), then the screens from
    docs/04-screens.md, in the order: host services → host rooms → host team (TM1 → TM3, see
    docs/12-team.md) → host customers & rewards (CR1 → CR10, see docs/13-customers-rewards.md) →
-   public profiles →
+   host reservations (RV1 → RV6, see docs/14-reservations.md) → public profiles →
    salon booking (regular, then first visit incl. the F4 offer states) →
    table booking (TB1 → TB4, see docs/11-table-booking.md) → coupons & events.
 4. Every screen must match screenshots/{small,medium,large}/<id>.png. Use the HTML in
@@ -95,7 +107,7 @@ handoff is in design-handoff/ (README.md first). Follow it exactly:
 6. Anything listed in docs/10-open-questions.md is out of scope: leave a TODO and ask.
 7. When a screen is done, compare it to the screenshots at all three sizes and go through
    docs/09-acceptance-checklist.md (and docs/11 §12 for table booking, docs/12 §8 for team,
-   docs/13 §13 for customers & rewards). Report any deviation
+   docs/13 §13 for customers & rewards, docs/14 §13 for reservations). Report any deviation
    instead of silently changing the design.
 ```
 
@@ -103,15 +115,16 @@ handoff is in design-handoff/ (README.md first). Follow it exactly:
 
 1. **Put the handoff next to the code.** Copy `design-handoff/` into the root of the mobile app repository (or add this repository as a git submodule) so the agent can read the docs and open the screenshots.
 2. **Start Claude Code in the app repository** (`claude` in a terminal at the repo root, or a Claude Code session on claude.ai/code with the app repo attached).
-3. **Plan first.** Paste the prompt above and ask for a plan before code: theme mapping (tokens → theme), the component list C1–C34 with where each will live, and the screen order. Review the plan, then let it implement.
+3. **Plan first.** Paste the prompt above and ask for a plan before code: theme mapping (tokens → theme), the component list C1–C43 with where each will live, and the screen order. Review the plan, then let it implement.
 4. **One phase per session / pull request.** Use these follow-up prompts in order and review each PR against the screenshots before starting the next:
 
    | Phase | Prompt to paste |
    |---|---|
-   | 1 · Theme + components | "Phase 1: map tokens.json into the theme and build components C1–C34 from docs/03 with previews at 360, 390 and 430 width. No screens yet." |
+   | 1 · Theme + components | "Phase 1: map tokens.json into the theme and build components C1–C43 from docs/03 with previews at 360, 390 and 430 width. No screens yet." |
    | 2 · Host tools | "Phase 2: build HS1–HS4 and HR1–HR4 (docs/04, flow C in docs/05). Match screenshots/*/hs*.png and hr*.png." |
    | 2b · Team | "Phase 2b: build the Team page exactly as docs/12-team.md: TM1 team list grouped Active / Paused / Invites with one pinned Invite to team, TM2 invite-by-username sheet, TM3 team member (Active / Paused, services checklist = Who does it, Remove, Save changes). Replace the existing Team screen. Wire HP Team tile → TM1. Data per docs/06 (Team member, Team invite). Done = docs/12 §8 at small, medium and large." |
    | 2c · Customers & rewards | "Phase 2c: build the Customers & rewards page exactly as docs/13-customers-rewards.md: CR1 People tab (group tiles, pick people, Send reward), CR2 New reward (live ticket, 40-char message, duration chips), CR3 sent, CR4 Rewards tab (automatic rules with switches, sent rewards with Used by), CR5–CR8 the 4-step monthly rule (When on the F4 week strip, Who from visits in the month before the send, Reward, Check and turn on), CR9 edit, CR10 details. Replace the existing Customers and Send Loyalty Reward screens. Wire HP Customers tile → CR1. Data and the monthly send logic per docs/06 (Customer, Reward, Automatic reward rule). Done = docs/13 §13 at small, medium and large." |
+   | 2d · Reservations | "Phase 2d: build the Reservations page exactly as docs/14-reservations.md: RV1 as the calendar tab of the host profile (amber badge = waiting requests, requests banner, Today and Tomorrow lists, no calendar strip), RV2 requests oldest first with Decline / Accept on each card, RV3 request details (summary with the offer strip, customer with Call / Copy email, special requests, pinned Decline / Accept), RV4 decline sheet with only Fully booked / Closed that day and no message, RV5 confirmed with Cancel reservation, RV6 did they come (No-show / Yes, done). Replace the existing Reservations tab. Category-neutral: one set of screens for services, tables and events. Data and states per docs/06 (Reservation): 24 h auto-decline, done automatically the next day, only DONE counts as a visit (feeds Customers & rewards). Done = docs/14 §13 at small, medium and large." |
    | 3 · Public profiles | "Phase 3: build HP, PA1–PA3, PS1, PF1 (CTA rules in docs/05 §E)." |
    | 4 · Salon booking | "Phase 4: build R1–R3, SV, F1–F4 with the F4 offer states F4C/F4E (docs/05 §B, docs/11 §8)." |
    | 5 · Table booking | "Phase 5: build the Table booking page exactly as docs/11-table-booking.md: TB1 month calendar, TB2 guests + Choose an offer + times (Any time / coupon / event states), TB3 details with the offer strip and First name / Last name fields, TB4 booked. Wire PF1 Book now → TB1. Data per docs/06 (Restaurant booking, Offer windows and sittings, Booking request). Done = docs/11 §12 at small, medium and large." |

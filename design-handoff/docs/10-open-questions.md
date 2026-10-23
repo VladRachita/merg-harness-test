@@ -35,3 +35,13 @@
 | 31 | Confirmations | CR9, CR10 | Delete rule and Stop reward confirmations are not designed (use the platform's destructive dialog). |
 | 32 | Customer side | — | How a customer is told about a new reward (push, "My activity") is not designed here. |
 | 33 | Send time | CR5 | Time of day for automatic sends is not shown. Proposal: 10:00 in the business's time zone. |
+| 34 | **Auto-accept** | RV1–RV3 | The designs make every booking a request. Whether a business can accept all bookings automatically (a setting) is not designed. |
+| 35 | Answer deadline | RV2 | 24 hours, then declined automatically (designed copy). For requests whose time starts sooner than 24 h away, proposal: the deadline is 1 hour before the start. Confirm. |
+| 36 | **Customer side of a request** | TB3/TB4, F4, R3 | With requests, the customer's last step should say the booking is waiting for the business ("Request sent"), then accepted / declined (with the reason) / cancelled. TB4 currently says booked. Not designed; ties to #1 and #15. |
+| 37 | Notifications | RV1, RV5 | Push to the host for a new request, and to the customer for accepted / declined / cancelled / auto-declined, are not designed. |
+| 38 | Time held while waiting | RV2 | Proposal: a waiting request holds its time (not offered to others) until it is answered or declined automatically. Confirm. |
+| 39 | Cancel reservation | RV5 | Confirmation dialog, whether a reason is asked, and the customer message are not designed (use the platform's destructive dialog). |
+| 40 | **No-show** | RV6, RV1 | Not counted as a visit. The "No-show" chip on RV1 (proposal: `status.danger` text on `bg.soft`) and any consequence (repeated no-shows, deposits) are not designed. |
+| 41 | Days after tomorrow, empty states | RV1 | The tab shows Today and Tomorrow only (no calendar, by decision). Where later reservations are seen (proposal: the Quick Actions **Calendar** / **Bookings** tiles) and the empty states ("No reservations today", no banner) are not designed. |
+| 42 | Who / which table | RV3 | Changing the team member on a request, or assigning a restaurant table, is not designed. "With <name>" is read-only. |
+

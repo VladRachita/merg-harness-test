@@ -33,6 +33,9 @@ Build these once and reuse them. Values are for the **medium** phone (390 × 844
 | Special requests | `message-square` | Add to calendar | `calendar-plus` |
 | Email | `mail` | Info note | `info` |
 | Home / Search / Map / Profile (nav) | `home` / `search` / `map-pin` / `user` | Videos tab | `square-play` |
+| Reservations tab | `calendar` (+ C35 badge) | Visit check (did they come) | `calendar-check` |
+| No-show | `user-x` | New customer | `sparkles` |
+| Accept / Decline | `check` / `x` | Copy email | `copy` |
 
 Stroke 1.8 at 20–26 px, 2–2.4 at 12–16 px. Filled: play, phone, star, more dots.
 
@@ -192,6 +195,9 @@ Full-bleed vertical video, video top & bottom scrims.
 | Secondary (Follow) | `bg.soft`, ink 15/500, 48 tall, radius 14 |
 | Picker Next | white pill 48, radius 24, ink 16/500 |
 | Destructive | red `trash-2` icon button in the header (edit screens) |
+| Destructive (confirm in a sheet) | `action.danger` fill, white 16/500, 52 tall, radius 16, full width (RV4 **Decline request**) |
+| Destructive (on a page) | white, 1px `line.card`, `action.danger` icon 18 + 15/500, 52 tall, radius 16 (TM3 Remove, CR10 Stop reward, RV5 **Cancel reservation**) |
+| Decline / Accept pair | two equal buttons, gap 8–10: `action.secondary` + `x` / ink + `check`; 52 in a bottom bar (RV3), 44 radius 12 inside a card (RV2) |
 | Icon button | 44 hit area, icon 20–24 |
 
 ## 18. Host profile — Quick Actions (HP)
@@ -267,3 +273,39 @@ Optional "Brand" tone: tile `#EEEAFD`, icon `#5B3FD6`. Default is Mono.
 ## 34. Stat tiles
 - 3 equal white tiles (radius 14): value 22/700 + label 12 secondary.
 - Seen in: CR9, CR10.
+
+## 35. Tab badge
+- Amber count on an icon tab: min 18 × 18, padding `0 5`, radius 9, 2px `bg.page` border, `status.warning` fill, `text.primary` 10.5/700. Hidden at 0.
+- Seen in: RV1 (calendar tab = waiting requests). Full spec: `14-reservations.md` §2.
+
+## 36. Requests banner
+- Radius 18, `status.warningBg`, padding `12 10 12 14`: circle 40 `status.warning` + `clock` 20 · "N requests to answer" 16/700 · "Oldest: <ago>" 12.5 `status.warningText` · ink **Answer** pill 36. The whole card is one tap target. Hidden with nothing to answer.
+- Seen in: RV1.
+
+## 37. Reservation status chip
+- 22 tall, radius 11, padding `0 8`, 11.5/600, never wraps: **Waiting for you** (`status.warningText` / `status.warningBg`), **Confirmed** (`status.successText` / `status.successBg`), **Done** (`text.secondary` / `bg.soft`).
+- Seen in: RV1, RV3, RV5.
+
+## 38. Reservation row
+- Min 68, padding `10 8 10 14`: time column 50 (start 16/700, end 12 tertiary) · 3-wide bar (Confirmed `status.success`, Done `line.strong`) · name 15/600 + C37 chip · "what · `users` N people" 12.5 secondary · chevron. Item ellipsizes first; "N people" never truncates.
+- Seen in: RV1. Category-neutral: "what" is a service, "Table" or an event title.
+
+## 39. Request card
+- White, radius 18, padding 12, gap 10: head (52 × 60 date tile · time 17/700 + "N h ago" · name · what · people) → chips (offer sticker, "N visits" or **New customer**) → 1-line special-request quote → **Decline** / **Accept** (44, radius 12). Head opens the request.
+- Seen in: RV2.
+
+## 40. Reservation summary card
+- White, radius 18: date tile (light while waiting, `dark.card` once confirmed) · time 17/700 + C37 chip · item 14/500 · facts (people, duration, price, "With <team member>" — each only when the booking has it), then the optional offer strip (coupon green as TB3C, event purple as TB3E).
+- Seen in: RV3, RV5, RV6 (no chip).
+
+## 41. Customer contact card
+- White, radius 18: avatar 44 · name 15/600 · "N visits · last <date>" / "New customer · first visit", then rows min 52: icon 18 · value 15 (ellipsis) · 44 action (**Call** opens the dialer; **Copy** copies the email + toast).
+- Seen in: RV3, RV5 (RV6 shows the head only).
+
+## 42. Reason sheet
+- C13 sheet visuals: title 19/600 + X, one context line, radio cards (min 52, radius 14; selected ring + 600 + filled ink radio, others 0.4), one full-width `action.danger` button. No free-text field.
+- Seen in: RV4 (Fully booked · Closed that day).
+
+## 43. Visit check card
+- White, radius 18, padding `18 16`, centred: circle 52 `bg.soft` + `calendar-check` 24 · "Did <name> come?" 20/700 · rule line 13.5 secondary · **No-show** (`action.secondary`, `user-x`) / **Yes, done** (ink, `check`), 52 each.
+- Seen in: RV6.

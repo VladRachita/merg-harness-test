@@ -29,6 +29,8 @@ All other copy is English in the designs and must go through the app's localisat
 - About: "Open now · Closes 23:59", "Closes soon · Until 22:30", "Closed · Opens 09:00", "Check-in 14:00 / Check-out 11:00", "Price level", Budget / Moderate / Expensive / Luxury, "© OpenStreetMap".
 - Coupons: "All", "Events", "Coupons", "20% OFF", "10 RON OFF", "Today", "1 day", "n days".
 - Customers & rewards: full list in [`13-customers-rewards.md`](13-customers-rewards.md) §10. The reward message is the host's own text (max 40 characters). Duration chips are built so "1 săptămână / 2 săptămâni / 1 lună" fit.
+- Reservations: full list in [`14-reservations.md`](14-reservations.md) §10 ("N requests to answer", "Oldest: 2 h ago", **Answer**, "Waiting for you", "Confirmed", "Done", **Accept**, **Decline**, "Fully booked", "Closed that day", **Decline request**, **Cancel reservation**, "Did <name> come?", **No-show**, **Yes, done**). Copy is category-neutral ("what · N people", never "stylist" or "haircut" in fixed text).
+- **Customers' gender is unknown**: never "he / she / his / her" in copy about a customer. Use their first name or "they" ("We let them know so they can book another time.").
 - Team: full list in [`12-team.md`](12-team.md) §5 ("Team", "Invite to team", "Active · N", "Paused · N", "Invites · N", "Owner", "Invited · waiting for an answer", "Team member", "Remove from team", …).
 - Table booking and offers: full list in [`11-table-booking.md`](11-table-booking.md) §9 ("Book a table", "Choose a time", "Choose an offer", "Any time", "Location maximum capacity · N", "Sittings", "N seats left", "Your details", "First name", "Last name", "Confirm reservation", …).
 - Currency in samples: RON. Format prices with the user's locale.
