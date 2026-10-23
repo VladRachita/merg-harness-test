@@ -56,7 +56,126 @@ Types: `string`, `int`, `bool`, `money` = `{ amount: number, currency: "RON" }`,
 | Host · Reservations | `RV1-reservations` … `RV6-after-visit` |
 | Customer · My activity | `MA1-upcoming` … `MA6-reward` |
 
-Then: **§A** rules and jobs the backend runs · **§B** gaps to decide · **§C** entity and field index.
+Start with the **quick index** below (what each screen reads and sends). Then each page in detail, then: **§A** rules and jobs the backend runs · **§B** gaps to decide · **§C** entity and field index.
+
+---
+
+## Quick index — what each screen reads and sends
+
+One line per screen.
+- **Reads** = the fields the screen needs from the backend, written as `Entity.field`; `Entity{a, b}` = those fields of that entity.
+- **Sends** = the request the screen makes.
+- Device-only actions (copy, call, mute) are not listed.
+
+Full detail per screen is in the page sections below. ⚠ = a gap listed in §B.
+
+**Profile (host)**
+
+| Screen | Reads | Sends |
+|---|---|---|
+| `HP-profile` | `BusinessProfile{avatarUrl, name, verified, handle, category, stats.posts, stats.followers, stats.following⚠}` · count of `Reservation` WAITING | upload profile photo → `BusinessProfile.avatarUrl` |
+
+**Services · Video flow (host)**
+
+| Screen | Reads | Sends |
+|---|---|---|
+| `HS1-services-list` | `Service[]{id, name, price, peoplePerBooking, durationMin, video.thumbnailUrl}` | — |
+| `HS2-add-video` | — (phone gallery) | upload video file → `Video{id, url, thumbnailUrl, durationSec}` ⚠ |
+| `HS3-service-details` | uploaded `Video.thumbnailUrl` · `TeamMember[]{id, name, avatarUrl, initials, avatarColor}` | create `Service{name, shortDescription, price{amount, currency, unit}, durationMin, peoplePerBooking, included[], notIncluded[], notAllowed[], teamMemberIds[], videoId?}` (+ `category`⚠, `price.from`⚠) |
+| `HS4-edit-service` | `Service{…all HS3 fields, video?}` · `TeamMember[]` | update `Service` · delete `Service` |
+| `HR1-rooms-list` | `Room[]{id, name, pricePerNight, guestsMax, video.thumbnailUrl}` | — |
+| `HR2-add-video` | — (phone gallery) | upload video file → `Video` ⚠ |
+| `HR3-room-details` | uploaded `Video.thumbnailUrl` | create `Room{name, shortDescription, pricePerNight, guestsMax, included[]{group⚠, item}, notIncluded[], notAllowed[], videoId?}` |
+| `HR4-edit-room` | `Room{…all HR3 fields, video?}` | update `Room` · delete `Room` |
+
+**Public · Profiles**
+
+| Screen | Reads | Sends |
+|---|---|---|
+| `PA1-profile-rooms` | `BusinessProfile{handle, avatarUrl, name, category, subcategoryLabel, stats.posts, stats.followers, stats.rating, stats.reviewsCount, phone, address{line, city, lat, lng}, checkIn, checkOut, priceLevel}` · `viewer.isFollowing`⚠ · `Room[]{id, name, pricePerNight, guestsMax, video.thumbnailUrl}` | follow / unfollow ⚠ |
+| `PA2-room-video` | `Video{url, thumbnailUrl, likes, views, publishedAt}` · `viewer.hasLiked`⚠ · `BusinessProfile{avatarUrl, name, handle, phone}` · `Room{name, shortDescription, guestsMax, pricePerNight, included[0..1].item, included.length}` | like / unlike · count a view ⚠ |
+| `PA3-room-included` | `Room{name, guestsMax, pricePerNight, included[]{group, item}, notIncluded[], notAllowed[]}` | — |
+| `PS1-profile-services` | `BusinessProfile` as PA1 with `openingHours` (not check-in / out) · `viewer.isFollowing`⚠ · `Service[]{id, name, category, price{amount, from}, peoplePerBooking, durationMin, video.thumbnailUrl}` + its ACTIVE `TeamMember{avatarUrl, initials, avatarColor}` | follow / unfollow |
+| `PF1-profile-fnb` | `BusinessProfile` as PS1 | follow / unfollow |
+
+**Public · Salon**
+
+| Screen | Reads | Sends |
+|---|---|---|
+| `R1-services-stylist-picked` | `BusinessProfile{name, verified}` · ACTIVE `TeamMember[]{id, name, avatarUrl, initials, avatarColor}` · the customer's usual `TeamMember.id`⚠ · categories `{category, count, imageUrl⚠}` for that member · `Service[]` as PS1, filtered by member | — |
+| `R2-video` | `Video{url, thumbnailUrl, likes, views, publishedAt}` · `viewer.hasLiked`⚠ · `BusinessProfile{avatarUrl, name, handle}` · `Service{name, shortDescription, durationMin, peoplePerBooking, price, included[0..1], included.length}` · `TeamMember.name` | like / unlike · count a view ⚠ |
+| `R3-pick-time` | `Service{name, durationMin, price, teamMemberIds}` · `TeamMember[]{id, name, avatarUrl, initials}` + `nextFree` · `DayAvailability[7]{date, state}` per member · `Slot[]{start, end, state}` | `ServiceBookingRequest{businessId, serviceId, teamMemberId, date, from, to}` + customer details ⚠ |
+| `SV-included` | `Service{name, durationMin, price, included[], notIncluded[], notAllowed[]}` | — |
+| `F1-services-everyone` | as R1 with **Everyone** (all categories, all services) | — |
+| `F2-video` | as R2 without `TeamMember.name` | like / unlike · count a view ⚠ |
+| `F3-choose-stylist` | `Service{name, durationMin, price}` · ACTIVE `TeamMember[]{id, name, avatarUrl, initials, role, yearsExperience, specialties[], rating, reviewsCount, languages[]}` + `nextFree` · "Anyone" earliest `nextFree` | — |
+| `F4-pick-time` | as R3 + the day's `Offer[]{id, type, discount \| title, windows[] / sittings[]}` for the service · "Any time" range ⚠ | service booking request + `offerId?` |
+| `F4C-pick-time-coupon` | as F4 + the coupon's `windows[]` with `Slot[]` inside each | service booking request with `offerId` |
+| `F4E-pick-time-event` | as F4 + `Offer.sittings[]{id, from, to, spotsLeft⚠}` | service booking request with `offerId`, `sittingId` |
+
+**Public · Coupons & Events**
+
+| Screen | Reads | Sends |
+|---|---|---|
+| `CE1-coupons-events` | counts per type · `Offer[]{id, type, title, discount, endsAt, quantityLeft, video.thumbnailUrl}` | claim a coupon / ticket (not designed) ⚠ |
+
+**Public · Table booking**
+
+| Screen | Reads | Sends |
+|---|---|---|
+| `TB1-pick-date` | `BusinessProfile.name` · `RestaurantBookingSettings.bookingHorizonMonths` · `DayAvailability[month]{date, state}` · `Offer[]` in the month `{id, type, title, dates, first start or window}` | — |
+| `TB2-guests-time-any` | `DayAvailability[7]{date, state}` · `RestaurantBookingSettings{capacity, tableHoldMin, services[]{name, from, to}}` · the day's `Offer[]{id, type, discount, title, windows[], sittings[], minGuests, maxGuests}` · `TimeSlot[]{start, state}` for the guest count | — |
+| `TB2C-guests-time-coupon` | as TB2 + the coupon's `windows[]` with `TimeSlot[]` inside each | — |
+| `TB2E-guests-time-event` | as TB2 + `Offer.sittings[]{id, from, to, seatsLeft}` | — |
+| `TB3-details-any` | `BusinessProfile.name` · the chosen `{date, from, to, guests}` · `tableHoldMin` | `TableBookingRequest{businessId, date, from, to, guests, firstName, lastName, phone{country, number}, email, specialRequests?}` → returns `Reservation.id` |
+| `TB3C-details-coupon` | as TB3 + `Offer{discount, windows[]}` | as TB3 + `offerId` |
+| `TB3E-details-event` | as TB3 + `Offer.title` + the sitting `{from, to}` | as TB3 + `offerId`, `sittingId` |
+| `TB4-booked` | `Reservation{date, from, to, people, state}` · `BusinessProfile{name, address.line, phone}` | — |
+
+**Host · Team**
+
+| Screen | Reads | Sends |
+|---|---|---|
+| `TM1-team-list` | `BusinessProfile.name` · `TeamMember[]{id, userId⚠, name, avatarUrl, initials, avatarColor, status, isOwner, username, role}` + services count · `TeamInvite[]{id, username, invitedAt}` PENDING | cancel `TeamInvite` |
+| `TM2-invite` | user search results `{userId, name, username, avatarUrl, inviteState}` ⚠ | search users by username · create `TeamInvite{businessId, userId}` |
+| `TM3-team-member` | `TeamMember{id, name, username, avatarUrl, initials, avatarColor, status, isOwner, joinedAt}` · `Service[]{id, name, durationMin, price{amount, from}, teamMemberIds}` | update `TeamMember.status` + the member's services · remove member |
+
+**Host · Customers & rewards**
+
+| Screen | Reads | Sends |
+|---|---|---|
+| `CR1-customers` | `BusinessProfile.name` · counts per group · group rules ⚠ · `Customer[]{id, name, avatarUrl, initials, avatarColor, visitsCount, lastVisitAt, groups, unusedRewardIds → Reward.discount}` | — |
+| `CR2-new-reward` | the chosen `Customer[]{name, avatarUrl, initials}` + group · `BusinessProfile.name` | create `Reward{title, discount{type, value}, validFor, source: MANUAL, customerIds[], audienceGroup?⚠}` |
+| `CR3-reward-sent` | `Reward{discount, title, validUntil}` · recipients' names | — |
+| `CR4-rewards-tab` | `RewardRule[]{id, title, dayOfMonth, on, discount, validForDays, visits, nextSendAt, matchingNow}` · idea templates ⚠ · `Reward[]` this month `{id, discount, title, source, validUntil, grants used / total}` | update `RewardRule.on` |
+| `CR5-auto-when` | — (dates computed from the pick) | — (draft) |
+| `CR6-auto-who` | match preview `{count, people[3]{name, avatarUrl, initials}}` | preview query `{visits, repeat, skipIfUnused, firstSendAt}` |
+| `CR7-auto-reward` | `BusinessProfile.name` | — (draft) |
+| `CR8-auto-check` | match preview `{count}` for the first send | create `RewardRule{title, discount, validForDays, dayOfMonth, firstSendAt, visits{count, mode}, repeat, skipIfUnused, on: true}` |
+| `CR9-auto-edit` | `RewardRule{…all, stats{timesSent, people, used}, nextSendAt, matchingNow}` · `BusinessProfile.name` | update `RewardRule` · delete `RewardRule` |
+| `CR10-reward-details` | `Reward{discount, title, validUntil, audienceGroup⚠, grants[]{customer{name, avatarUrl, initials}, state, usedAt}}` · `BusinessProfile.name` | stop `Reward` |
+
+**Host · Reservations**
+
+| Screen | Reads | Sends |
+|---|---|---|
+| `RV1-reservations` | count WAITING + the oldest `requestedAt` · `Reservation[]` today and tomorrow `{id, from, to, state, what, people}` + `Customer.name` · counts per day | — |
+| `RV2-requests` | `Reservation[]` WAITING `{id, date, from, to, requestedAt, what, people, offer, specialRequests}` + `Customer{name, visitsCount}` | accept |
+| `RV3-request` | `Reservation{…all, durationMin, price, teamMemberId → TeamMember.name, offer{discount, pays}}` · `Customer{name, avatarUrl, initials, avatarColor, visitsCount, lastVisitAt, phone, email}` | accept |
+| `RV4-decline` | `Reservation{date, from, what}` · `Customer.name` | decline `{declineReason: FULLY_BOOKED \| CLOSED_THAT_DAY}` |
+| `RV5-confirmed` | as RV3 | cancel (`cancelledBy: BUSINESS`) |
+| `RV6-after-visit` | `Reservation{date, from, to, what, people, durationMin, price}` · `Customer{name, avatarUrl, initials, visitsCount, lastVisitAt}` | check `{state: DONE \| NO_SHOW}` |
+
+**Customer · My activity**
+
+| Screen | Reads | Sends |
+|---|---|---|
+| `MA1-upcoming` | `MyActivity.upcoming[]` = `Reservation{id, date, from, to, state, what, people, offer, place.name}` · tab counts | — |
+| `MA2-rewards` | `MyActivity.rewards.ready[]` / `.usedOrEnded[]` = `RewardGrantView{rewardId, discount, title, validUntil, state, usedAt, place.name}` | — |
+| `MA3-history` | `MyActivity.history[]` = `Reservation{id, date, from, state, what, people, declineReason, cancelledBy, myRating, place{name, businessId}}` | rating through the existing review flow ⚠ |
+| `MA4-reservation-waiting` | `Reservation{…all, durationMin, price, teamMemberId → TeamMember.name, offer{discount, pays}, specialRequests, place{businessId, name, type, address, phone, avatarUrl, avatarColor}}` | cancel (`cancelledBy: CUSTOMER`) |
+| `MA5-reservation-confirmed` | as MA4 | cancel (`cancelledBy: CUSTOMER`) |
+| `MA6-reward` | `RewardGrantView{discount, title, validUntil, place{businessId, name, type, city}}` | — (booking with it: `rewardGrantId`⚠) |
 
 ---
 
@@ -142,7 +261,7 @@ Then: **§A** rules and jobs the backend runs · **§B** gaps to decide · **§C
 | Element | Field | Type | Notes |
 |---|---|---|---|
 | Video thumbnail | `Video.thumbnailUrl` | `url` | **Change** → HS2. When there is no video, an **Add video** tile shows instead (as on HS4). |
-| Team members ("Who does it") | `TeamMember[]`: `id`, `name`, `avatarUrl?`, `initials`, `avatarColor` | list | All team members of the business. The selected ones get a green check; the others are greyed. |
+| Team members ("Who does it") | `TeamMember[]`: `TeamMember.id`, `.name`, `.avatarUrl?`, `.initials`, `.avatarColor` | list | All team members of the business. The selected ones get a green check; the others are greyed. |
 | Included count | `included.length` | `int` | "Included · 10". |
 | "+6 more" | `included.length − 4` | `int` | Computed in the app. The first 4 items are shown. |
 
@@ -204,7 +323,9 @@ Then: **§A** rules and jobs the backend runs · **§B** gaps to decide · **§C
 
 ### Screen 6 · Add a video — room (`HR2-add-video`)
 
-Same as HS2 (device gallery, single pick, **Next** uploads, **Skip**). Opens in mode `CREATE`, `ATTACH` or `REPLACE` for a `roomId`.
+**Opens with:** mode `CREATE`, `ATTACH` or `REPLACE` for a `roomId`.
+
+Same as HS2 (device gallery, single pick, **Next** uploads, **Skip**).
 
 ### Screen 7 · Room details — create (`HR3-room-details`, board *3 · Room details*)
 
@@ -258,17 +379,17 @@ The profile header is the same on PA1, PS1 and PF1 and is described once, under 
 | Element | Field | Type | Notes |
 |---|---|---|---|
 | Handle (top bar) | `BusinessProfile.handle` | `string` | *@stay_host_brasov* |
-| Profile photo | `avatarUrl` | `url?` | Placeholder icon when there is none. |
-| Name | `name` | `string` | |
-| Category line | `category` + `subcategoryLabel?` | `enum` + `string?` | *Accommodation*; *Services · Barber & salon*; *Food & Beverage · Restaurant* |
-| Posts | `stats.posts` | `int` | |
-| Followers | `stats.followers` | `int` | |
-| Rating | `stats.rating?`, `stats.reviewsCount` | `number?`, `int` | "–" and "No reviews yet" when there are no reviews. |
+| Profile photo | `BusinessProfile.avatarUrl` | `url?` | Placeholder icon when there is none. |
+| Name | `BusinessProfile.name` | `string` | |
+| Category line | `BusinessProfile.category` + `BusinessProfile.subcategoryLabel?` | `enum` + `string?` | *Accommodation*; *Services · Barber & salon*; *Food & Beverage · Restaurant* |
+| Posts | `BusinessProfile.stats.posts` | `int` | |
+| Followers | `BusinessProfile.stats.followers` | `int` | |
+| Rating | `BusinessProfile.stats.rating?`, `BusinessProfile.stats.reviewsCount` | `number?`, `int` | "–" and "No reviews yet" when there are no reviews. |
 | Follow button state | `viewer.isFollowing` | `bool` | **⚠ gap:** not in `06` (Follow / Following). |
-| Map | `address.lat`, `address.lng` | `number` | OpenStreetMap tiles. The pin icon comes from `category`. |
-| Address | `address.line` (+ `city`) | `string` | Tap = copy. |
-| Hours cell | ACCOMMODATION: `checkIn`, `checkOut` · others: `openingHours` + now | `time` / `WeeklyHours` | "Check-in 14:00 · Check-out 11:00", or the opening status (see PS1). |
-| Price level | `priceLevel` | `int 1–4` | Shown as Budget / Moderate / Expensive / Luxury. |
+| Map | `BusinessProfile.address.lat`, `BusinessProfile.address.lng` | `number` | OpenStreetMap tiles. The pin icon comes from `BusinessProfile.category`. |
+| Address | `BusinessProfile.address.line` (+ `.city`) | `string` | Tap = copy. |
+| Hours cell | ACCOMMODATION: `BusinessProfile.checkIn`, `BusinessProfile.checkOut` · others: `BusinessProfile.openingHours` + now | `time` / `WeeklyHours` | "Check-in 14:00 · Check-out 11:00", or the opening status (see PS1). |
+| Price level | `BusinessProfile.priceLevel` | `int 1–4` | Shown as Budget / Moderate / Expensive / Luxury. |
 
 **Elements displayed — Rooms tab** (tabs: Videos · Rooms · Coupons · Reviews)
 
@@ -299,7 +420,7 @@ The profile header is the same on PA1, PS1 and PF1 and is described once, under 
 |---|---|---|---|
 | Video | `Video.url`, `Video.thumbnailUrl` (poster) | `url` | Full screen. Mute is local. |
 | Likes | `Video.likes`, `viewer.hasLiked` | `int`, `bool` | **⚠ gap:** `hasLiked` is not in `06`. |
-| Business avatar, name, handle | `BusinessProfile.avatarUrl` / initial, `name`, `handle` | | |
+| Business avatar, name, handle | `BusinessProfile.avatarUrl` (or initial), `BusinessProfile.name`, `BusinessProfile.handle` | | |
 | Caption | `Room.shortDescription` | `string` | Max 2 lines. |
 | Included chips | `Room.included[0..1].item` | `string` | The first 2 items. |
 | "+16 more" | `Room.included.length − 2` | `int` | Computed in the app → PA3. |
@@ -340,8 +461,8 @@ The profile header is the same on PA1, PS1 and PF1 and is described once, under 
 | Count | number of services | `int` | "2 services" |
 | Thumbnail | `Service.video.thumbnailUrl` | `url?` | No video → the icon of `Service.category` (scissors). |
 | Title | `Service.name` | `string` | |
-| Team avatars | `Service.teamMemberIds` → `TeamMember.avatarUrl` / `initials` / `avatarColor` | list | Avatar stack (*A R*). ACTIVE members only. |
-| Price | `Service.price` (+ `from`) | `money` | "from 70 RON" when `from` is true. |
+| Team avatars | `Service.teamMemberIds` → `TeamMember.avatarUrl` / `TeamMember.initials` / `TeamMember.avatarColor` | list | Avatar stack (*A R*). ACTIVE members only. |
+| Price | `Service.price` (+ `Service.price.from`) | `money` | "from 70 RON" when `Service.price.from` is true. |
 | Guest number | `Service.peoplePerBooking` | `int` | |
 | Service time | `Service.durationMin` | `int` | |
 
@@ -373,8 +494,8 @@ The profile header is the same on PA1, PS1 and PF1 and is described once, under 
 
 | Element | Field | Type | Notes |
 |---|---|---|---|
-| Business name + verified (top bar) | `name`, `verified` | | |
-| Team filter | **Everyone** + ACTIVE `TeamMember[]`: `id`, `name`, `avatarUrl` / `initials` / `avatarColor` | list | The picked person has the ring; the others are greyed. PAUSED members are not listed. |
+| Business name + verified (top bar) | `BusinessProfile.name`, `BusinessProfile.verified` | | |
+| Team filter | **Everyone** + ACTIVE `TeamMember[]`: `TeamMember.id`, `.name`, `.avatarUrl` / `.initials` / `.avatarColor` | list | The picked person has the ring; the others are greyed. PAUSED members are not listed. |
 | Category tiles | `Service.category` values + count per category for the picked member | `{ category, count }[]` | *All 2 · Hair 1 · Beard 1 · Massage 0*. A count of 0 is disabled. **⚠ gap:** each tile shows a cover image; its source (per category? per business?) and the category list are not defined. |
 | Service cards | as on PS1, filtered to `Service.teamMemberIds ∋ pickedMember` | | |
 
@@ -382,8 +503,8 @@ The profile header is the same on PA1, PS1 and PF1 and is described once, under 
 
 | Input | Type | Notes |
 |---|---|---|
-| Team member filter | `teamMemberId \| EVERYONE` | **Everyone** → F1 (the first-visit path). |
-| Category filter | `category \| ALL` | |
+| Team member filter | `TeamMember.id \| EVERYONE` | **Everyone** → F1 (the first-visit path). |
+| Category filter | `Service.category \| ALL` | |
 
 **Actions:** a card → R2 (`serviceId`, `teamMemberId`). A card without a video → R3.
 
@@ -415,13 +536,13 @@ The profile header is the same on PA1, PS1 and PF1 and is described once, under 
 | Element | Field | Type | Notes |
 |---|---|---|---|
 | Title | `Service.name` | `string` | "Book Haircut" |
-| Duration, price (top right) | `durationMin`, `price` | | |
-| Who · picked person | `TeamMember` (avatar, name) + `nextFree(member, service)` | `time` | *Andrei 14:30*. Check badge. |
-| Who · "Can replace <name>" | the other ACTIVE members in `Service.teamMemberIds`, each with `nextFree` | list | *Radu 16:15*. Readable, not greyed. |
+| Duration, price (top right) | `Service.durationMin`, `Service.price` | | |
+| Who · picked person | `TeamMember.avatarUrl` / `.initials`, `TeamMember.name` + `nextFree(member, service)` | `datetime` | *Andrei 14:30*. Check badge. |
+| Who · "Can replace <name>" | the other ACTIVE `TeamMember[]` in `Service.teamMemberIds`, each with `TeamMember.name`, avatar and `nextFree(member, service)` | list | *Radu 16:15*. Readable, not greyed. |
 | Month label | month of the visible week | | "When · October 2026" |
-| Week strip | `DayAvailability[]` for 7 days: `date`, `state(OPEN\|CLOSED\|FULLY_BOOKED)`, has free slots | list | Green dot = free slots. Closed and fully booked days are struck through and disabled. |
-| Time slots | `Slot[]` for the day and member: `start`, `state(FREE\|TAKEN)` | list | Grouped Morning / Afternoon / Evening. A group with no FREE slot is hidden. TAKEN = struck through. The earliest FREE slot is preselected. |
-| Bottom bar | the chosen date, member name, `start – (start + durationMin)` | | "Thu, 22 Oct · with Andrei / 14:30 – 15:30" |
+| Week strip | `DayAvailability[]` (per member) for 7 days: `DayAvailability.date`, `.state(OPEN\|CLOSED\|FULLY_BOOKED)`, has a FREE slot | list | Green dot = free slots. Closed and fully booked days are struck through and disabled. |
+| Time slots | `Slot[]` for the day and member: `Slot.start`, `Slot.end`, `Slot.state(FREE\|TAKEN)` | list | Grouped Morning / Afternoon / Evening. A group with no FREE slot is hidden. TAKEN = struck through. The earliest FREE slot is preselected. |
+| Bottom bar | the chosen `date`, `TeamMember.name`, `Slot.start – Slot.end` (start + `Service.durationMin`) | | "Thu, 22 Oct · with Andrei / 14:30 – 15:30" |
 
 **Inputs**
 - **Who:** the picked person or a "Can replace" person (`teamMemberId`).
@@ -461,6 +582,8 @@ The profile header is the same on PA1, PS1 and PF1 and is described once, under 
 
 ### Screen 6 · F2 · Service video (first visit) (`F2-video`, board *F2 · Video · Book on the side…*)
 
+**Opens with:** `serviceId`.
+
 As R2, but the info bar has **no** team member name (`name`, `durationMin`, `peoplePerBooking`, `price`).
 
 **Actions:**
@@ -476,9 +599,9 @@ As R2, but the info bar has **no** team member name (`name`, `durationMin`, `peo
 
 | Element | Field | Type | Notes |
 |---|---|---|---|
-| Service line | `name`, `durationMin`, `price` | | |
-| Anyone | the earliest `nextFree` across `Service.teamMemberIds` | `datetime` | "First free stylist · Today 14:30" |
-| Person card | `TeamMember.avatarUrl` / `initials`, `name`, `role`, `yearsExperience`, `specialties[]`, `rating`, `reviewsCount`, `languages[]`, `nextFree(member, service)` | | *Andrei · Barber · 8 years · Fades / Beard trims / Classic cuts · 4.9 (38) · RO · EN · Today 14:30*. ACTIVE members who do the service only. |
+| Service line | `Service.name`, `Service.durationMin`, `Service.price` | | |
+| Anyone | the earliest `nextFree(member, service)` across `Service.teamMemberIds` | `datetime` | "First free stylist · Today 14:30" |
+| Person card | `TeamMember.avatarUrl` / `.initials`, `.name`, `.role`, `.yearsExperience`, `.specialties[]`, `.rating`, `.reviewsCount`, `.languages[]` + `nextFree(member, service)` | | *Andrei · Barber · 8 years · Fades / Beard trims / Classic cuts · 4.9 (38) · RO · EN · Today 14:30*. ACTIVE members who do the service only. |
 | Bottom bar | the chosen person + their next free | | "With Andrei · next free / Today 14:30" |
 
 **Inputs:** **Anyone** or one person (single choice).
@@ -496,8 +619,8 @@ As R2, but the info bar has **no** team member name (`name`, `durationMin`, `peo
 | Element | Field | Type | Notes |
 |---|---|---|---|
 | **Any time** card | the bookable range that day | `time–time` | "All times · 13:00 – 20:00". **⚠ gap:** define the source (the member's working hours or the business opening hours that day). |
-| **Coupon** card | `Offer(type COUPON)`: `discount`, that day's `windows[]` | | "15% OFF · 14:00 – 16:00 · 18:00 – 19:00". Only offers with `appliesTo.serviceIds ∋ serviceId` on that date. |
-| **Event** card | `Offer(type EVENT)`: `title`, that day's sittings / windows | | "Late cuts · 19:00 – 20:00 · 20:00 – 21:00" |
+| **Coupon** card | `Offer` (type COUPON): `Offer.id`, `Offer.discount`, that day's `Offer.windows[]` | | "15% OFF · 14:00 – 16:00 · 18:00 – 19:00". Only offers with `appliesTo.serviceIds ∋ serviceId` on that date. |
+| **Event** card | `Offer` (type EVENT): `Offer.id`, `Offer.title`, that day's `Offer.sittings[]` | | "Late cuts · 19:00 – 20:00 · 20:00 – 21:00" |
 
 **Inputs:**
 - everything on R3;
@@ -506,6 +629,8 @@ As R2, but the info bar has **no** team member name (`name`, `durationMin`, `peo
 **Actions:** **Confirm** → booking request `{ serviceId, teamMemberId, date, from, to, offerId?, sittingId? }`.
 
 ### Screen 9 · F4C · Pick a time · coupon chosen (`F4C-pick-time-coupon`, board *F4 · Pick a time · 15% OFF (coupon)*)
+
+**Opens with:** `serviceId`, `teamMemberId`, `date`, `offerId` (the coupon).
 
 As F4 with the coupon chosen:
 - **times are grouped by coupon window** ("14:00 – 16:00" with the discount sticker), showing only FREE / TAKEN slots inside each window;
@@ -516,6 +641,8 @@ As F4 with the coupon chosen:
 **Actions:** **Confirm** with `offerId`.
 
 ### Screen 10 · F4E · Pick a time · event chosen (`F4E-pick-time-event`, board *F4 · Pick a time · Late cuts (event)*)
+
+**Opens with:** `serviceId`, `teamMemberId`, `date`, `offerId` (the event).
 
 As F4 with the event chosen. Instead of times, the screen shows **spots**:
 - "Spots · 60 min" (spot length);
@@ -567,9 +694,9 @@ The bottom bar shows the event title.
 | Element | Field | Type | Notes |
 |---|---|---|---|
 | Business line | `BusinessProfile.name` | `string` | "Maestro Bistro · free to book". **⚠** "free to book" is fixed copy today; it would need a field if deposits come (open question #19). |
-| Month label + month grid | `DayAvailability[]` for the month: `date`, `state(FREE\|FEW_LEFT\|FULL\|CLOSED)` | list | Past days are light and not tappable. Today has a ring. **No offer icons in the cells**, but each cell's accessibility label names that day's offers ("free tables, event: Live jazz night"), so the app needs to know which offers fall on each date (from the month list below). |
+| Month label + month grid | `DayAvailability[]` (tables) for the month: `DayAvailability.date`, `.state(FREE\|FEW_LEFT\|FULL\|CLOSED)` | list | Past days are light and not tappable. Today has a ring. **No offer icons in the cells**, but each cell's accessibility label names that day's offers ("free tables, event: Live jazz night"), so the app needs to know which offers fall on each date (from the month list below). |
 | Previous / next month | `RestaurantBookingSettings.bookingHorizonMonths` | `int` | Previous is disabled on the current month; next stops at the horizon. |
-| "Events & coupons in <month>" list | `Offer[]` active in the month: `type`, `title`, first date or date range, first start time or that window | list | Row: date badge (*FRI 23*, *MON–FRI 26–30*) · title (*Wine tasting*, *20% OFF lunch*) · "Mon, 26 Oct · from 19:00" or "Mon 26 – Fri 30 Oct · 12:00 – 15:00" · type icon (event / coupon). |
+| "Events & coupons in <month>" list | `Offer[]` active in the month: `Offer.id`, `.type`, `.title`, its dates (`windows[].date` / `sittings[].date`) and the first start time or window | list | Row: date badge (*FRI 23*, *MON–FRI 26–30*) · title (*Wine tasting*, *20% OFF lunch*) · "Mon, 26 Oct · from 19:00" or "Mon 26 – Fri 30 Oct · 12:00 – 15:00" · type icon (event / coupon). |
 | Bottom bar | the chosen date | `date` | "Your date · Mon, 26 Oct" |
 
 **Inputs:**
@@ -587,15 +714,15 @@ The bottom bar shows the event title.
 
 | Element | Field | Type | Notes |
 |---|---|---|---|
-| Business line | `name` | | |
-| Week strip | `DayAvailability[]` for 7 days from today | list | "Today" label; dot green FREE / amber FEW_LEFT; CLOSED / FULL struck through. |
+| Business line | `BusinessProfile.name` | | |
+| Week strip | `DayAvailability[]` (tables) for 7 days from today: `.date`, `.state` | list | "Today" label; dot green FREE / amber FEW_LEFT; CLOSED / FULL struck through. |
 | Guests | the chosen number + `RestaurantBookingSettings.capacity` | `int`, `int` | "Location maximum capacity · 40". The stepper max = capacity. |
-| Offer · **Any time** | `services[]`: `name`, `from`, `to` | list | "Lunch 12:00 – 16:00 · Dinner 17:30 – 23:00" |
-| Offer · coupon | `Offer(COUPON)`: `discount`, that day's `windows[]` | | "20% OFF · 12:00 – 14:00 · 17:30 – 18:30" |
-| Offer · event | `Offer(EVENT)`: `title`, that day's `sittings[]` times | | "Wine tasting · 19:00 – 20:30 · 21:00 – 22:30" |
-| Time slots | `TimeSlot[]` per service period **for the chosen guest count**: `start`, `state(FREE\|TAKEN)` | list | Grouped Lunch / Dinner. TAKEN struck through. |
-| Hold note | `tableHoldMin` | `int` | "Tables are held for 1 h 30 min." |
-| Bottom bar | date · guests · `start – (start + tableHoldMin)` | | "Mon, 26 Oct · 2 guests / 20:00 – 21:30" |
+| Offer · **Any time** | `RestaurantBookingSettings.services[]`: `.name`, `.from`, `.to` | list | "Lunch 12:00 – 16:00 · Dinner 17:30 – 23:00" |
+| Offer · coupon | `Offer` (COUPON): `Offer.id`, `.discount`, that day's `.windows[]` | | "20% OFF · 12:00 – 14:00 · 17:30 – 18:30" |
+| Offer · event | `Offer` (EVENT): `Offer.id`, `.title`, that day's `.sittings[]` (`from`, `to`) | | "Wine tasting · 19:00 – 20:30 · 21:00 – 22:30" |
+| Time slots | `TimeSlot[]` per service period **for the chosen guest count**: `TimeSlot.start`, `TimeSlot.state(FREE\|TAKEN)` | list | Grouped Lunch / Dinner. TAKEN struck through. |
+| Hold note | `RestaurantBookingSettings.tableHoldMin` | `int` | "Tables are held for 1 h 30 min." |
+| Bottom bar | `date` · `guests` · `TimeSlot.start – (start + tableHoldMin)` | | "Mon, 26 Oct · 2 guests / 20:00 – 21:30" |
 
 **Inputs**
 
@@ -604,13 +731,15 @@ The bottom bar shows the event title.
 | Day | `date` | Week strip, previous / next week. |
 | Guests | `int` 1…capacity | Changing it reloads the slots. With an offer, also `minGuests` / `maxGuests`. |
 | Offer | `ANY \| offerId` | Radio. |
-| Time | `start` | |
+| Time | `TimeSlot.start` (or `Offer.sittings[].id`) | |
 
 **Actions:**
 - load availability for `{ date, guests }`;
 - **Continue** → TB3 with `{ date, from, to, guests, offerId?, sittingId? }`.
 
 ### Screen 3 · Guests & time · coupon (`TB2C-guests-time-coupon`, board *2 · Guests & time · 20% OFF (coupon)*)
+
+**Opens with:** `businessId`, `date`, `guests`, `offerId` (the coupon).
 
 As TB2 with the coupon chosen:
 - the slots are grouped **by coupon window** ("12:00 – 14:00" + sticker);
@@ -619,6 +748,8 @@ As TB2 with the coupon chosen:
 **Continue** → TB3C.
 
 ### Screen 4 · Guests & time · event (`TB2E-guests-time-event`, board *2 · Guests & time · Wine tasting (event)*)
+
+**Opens with:** `businessId`, `date`, `guests`, `offerId` (the event).
 
 As TB2 with the event chosen. **Sittings** replace the times:
 - "Sittings · 1 h 30 min" (sitting length = `to − from`);
@@ -643,12 +774,12 @@ The bottom bar shows the event title.
 
 | Input | Field | Type | Required | Notes |
 |---|---|---|---|---|
-| First name | `firstName` | `string` | yes | Two separate fields, never "Full name". |
-| Last name | `lastName` | `string` | yes | |
-| Country code | `phone.country` | ISO country (default RO, +40) | yes | Picker (the list is not designed). |
-| Phone number | `phone.number` | `string` (tel) | yes | **⚠ gap:** format and validation (open question #16). |
-| Email | `email` | `string` (email) | yes | |
-| Special requests | `specialRequests` | `string` | no | Max 1000; "0 / 1000" counter. |
+| First name | `TableBookingRequest.firstName` | `string` | yes | Two separate fields, never "Full name". |
+| Last name | `TableBookingRequest.lastName` | `string` | yes | |
+| Country code | `TableBookingRequest.phone.country` | ISO country (default RO, +40) | yes | Picker (the list is not designed). |
+| Phone number | `TableBookingRequest.phone.number` | `string` (tel) | yes | **⚠ gap:** format and validation (open question #16). |
+| Email | `TableBookingRequest.email` | `string` (email) | yes | |
+| Special requests | `TableBookingRequest.specialRequests` | `string` | no | Max 1000; "0 / 1000" counter. |
 
 **Actions**
 - **Confirm reservation** → `TableBookingRequest { businessId, date, from, to, guests, offerId?, sittingId?, firstName, lastName, phone { country, number }, email, specialRequests? }`.
@@ -657,11 +788,19 @@ The bottom bar shows the event title.
 
 ### Screen 6 · Your details · coupon (`TB3C-details-coupon`, board *3 · Your details · 20% OFF*)
 
-As TB3, plus the **coupon strip** under the summary: `discount` + " your bill" ("20% OFF your bill") and "Valid <window that holds the picked time> · applied at the restaurant".
+**Opens with:** as TB3, with `offerId` (the coupon).
+
+As TB3, plus the **coupon strip** under the summary: `Offer.discount` + " your bill" ("20% OFF your bill") and "Valid <the `Offer.windows[]` entry that holds `from`> · applied at the restaurant".
+
+**Inputs / Actions:** as TB3. The `TableBookingRequest` carries `offerId`.
 
 ### Screen 7 · Your details · event (`TB3E-details-event`, board *3 · Your details · Wine tasting*)
 
-As TB3, plus the **event strip**: `Offer.title` + "Sitting `from – to` · `guests` seats held for you".
+**Opens with:** as TB3, with `offerId` + `sittingId` (the event sitting).
+
+As TB3, plus the **event strip**: `Offer.title` + "Sitting `Offer.sittings[].from – to` · `guests` seats held for you".
+
+**Inputs / Actions:** as TB3. The `TableBookingRequest` carries `offerId` + `sittingId`.
 
 ### Screen 8 · Booked (`TB4-booked`, board *4 · Reserved*)
 
@@ -673,10 +812,10 @@ As TB3, plus the **event strip**: `Offer.title` + "Sitting `from – to` · `gue
 |---|---|---|---|
 | Title | — | — | Fixed copy (*Succesfully Booked*). **⚠** Now that every booking is a request, this should say "Request sent" while WAITING (open questions #15, #36). |
 | "<Business> is expecting you." | `BusinessProfile.name` | `string` | |
-| Date · time | `date`, `from – to` | | "Mon, 26 Oct · 20:00 – 21:30" |
-| Guests | `guests` | `int` | |
-| Address | `address.line` | `string` | Copy button. |
-| Call the restaurant | `phone` | `string` | Opens the dialer. |
+| Date · time | `Reservation.date`, `Reservation.from – Reservation.to` | | "Mon, 26 Oct · 20:00 – 21:30" |
+| Guests | `Reservation.people` | `int` | |
+| Address | `BusinessProfile.address.line` | `string` | Copy button. |
+| Call the restaurant | `BusinessProfile.phone` | `string` | Opens the dialer. |
 
 **Actions**
 - **Add to calendar** → a calendar event on the phone (no backend). **⚠** My activity (MA5) dropped Add to calendar because the feature is not built; confirm it for TB4 too.
@@ -695,14 +834,14 @@ As TB3, plus the **event strip**: `Offer.title` + "Sitting `from – to` · `gue
 | Element | Field | Type | Notes |
 |---|---|---|---|
 | Subtitle | `BusinessProfile.name` + number of team members | `string`, `int` | "Maestro Host · 4 people" (invites not counted). |
-| Section counts | count per `status` + PENDING invites | `int` | "Active · 3", "Paused · 1", "Invites · 1". An empty section is hidden. |
-| Member avatar + status dot | `TeamMember.avatarUrl` / `initials` / `avatarColor`, `status` | | Green dot ACTIVE, amber dot PAUSED. |
+| Section counts | count of `TeamMember` per `TeamMember.status` + count of PENDING `TeamInvite` | `int` | "Active · 3", "Paused · 1", "Invites · 1". An empty section is hidden. |
+| Member avatar + status dot | `TeamMember.avatarUrl` / `.initials` / `.avatarColor`, `TeamMember.status` | | Green dot ACTIVE, amber dot PAUSED. |
 | Name | `TeamMember.name` | `string` | |
 | Owner chip | `TeamMember.isOwner` | `bool` | |
-| "@username · Role" | `username`, `role` | `string` | The signed-in person's own row says "@username · You". **⚠ gap:** link `TeamMember.userId` ↔ signed-in user. |
-| Status word | `status` | `enum(ACTIVE\|PAUSED)` | |
-| "N services" | number of services whose `teamMemberIds` holds this member | `int` | |
-| Invite row | `TeamInvite.username`, `state = PENDING` | | "Invited · waiting for an answer". Newest first. |
+| "@username · Role" | `TeamMember.username`, `TeamMember.role` | `string` | The signed-in person's own row says "@username · You". **⚠ gap:** link `TeamMember.userId` ↔ signed-in user. |
+| Status word | `TeamMember.status` | `enum(ACTIVE\|PAUSED)` | |
+| "N services" | number of `Service` whose `Service.teamMemberIds` holds this member | `int` | |
+| Invite row | `TeamInvite.id`, `TeamInvite.username`, `TeamInvite.state = PENDING`, `TeamInvite.invitedAt` | | "Invited · waiting for an answer". Newest first. |
 
 **Inputs:** none.
 
@@ -741,19 +880,19 @@ As TB3, plus the **event strip**: `Offer.title` + "Sitting `from – to` · `gue
 
 | Element | Field | Type | Notes |
 |---|---|---|---|
-| Avatar + status dot | `avatarUrl` / `initials` / `avatarColor`, `status` | | |
-| Name, username | `name`, `username` | `string` | |
-| Status chip | `status` | `enum` | |
-| "Joined Mar 2025" | `joinedAt` | `datetime` | |
-| "Customers can book <name>" | `name` (first name) | `string` | Inside the Active card. |
-| Services · N of M | every `Service` of the business: `name`, `durationMin`, `price` (+ `from`), and whether this member does it | list | "Haircut · 60 min · 120 RON" ✓ |
+| Avatar + status dot | `TeamMember.avatarUrl` / `.initials` / `.avatarColor`, `TeamMember.status` | | |
+| Name, username | `TeamMember.name`, `TeamMember.username` | `string` | |
+| Status chip | `TeamMember.status` | `enum` | |
+| "Joined Mar 2025" | `TeamMember.joinedAt` | `datetime` | |
+| "Customers can book <name>" | `TeamMember.name` (first name) | `string` | Inside the Active card. |
+| Services · N of M | every `Service` of the business: `Service.id`, `.name`, `.durationMin`, `.price` (+ `.price.from`), and whether `Service.teamMemberIds` holds this member | list | "Haircut · 60 min · 120 RON" ✓ |
 
 **Inputs**
 
 | Input | Type | Notes |
 |---|---|---|
 | Status | `enum(ACTIVE\|PAUSED)` | Radio cards. The owner's screen hides Paused (proposal). |
-| Services checklist | `serviceIds[]` | The same data as "Who does it" on HS3 / HS4. |
+| Services checklist | `Service.id[]` this member does | The same data as "Who does it" on HS3 / HS4. |
 
 **Actions**
 - **Save changes** → update `TeamMember.status` and the member's services (adds / removes this member in each `Service.teamMemberIds`).
@@ -773,11 +912,11 @@ As TB3, plus the **event strip**: `Offer.title` + "Sitting `from – to` · `gue
 
 | Element | Field | Type | Notes |
 |---|---|---|---|
-| Subtitle | `BusinessProfile.name` + number of customers | `int` | "Maestro Host · 24 people" |
-| Group tiles | count per group: `ALL`, `REGULAR`, `NEW`, `AWAY` | `int` | *All 24 · Regulars 8 · New 10 · Away 6* |
+| Subtitle | `BusinessProfile.name` + number of `Customer` | `string`, `int` | "Maestro Host · 24 people" |
+| Group tiles | count of `Customer` per `Customer.groups`: `ALL`, `REGULAR`, `NEW`, `AWAY` | `int` | *All 24 · Regulars 8 · New 10 · Away 6* |
 | Group line | the selected group + its rule + selected count | | "Regulars · 3+ visits · 2 selected". **⚠ gap:** group rules (proposal: Regulars 3+ visits, New 1 visit, Away no visit in 60 days; #26). |
-| Customer row | `Customer.avatarUrl` / `initials` / `avatarColor`, `name`, `visitsCount`, `lastVisitAt` | | "6 visits · last 12 Oct". No phone or email in the list. |
-| Unused reward chip | an unused reward of this business held by the customer: `discount` | | "10 RON OFF · not used" |
+| Customer row | `Customer.id`, `.avatarUrl` / `.initials` / `.avatarColor`, `.name`, `.visitsCount`, `.lastVisitAt` | | "6 visits · last 12 Oct". No phone or email in the list. |
+| Unused reward chip | `Customer.unusedRewardIds` → that `Reward.discount` (from this business) | | "10 RON OFF · not used" |
 
 **Inputs**
 - Group filter.
@@ -804,12 +943,12 @@ As TB3, plus the **event strip**: `Offer.title` + "Sitting `from – to` · `gue
 
 | Input | Field | Type | Required | Notes |
 |---|---|---|---|---|
-| Discount type | `discount.type` | `enum(PERCENT\|AMOUNT)` | yes | % / RON toggle. |
-| Discount value | `discount.value` | `number` | yes | Presets 10 · 15 · 20 · 25 % or **Other**. **⚠ gap:** the custom value input and the RON presets (#30). |
+| Discount type | `Reward.discount.type` | `enum(PERCENT\|AMOUNT)` | yes | % / RON toggle. |
+| Discount value | `Reward.discount.value` | `number` | yes | Presets 10 · 15 · 20 · 25 % or **Other**. **⚠ gap:** the custom value input and the RON presets (#30). |
 | Message | `Reward.title` | `string` | **⚠** | Max **40** characters, "22 / 40" counter. The host's own text, not translated. |
-| Valid for | length | `enum(1_WEEK\|2_WEEKS\|3_WEEKS\|1_MONTH)` | yes | "Until <date>" next to it. |
+| Valid for | `validFor` (the backend sets `Reward.validUntil`) | `enum(1_WEEK\|2_WEEKS\|3_WEEKS\|1_MONTH)` | yes | "Until <date>" next to it. |
 
-**Actions:** **Send to N people** → create `Reward { businessId, title, discount, validUntil (or length), source: MANUAL, customerIds[], audienceGroup? }`. The backend creates one grant per person (NOT_USED). The app goes to CR3.
+**Actions:** **Send to N people** → create `Reward { businessId, title, discount, validFor, source: MANUAL, customerIds[], audienceGroup? }` (the backend sets `sentAt` and `validUntil`). The backend creates one grant per person (NOT_USED). The app goes to CR3.
 
 **⚠ gaps:**
 - the group label shown later ("Regulars" on CR10) has no field on `Reward`;
@@ -838,10 +977,10 @@ As TB3, plus the **event strip**: `Offer.title` + "Sitting `from – to` · `gue
 |---|---|---|---|
 | Subtitle and tabs | as CR1 | | "Maestro Host · 24 people", People · Rewards |
 | "Automatic · N on" | count of `RewardRule.on = true` | `int` | |
-| Rule card | `RewardRule.title`, `dayOfMonth`, `on`, `discount`, `validForDays`, `visits { count, mode }` | | "Come back soon · Every month on the 15th · 10% OFF · valid 5 days · Exactly 1 visit in the month before" |
-| Rule status | `nextSendAt`, people matching now | `date`, `int` | "Next: Sun, 15 Nov · 10 people". Computed by the backend. |
-| Idea to start | template: `title`, `discount`, `visits` | | "VIP thank you · 20 RON OFF · 5 or more visits in the month before". **⚠ gap:** ideas fixed in the app, or sent by the backend? |
-| Sent · this month | `Reward[]` sent this month: `discount`, `title`, `source`, used grants / all grants, `validUntil` or end date | list | "Come back soon · Auto · Used by 4 of 9 · ended 20 Oct"; "Thanks for coming back · By you · Used by 3 of 8 · until 22 Nov" |
+| Rule card | `RewardRule.id`, `.title`, `.dayOfMonth`, `.on`, `.discount`, `.validForDays`, `.visits { count, mode }` | | "Come back soon · Every month on the 15th · 10% OFF · valid 5 days · Exactly 1 visit in the month before" |
+| Rule status | `RewardRule.nextSendAt`, `RewardRule.matchingNow` (people) | `date`, `int` | "Next: Sun, 15 Nov · 10 people". Computed by the backend. |
+| Idea to start | template: `title`, `discount`, `visits { count, mode }` | | "VIP thank you · 20 RON OFF · 5 or more visits in the month before". **⚠ gap:** ideas fixed in the app, or sent by the backend? |
+| Sent · this month | `Reward[]` with `sentAt` this month: `Reward.id`, `.discount`, `.title`, `.source`, count of `grants` USED / all `grants`, `.validUntil` ("ended" when past) | list | "Come back soon · Auto · Used by 4 of 9 · ended 20 Oct"; "Thanks for coming back · By you · Used by 3 of 8 · until 22 Nov" |
 
 **Inputs:** the **on / off switch** on each rule.
 
@@ -871,6 +1010,8 @@ As TB3, plus the **event strip**: `Offer.title` + "Sitting `from – to` · `gue
 
 ### Screen 6 · New automatic reward · Who (`CR6-auto-who`, board *6 · New automatic reward · Who*)
 
+**Opens with:** the draft rule from CR5 (`firstSendAt`, `dayOfMonth`).
+
 **Elements displayed:**
 - the counting period for the first send ("15 Oct – 14 Nov"; computed);
 - **live match preview:** the number of people who match today + up to 3 avatars + names ("10 people match today · Cristina, Dan, Ioana and 7 more").
@@ -879,16 +1020,18 @@ As TB3, plus the **event strip**: `Offer.title` + "Sitting `from – to` · `gue
 
 | Input | Field | Type | Notes |
 |---|---|---|---|
-| Visits in that month · mode | `visits.mode` | `enum(EXACTLY\|AT_LEAST)` | "Exactly" / "Or more" |
-| Visits in that month · number | `visits.count` | `int 1–5` | |
-| A person can get it | `repeat` | `enum(ONCE\|EVERY_MONTH)` | |
-| Skip people with an unused reward | `skipIfUnused` | `bool` | Switch, on by default. |
+| Visits in that month · mode | `RewardRule.visits.mode` | `enum(EXACTLY\|AT_LEAST)` | "Exactly" / "Or more" |
+| Visits in that month · number | `RewardRule.visits.count` | `int 1–5` | |
+| A person can get it | `RewardRule.repeat` | `enum(ONCE\|EVERY_MONTH)` | |
+| Skip people with an unused reward | `RewardRule.skipIfUnused` | `bool` | Switch, on by default. |
 
 **Actions:**
 - the live preview → backend `{ visits, repeat, skipIfUnused, firstSendAt }` → `{ count, people: [{ name, avatarUrl / initials }] (first 3) }`;
 - **Next** → CR7.
 
 ### Screen 7 · New automatic reward · Reward (`CR7-auto-reward`, board *7 · New automatic reward · Reward*)
+
+**Opens with:** the draft rule from CR5–CR6.
 
 **Elements displayed:** the live ticket (discount, business name, message, "Single use · valid 5 days").
 
@@ -897,13 +1040,15 @@ As TB3, plus the **event strip**: `Offer.title` + "Sitting `from – to` · `gue
 | Input | Field | Type | Notes |
 |---|---|---|---|
 | Message | `RewardRule.title` | `string` | Max 40, "14 / 40" counter. |
-| Discount type | `discount.type` | `enum(PERCENT\|AMOUNT)` | |
-| Discount value | `discount.value` | `number` | Presets 5 · 10 · 15 · 20 % or **Other** (⚠ #30). |
-| Valid for | `validForDays` | `enum(3\|5\|7\|30)` | "3 days · 5 days · 1 week · 1 month", counted from the day it is sent. |
+| Discount type | `RewardRule.discount.type` | `enum(PERCENT\|AMOUNT)` | |
+| Discount value | `RewardRule.discount.value` | `number` | Presets 5 · 10 · 15 · 20 % or **Other** (⚠ #30). |
+| Valid for | `RewardRule.validForDays` | `enum(3\|5\|7\|30)` | "3 days · 5 days · 1 week · 1 month", counted from the day it is sent. |
 
 **Actions:** **Next** → CR8.
 
 ### Screen 8 · New automatic reward · Check and turn on (`CR8-auto-check`, board *8 · New automatic reward · Check and turn on*)
+
+**Opens with:** the full draft rule from CR5–CR7.
 
 **Elements displayed:**
 - the rule as one sentence (built in the app from the draft);
@@ -925,10 +1070,10 @@ As TB3, plus the **event strip**: `Offer.title` + "Sitting `from – to` · `gue
 | Element | Field | Type |
 |---|---|---|
 | Title | `RewardRule.title` | `string` |
-| State line | `on`, `nextSendAt`, people matching now | "On · next send Sun, 15 Nov · 10 people" |
-| Stats | `stats.timesSent`, `stats.people`, `stats.used` | `int` ×3 |
-| Ticket preview | `discount`, business name, `title`, `validForDays` | |
-| Rule rows | When (`dayOfMonth`), Who (`visits`, `repeat`, `skipIfUnused`), Discount, Valid for, Message | |
+| State line | `RewardRule.on`, `.nextSendAt`, `.matchingNow` | "On · next send Sun, 15 Nov · 10 people" |
+| Stats | `RewardRule.stats.timesSent`, `.stats.people`, `.stats.used` | `int` ×3 |
+| Ticket preview | `RewardRule.discount`, `BusinessProfile.name`, `RewardRule.title`, `RewardRule.validForDays` | |
+| Rule rows | When (`RewardRule.dayOfMonth`), Who (`.visits`, `.repeat`, `.skipIfUnused`), Discount (`.discount`), Valid for (`.validForDays`), Message (`.title`) | |
 
 **Inputs:**
 - the on / off switch;
@@ -946,9 +1091,9 @@ As TB3, plus the **event strip**: `Offer.title` + "Sitting `from – to` · `gue
 
 | Element | Field | Type | Notes |
 |---|---|---|---|
-| Ticket | `discount`, business name, `title`, `validUntil`, group label | | "Single use · until Sun, 22 Nov · Regulars". **⚠ gap:** the group label is not on `Reward`. |
-| Stats | grants total, USED, NOT_USED | `int` ×3 | "8 Sent · 3 Used · 5 Not used yet" |
-| People · N | each grant: customer `avatar` / `initials`, `name`, `state`, `usedAt?` | list | Sorted **used first**. "Used · 14 Oct" / "Not used yet". The first 5, then "Show all 8". |
+| Ticket | `Reward.discount`, `BusinessProfile.name`, `Reward.title`, `Reward.validUntil`, group label | | "Single use · until Sun, 22 Nov · Regulars". **⚠ gap:** the group label is not on `Reward`. |
+| Stats | count of `Reward.grants`: all, USED, NOT_USED | `int` ×3 | "8 Sent · 3 Used · 5 Not used yet" |
+| People · N | each `Reward.grants[]`: `Customer.avatarUrl` / `.initials`, `Customer.name`, `grant.state`, `grant.usedAt?` | list | Sorted **used first**. "Used · 14 Oct" / "Not used yet". The first 5, then "Show all 8". |
 
 **Actions**
 - **Show all** → the full list (not designed).
@@ -966,11 +1111,11 @@ As TB3, plus the **event strip**: `Offer.title` + "Sitting `from – to` · `gue
 
 | Element | Field | Type | Notes |
 |---|---|---|---|
-| Tab badge | count of WAITING | `int` | Hidden at 0. |
-| Requests banner | count of WAITING, the oldest `requestedAt` | `int`, `datetime` | "2 requests to answer · Oldest: 2 h ago". Hidden at 0. |
+| Tab badge | count of `Reservation` with `state = WAITING` | `int` | Hidden at 0. |
+| Requests banner | count of WAITING, the oldest `Reservation.requestedAt` | `int`, `datetime` | "2 requests to answer · Oldest: 2 h ago". Hidden at 0. |
 | Day headings | today and tomorrow (business time zone) | `date` | "Today · Fri, 23 Oct" |
-| Day counts | reservations that day; DONE that day | `int` | "3 reservations · 1 done" |
-| Reservation row | `from`, `to`, customer `name`, `state`, `what`, `people` | | State bar + chip: CONFIRMED green, DONE grey. |
+| Day counts | count of `Reservation` that day; count with `state = DONE` | `int` | "3 reservations · 1 done" |
+| Reservation row | `Reservation.id`, `.from`, `.to`, `Customer.name`, `.state`, `.what`, `.people` | | State bar + chip: CONFIRMED green, DONE grey. |
 
 **Actions**
 - Banner → RV2.
@@ -987,15 +1132,15 @@ As TB3, plus the **event strip**: `Offer.title` + "Sitting `from – to` · `gue
 
 | Element | Field | Type | Notes |
 |---|---|---|---|
-| Count | number of WAITING | `int` | "Requests · 2" |
-| Date tile | `date` | `date` | Weekday, day, month. |
-| Time | `from – to` | `time` | |
-| Requested ago | `requestedAt` | `datetime` | "2 h ago", "20 min ago" |
+| Count | count of `Reservation` with `state = WAITING` | `int` | "Requests · 2" |
+| Date tile | `Reservation.date` | `date` | Weekday, day, month. |
+| Time | `Reservation.from – Reservation.to` | `time` | |
+| Requested ago | `Reservation.requestedAt` | `datetime` | "2 h ago", "20 min ago" |
 | Customer | `Customer.name` | `string` | |
-| What · people | `what`, `people` | | "Haircut · 1 person", "Table · 6 people" |
-| Offer sticker | `offer` (coupon discount, or event title) | | "15% OFF" |
+| What · people | `Reservation.what`, `Reservation.people` | | "Haircut · 1 person", "Table · 6 people" |
+| Offer sticker | `Reservation.offer` (coupon `discount`, or event `title`) | | "15% OFF" |
 | Visits chip | `Customer.visitsCount` (with this business) | `int` | "6 visits", or **New customer** at 0 DONE visits. |
-| Note | `specialRequests` | `string?` | 1 line here. |
+| Note | `Reservation.specialRequests` | `string?` | 1 line here. |
 
 **Actions:**
 - **Accept** → `state = CONFIRMED` (`answeredAt`), the customer is told → RV5;
@@ -1012,13 +1157,13 @@ As TB3, plus the **event strip**: `Offer.title` + "Sitting `from – to` · `gue
 
 | Element | Field | Type | Notes |
 |---|---|---|---|
-| Summary | `date`, `from – to`, `state`, `what`, `people`, `durationMin?`, `price?`, team member `name?` | | Each fact shows only when it exists ("With Andrei"). |
-| Offer strip | coupon: `discount`, `pays`, `price` · event: `title`, sitting | | "15% OFF coupon · Pays 102 RON instead of 120 RON" |
-| Customer | `avatar` / `initials` / `avatarColor`, `name`, `visitsCount`, `lastVisitAt` | | "6 visits · last 12 Oct" |
-| Phone | customer `phone` | `string` | **Call** → dialer. |
-| Email | customer `email` | `string` | **Copy**. |
-| Special requests | `specialRequests` | `string?` | Full text. |
-| Requested at | `requestedAt` | `datetime` | "Requested in the app today at 12:31." |
+| Summary | `Reservation.date`, `.from – .to`, `.state`, `.what`, `.people`, `.durationMin?`, `.price?`, `TeamMember.name?` (via `.teamMemberId`) | | Each fact shows only when it exists ("With Andrei"). |
+| Offer strip | coupon: `Reservation.offer.discount`, `.offer.pays`, `.price` · event: `Offer.title`, the sitting `from – to` | | "15% OFF coupon · Pays 102 RON instead of 120 RON" |
+| Customer | `Customer.avatarUrl` / `.initials` / `.avatarColor`, `.name`, `.visitsCount`, `.lastVisitAt` | | "6 visits · last 12 Oct" |
+| Phone | `Customer.phone` | `string` | **Call** → dialer. |
+| Email | `Customer.email` | `string` | **Copy**. |
+| Special requests | `Reservation.specialRequests` | `string?` | Full text. |
+| Requested at | `Reservation.requestedAt` | `datetime` | "Requested in the app today at 12:31." |
 
 **Actions:**
 - **Accept** → CONFIRMED;
@@ -1034,7 +1179,7 @@ As TB3, plus the **event strip**: `Offer.title` + "Sitting `from – to` · `gue
 
 | Input | Field | Type | Notes |
 |---|---|---|---|
-| Reason | `declineReason` | `enum(FULLY_BOOKED\|CLOSED_THAT_DAY)` | Required. Fully booked is pre-selected. **No message field.** |
+| Reason | `Reservation.declineReason` | `enum(FULLY_BOOKED\|CLOSED_THAT_DAY)` | Required. Fully booked is pre-selected. **No message field.** |
 
 **Actions:**
 - **Decline request** → `state = DECLINED`, `declineReason`, `answeredAt`; the customer is told the reason;
@@ -1084,9 +1229,9 @@ As TB3, plus the **event strip**: `Offer.title` + "Sitting `from – to` · `gue
 
 | Element | Field | Type | Notes |
 |---|---|---|---|
-| Tab counts | number of upcoming; number of rewards ready to use | `int` ×2 | "Upcoming · 2", "Rewards · 2" (hidden at 0). History has no count. |
-| Day headings | the reservation `date` | `date` | "Tomorrow · Sat, 24 Oct", "Mon, 26 Oct" |
-| Reservation row | `from`, `to`, `place.name`, `state(WAITING\|CONFIRMED)`, `what`, `people`, `offer?` | | Bar + chip: Confirmed green / Waiting amber. Offer sticker "15% OFF". |
+| Tab counts | `MyActivity.upcoming.length`; `MyActivity.rewards.ready.length` | `int` ×2 | "Upcoming · 2", "Rewards · 2" (hidden at 0). History has no count. |
+| Day headings | `Reservation.date` | `date` | "Tomorrow · Sat, 24 Oct", "Mon, 26 Oct" |
+| Reservation row | `Reservation.id`, `.from`, `.to`, `.place.name`, `.state(WAITING\|CONFIRMED)`, `.what`, `.people`, `.offer?` | | Bar + chip: Confirmed green / Waiting amber. Offer sticker "15% OFF". |
 
 **Actions:**
 - a WAITING row → MA4;
@@ -1097,29 +1242,33 @@ As TB3, plus the **event strip**: `Offer.title` + "Sitting `from – to` · `gue
 
 ### Screen 2 · Rewards tab (`MA2-rewards`, board *2 · Rewards tab (ready to use, used or ended)*)
 
+**Opens with:** the signed-in customer (`userId`). Same top bar and tabs as MA1.
+
 **Elements displayed**
 
 | Element | Field | Type | Notes |
 |---|---|---|---|
-| Ready to use · N | grants NOT_USED and not past `validUntil` | list | **Ending soonest first.** |
-| Ticket (ready) | `discount`, `place.name`, `title`, `validUntil` | | "10 RON OFF · Maestro Bistro · See you again soon · Single use · until Wed, 28 Oct" |
-| Used or ended · N | grants USED / ENDED / STOPPED | list | Newest first. |
-| Ticket (faded) | `discount`, `place.name`, `title`, `usedAt` or end date | | "Used · 12 Oct", "Ended · 30 Sep" |
+| Ready to use · N | `MyActivity.rewards.ready[]` (grants NOT_USED, not past `validUntil`) | list | **Ending soonest first.** |
+| Ticket (ready) | `RewardGrantView.rewardId`, `.discount`, `.place.name`, `.title`, `.validUntil` | | "10 RON OFF · Maestro Bistro · See you again soon · Single use · until Wed, 28 Oct" |
+| Used or ended · N | `MyActivity.rewards.usedOrEnded[]` (USED / ENDED / STOPPED) | list | Newest first. |
+| Ticket (faded) | `RewardGrantView.discount`, `.place.name`, `.title`, `.state`, `.usedAt` or `.validUntil` | | "Used · 12 Oct", "Ended · 30 Sep" |
 
 **Actions:** a ready ticket → MA6 (`rewardId` / grant id).
 
 ### Screen 3 · History tab (`MA3-history`, board *3 · History tab (rate, book again)*)
 
+**Opens with:** the signed-in customer (`userId`). Same top bar and tabs as MA1.
+
 **Elements displayed** (grouped by month, newest first)
 
 | Element | Field | Type | Notes |
 |---|---|---|---|
-| Month heading | `date` month | | "October" |
-| Date, time | `date`, `from` | | "20 Oct · 19:00" |
-| Place | `place.name` | `string` | |
-| What · people (DONE) | `what`, `people` | | |
-| State + reason (DECLINED / CANCELLED) | `state`, `declineReason` / `cancelledBy` | `enum` | "Declined · Fully booked", "Cancelled · By you" |
-| Your rating | `myRating` | `int 1–5` | "★ 5" when already rated. |
+| Month heading | month of `Reservation.date` | | "October" |
+| Date, time | `Reservation.date`, `Reservation.from` | | "20 Oct · 19:00" |
+| Place | `Reservation.place.name` | `string` | |
+| What · people (DONE) | `Reservation.what`, `Reservation.people` | | |
+| State + reason (DECLINED / CANCELLED) | `Reservation.state`, `.declineReason` / `.cancelledBy` | `enum` | "Declined · Fully booked", "Cancelled · By you" |
+| Your rating | `Reservation.myRating` | `int 1–5` | "★ 5" when already rated. |
 
 **Inputs / Actions**
 - **Rate** (DONE, not rated) → the app's existing review flow for this `reservationId` (#44). Afterwards `myRating` is set.
@@ -1133,11 +1282,11 @@ As TB3, plus the **event strip**: `Offer.title` + "Sitting `from – to` · `gue
 
 | Element | Field | Type | Notes |
 |---|---|---|---|
-| Banner | `place.name` | `string` | "Waiting for Maestro Host · They answer within 24 hours." |
-| Summary | `date`, `from – to`, `state`, `what`, `people`, `durationMin?`, `price?`, team member `name?` | | |
-| Coupon strip | `offer.discount`, `offer.pays`, `price` | | "15% OFF coupon · You pay 102 RON instead of 120 RON" (or the event strip). |
-| Place card | `place.avatarUrl` / initial + `avatarColor`, `place.name`, `place.type`, `place.address`, `place.phone` | | Head → the place's profile. |
-| Your special requests | `specialRequests` | `string?` | Hidden when empty. |
+| Banner | `Reservation.place.name` | `string` | "Waiting for Maestro Host · They answer within 24 hours." |
+| Summary | `Reservation.date`, `.from – .to`, `.state`, `.what`, `.people`, `.durationMin?`, `.price?`, `TeamMember.name?` | | |
+| Coupon strip | `Reservation.offer.discount`, `.offer.pays`, `.price` | | "15% OFF coupon · You pay 102 RON instead of 120 RON" (or the event strip). |
+| Place card | `Reservation.place.avatarUrl` (or initial + `.avatarColor`), `.place.name`, `.place.type`, `.place.address`, `.place.phone`, `.place.businessId` | | Head → the place's profile. |
+| Your special requests | `Reservation.specialRequests` | `string?` | Hidden when empty. |
 
 **Actions**
 - **Cancel request** → `state = CANCELLED`, `cancelledBy = CUSTOMER`; the place is told. The confirmation is not designed (#46).
@@ -1145,7 +1294,9 @@ As TB3, plus the **event strip**: `Offer.title` + "Sitting `from – to` · `gue
 
 ### Screen 5 · Reservation · confirmed (`MA5-reservation-confirmed`, board *5 · Reservation · confirmed*)
 
-As MA4 with:
+**Opens with:** `reservationId` (state CONFIRMED).
+
+As MA4 (same fields) with:
 - the green banner "Confirmed · <place> is expecting you.";
 - the dark date tile and the **Confirmed** chip;
 - *Table · 2 people · 1 h 30 min* (no price, no team member).
@@ -1164,10 +1315,10 @@ As MA4 with:
 
 | Element | Field | Type | Notes |
 |---|---|---|---|
-| Ticket | `discount`, `place.name`, `title`, `validUntil` | | |
-| From | `place.name`, `place.type`, `place.city` | | "From Maestro Host · Barber & salon · Brașov" |
-| Days left | `validUntil` − today | `int` | "30 days left · Until Sun, 22 Nov" (red at Today / 1 day). |
-| Single use | `place.name` | | "For one booking at Maestro Host" |
+| Ticket | `RewardGrantView.discount`, `.place.name`, `.title`, `.validUntil` | | |
+| From | `RewardGrantView.place.name`, `.place.type`, `.place.city` | | "From Maestro Host · Barber & salon · Brașov" |
+| Days left | `RewardGrantView.validUntil` − today | `int` | "30 days left · Until Sun, 22 Nov" (red at Today / 1 day). |
+| Single use | `RewardGrantView.place.name` | | "For one booking at Maestro Host" |
 
 **Actions:**
 - **Book with <place>** → the place's booking start;
@@ -1242,7 +1393,7 @@ As MA4 with:
 | **BusinessProfile** | `id`, `handle`, `name`, `verified`, `category`, `subcategoryLabel?`, `avatarUrl?`, `stats { posts, followers, following⚠, rating?, reviewsCount }`, `phone`, `address { line, city, lat, lng }`, `openingHours`, `checkIn?`, `checkOut?`, `priceLevel`, `timeZone⚠`, currency | HP, PA1, PS1, PF1, PA2, R1–R3, F1–F4, TB1–TB4, MA4–MA6 |
 | **Viewer state** | `isFollowing⚠`, `hasLiked⚠` (per video), signed-in `userId` + role⚠ | PA1, PS1, PF1, PA2, R2, F2, TM1 |
 | **Video** | `id`, `url`, `thumbnailUrl`, `durationSec`, `views`, `publishedAt`, `likes` | HS1–HS4, HR1–HR4, PA1, PA2, PS1, R1, R2, F1, F2, CE1 |
-| **Service** | `id`, `name`, `shortDescription`, `category⚠ form`, `price { amount, currency, unit VISIT\|PERSON, from⚠ form }`, `durationMin`, `peoplePerBooking`, `included[]`, `notIncluded[]`, `notAllowed[]`, `teamMemberIds[]`, `video?` | HS1–HS4, PS1, R1–R3, SV, F1–F4, TM3, RV*, MA* |
+| **Service** | `id`, `name`, `shortDescription`, `category⚠ form`, `price { amount, currency, unit VISIT\|PERSON, from⚠ form }`, `durationMin`, `peoplePerBooking`, `included[]`, `notIncluded[]`, `notAllowed[]`, `teamMemberIds[]`, `video?`; categories list for R1 / F1 tiles: `{ category, count, imageUrl⚠ }` | HS1–HS4, PS1, R1–R3, SV, F1–F4, TM3, RV*, MA* |
 | **Room** | `id`, `name`, `shortDescription`, `pricePerNight`, `guestsMax`, `included[] { group⚠, item }`, `notIncluded[]`, `notAllowed[]`, `video?` | HR1–HR4, PA1–PA3 |
 | **TeamMember** | `id`, `userId⚠`, `name`, `initials`, `avatarUrl?`, `avatarColor`, `username`, `status ACTIVE\|PAUSED`, `isOwner`, `joinedAt`, `role`, `yearsExperience`, `specialties[]`, `languages[]`, `rating`, `reviewsCount`; derived: services count, `nextFree` | HS3, HS4, TM1–TM3, PS1, R1–R3, F1–F4, RV3, RV5, MA4 |
 | **TeamInvite** | `id`, `username` / `userId`, `invitedAt`, `state PENDING\|ACCEPTED\|DECLINED\|CANCELLED` | TM1, TM2 |
@@ -1251,12 +1402,12 @@ As MA4 with:
 | **RestaurantBookingSettings** | `capacity`, `bookingHorizonMonths`, `tableHoldMin`, `slotStepMin`, `services[] { name, from, to }` | TB1, TB2*, TB3* |
 | **Table availability** | `DayAvailability { date, state FREE\|FEW_LEFT\|FULL\|CLOSED }`, `TimeSlot { start, state }` per guest count | TB1, TB2* |
 | **Offer** (coupon / event) | `id`, `type`, `title`, `discount?`, `startsAt?`, `endsAt`, `quantityLeft`, `video?`, `appliesTo`, `windows[] { date, from, to }`, `sittings[] { id, date, from, to, seatsLeft }`, `minGuests?`, `maxGuests?` | CE1, TB1, TB2*, TB3*, F4*, RV2, RV3, MA1, MA4 |
-| **Booking request (table)** | `businessId`, `date`, `from`, `to`, `guests`, `offerId?`, `sittingId?`, `firstName`, `lastName`, `phone { country, number }`, `email`, `specialRequests?` (max 1000), `rewardGrantId?⚠` | TB3* → creates Reservation |
-| **Booking request (service)** | `businessId`, `serviceId`, `teamMemberId \| ANY`, `date`, `from`, `to`, `offerId?`, `sittingId?`, customer details⚠, `rewardGrantId?⚠` | R3, F4* → creates Reservation |
+| **TableBookingRequest** (table booking) | `businessId`, `date`, `from`, `to`, `guests`, `offerId?`, `sittingId?`, `firstName`, `lastName`, `phone { country, number }`, `email`, `specialRequests?` (max 1000), `rewardGrantId?⚠` | TB3* → creates Reservation |
+| **ServiceBookingRequest** (service booking) | `businessId`, `serviceId`, `teamMemberId \| ANY`, `date`, `from`, `to`, `offerId?`, `sittingId?`, customer details⚠, `rewardGrantId?⚠` | R3, F4* → creates Reservation |
 | **Reservation** | `id`, `businessId`, `customerId`, `kind SERVICE\|TABLE\|EVENT`, `what`, `people`, `date`, `from`, `to`, `durationMin?`, `price?`, `teamMemberId?` (+ name), `offer? { COUPON: discount, pays } \| { EVENT: title, sittingId }`, `specialRequests?`, `requestedAt`, `answerBy`, `state WAITING\|CONFIRMED\|DECLINED\|CANCELLED\|DONE\|NO_SHOW`, `declineReason? FULLY_BOOKED\|CLOSED_THAT_DAY\|NO_ANSWER`, `answeredAt?`, `cancelledAt?`, `cancelledBy? CUSTOMER\|BUSINESS`, `checkedAt?`, `myRating?`, `place { businessId, name, type, city, address, phone, avatarUrl?, avatarColor }` | RV1–RV6, MA1–MA5, TB4, HP badge |
-| **Customer** (host side) | `id`, `name`, `initials`, `avatarUrl?`, `avatarColor`, `visitsCount` (DONE), `lastVisitAt`, `groups[]`, unused rewards from this business (`discount`), `phone`, `email` (RV3 / RV5 only) | CR1, CR2, CR3, CR6, CR10, RV1–RV6 |
-| **Reward** | `id`, `businessId`, `title` (max 40), `discount`, `sentAt`, `validUntil`, `source MANUAL \| { ruleId }`, `audienceGroup?⚠`, `grants[] { customerId, state NOT_USED\|USED\|ENDED\|STOPPED, usedAt?, bookingId? }`, `stoppedAt?`; derived: used / total | CR2–CR4, CR10, MA2, MA6 |
-| **RewardRule** | `id`, `on`, `title`, `dayOfMonth`, `firstSendAt`, `visits { count 1–5, mode EXACTLY\|AT_LEAST }`, `repeat ONCE\|EVERY_MONTH`, `skipIfUnused`, `discount`, `validForDays 3\|5\|7\|30`, `stats { timesSent, people, used }`; derived: `nextSendAt`, people matching now (+ first 3) | CR4–CR9 |
-| **My activity (customer)** | `upcoming[]` and `history[]` (Reservation with `place`), `rewards.ready[]` / `rewards.usedOrEnded[]` (`RewardGrantView { rewardId, place, discount, title, validUntil, state, usedAt? }`), tab counts | MA1–MA6 |
+| **Customer** (host side) | `id`, `name`, `initials`, `avatarUrl?`, `avatarColor`, `visitsCount` (DONE), `lastVisitAt`, `groups[]`, `unusedRewardIds[]` (→ `Reward.discount`, this business only), `phone`, `email` (RV3 / RV5 only) | CR1, CR2, CR3, CR6, CR10, RV1–RV6 |
+| **Reward** | `id`, `businessId`, `title` (max 40), `discount`, `validFor` (input: 1_WEEK \| 2_WEEKS \| 3_WEEKS \| 1_MONTH), `sentAt`, `validUntil`, `source MANUAL \| { ruleId }`, `audienceGroup?⚠`, `grants[] { customerId, state NOT_USED\|USED\|ENDED\|STOPPED, usedAt?, bookingId? }`, `stoppedAt?`; derived: used / total | CR2–CR4, CR10, MA2, MA6 |
+| **RewardRule** | `id`, `on`, `title`, `dayOfMonth`, `firstSendAt`, `visits { count 1–5, mode EXACTLY\|AT_LEAST }`, `repeat ONCE\|EVERY_MONTH`, `skipIfUnused`, `discount`, `validForDays 3\|5\|7\|30`, `stats { timesSent, people, used }`; derived: `nextSendAt`, `matchingNow` (count + the first 3 people) | CR4–CR9 |
+| **MyActivity** (customer) | `upcoming[]` and `history[]` (Reservation with `place`), `rewards.ready[]` / `rewards.usedOrEnded[]` (`RewardGrantView { rewardId, place, discount, title, validUntil, state, usedAt? }`), tab counts | MA1–MA6 |
 
 *Screen ids with `*` cover all their states (for example, `TB2*` = TB2, TB2C, TB2E).*
