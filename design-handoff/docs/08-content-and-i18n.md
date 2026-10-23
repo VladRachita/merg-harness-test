@@ -28,5 +28,6 @@ All other copy is English in the designs and must go through the app's localisat
 - Host: "Everything here is shown on your video", **Included · N**, **Not included**, **Not allowed**, **Add**, **Who does it**, "/ visit", "/ night", **Save service**, **Save room**, **Save changes**, **New service**, **New room**, "Start with a video", "No video yet", **Add a video**, "Pick a clip that shows the service / room", **Skip**, **Next**, "Recents".
 - About: "Open now · Closes 23:59", "Closes soon · Until 22:30", "Closed · Opens 09:00", "Check-in 14:00 / Check-out 11:00", "Price level", Budget / Moderate / Expensive / Luxury, "© OpenStreetMap".
 - Coupons: "All", "Events", "Coupons", "20% OFF", "10 RON OFF", "Today", "1 day", "n days".
+- Team: full list in [`12-team.md`](12-team.md) §5 ("Team", "Invite to team", "Active · N", "Paused · N", "Invites · N", "Owner", "Invited · waiting for an answer", "Team member", "Remove from team", …).
 - Table booking and offers: full list in [`11-table-booking.md`](11-table-booking.md) §9 ("Book a table", "Choose a time", "Choose an offer", "Any time", "Location maximum capacity · N", "Sittings", "N seats left", "Your details", "First name", "Last name", "Confirm reservation", …).
 - Currency in samples: RON. Format prices with the user's locale.

@@ -9,6 +9,7 @@ Each screen: id → files, then top-to-bottom content, actions and data. "C#" re
 ### HP-profile · Host profile with Quick Actions
 Top bar (back, settings) → C18 profile block → **Quick Actions** 4-column grid (Calendar, Bookings, Hours, Services, Coupons, Customers, Team) → icon tabs (Videos, Reviews, Events) → C9 bottom nav (Profile active).
 - Services tile → HS1 (services hosts) or HR1 (accommodation hosts, label "Rooms").
+- Team tile → TM1 (not linked in the canvas prototype; implement it).
 - Icon set rules: `../screens/reference/icon-set.html`.
 
 ---
@@ -58,6 +59,21 @@ C11 form **without Duration and Who does it**:
 
 ### HR4-edit-room · Edit room (no video yet)
 HR3 fields for Family Room with Balcony (380 / night, 4 guests, Included: Wi-Fi, Parking, Kitchen; Not included: Breakfast; Not allowed: Smoking, Parties), Add video tile, trash in header, **Save changes**.
+
+---
+
+## Host — team
+
+Full spec, sizes and states: [`12-team.md`](12-team.md). Summary:
+
+### TM1-team-list · Team
+Top bar "Team · Maestro Host · 4 people" → **Active · 3**: Maestro Host (Owner, "@maestro_seed_host · You", 1 service), Andrei (Barber, 3 services), Radu (Stylist, 2 services) → **Paused · 1**: Maria (Stylist, 2 services) → **Invites · 1**: @ioana.nails ("Invited · waiting for an answer", Cancel) → note about paused people → pinned **Invite to team** → TM2. Any person → TM3. Back → HP.
+
+### TM2-invite · Invite to team (sheet)
+C26 over TM1: "ioana" typed → 2 people: Ioana Pop @ioana.nails "✓ Invited", Ioana Marin @ioana.m **Invite**. X / dim → TM1.
+
+### TM3-team-member · Team member
+Profile card (Andrei, @andrei.barber, Active, Joined Mar 2025) → **Status**: Active (selected) / Paused → **Services · 3 of 4** (C27): Haircut ✓, Beard trim ✓, Kids haircut ✓, Couples massage ✗ → **Remove from team** → **Save changes** → TM1.
 
 ---
 

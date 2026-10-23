@@ -38,3 +38,7 @@ Use this for every screen before calling it done.
 - [ ] **TB3**: day tile summary; coupon/event strip only for that offer; First name | Last name on one row; Special requests optional with 0 / 1000 counter.
 - [ ] **TB4**: summary rows, copy address, Call the restaurant, Add to calendar, Done → PF1.
 - [ ] Everything in `11-table-booking.md` §12 (definition of done).
+- [ ] **TM1**: grouped Active / Paused / Invites with counts; status dot + status word per person; Owner chip; one pinned Invite to team; no username field on the list.
+- [ ] **TM2**: sheet max height screen − 64; Invite → "✓ Invited" and the invite appears on TM1.
+- [ ] **TM3**: Active / Paused radio cards; services checklist mirrors "Who does it"; Remove in danger red; Save changes pinned.
+- [ ] Everything in `12-team.md` §8 (definition of done).

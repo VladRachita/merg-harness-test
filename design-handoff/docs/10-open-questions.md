@@ -21,3 +21,9 @@
 | 17 | "Few left" threshold and booking horizon | TB1, TB2 | Proposal: few left ≤ 20 % of capacity for that day; horizon 6 months (per restaurant setting). |
 | 18 | Host tools for offers in booking | host | Creating coupon windows, event sittings/spots and the restaurant capacity is not designed. |
 | 19 | Paid events / deposits | TB2E, TB3E | Designs say "free to book". Ticket prices or deposits are not designed. |
+| 20 | **Pause** rules | TM1, TM3 | Proposal used in the designs: hidden from booking (R1, F3, "Can replace", "Anyone"), existing bookings stay. Confirm. |
+| 21 | Owner rules | TM1, TM3 | Proposal: the owner is always Active, cannot be paused or removed; their TM3 hides Paused and Remove. Confirm. |
+| 22 | Remove from team | TM3 | Confirmation dialog and what happens to their future bookings are not designed. |
+| 23 | Invitee side | TM2 | How an invite is received and accepted (notification, accept / decline screen) is not designed. |
+| 24 | Stylist profile fields | TM3, F3 | Role, experience, specialties and languages (shown on F3 "Choose a stylist") are not edited on TM3. Who edits them (the member on their own profile?) is not designed. |
+| 25 | Search results | TM2 | Proposal: people already in the team are not listed. Privacy / discoverability of usernames to confirm. |
