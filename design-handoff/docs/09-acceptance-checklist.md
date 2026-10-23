@@ -47,3 +47,10 @@ Use this for every screen before calling it done.
 - [ ] **CR5–CR8**: progress bar without step text; F4 week strip; Who counted in the month before each send; summary sentence; Change returns to the step.
 - [ ] **CR9/CR10**: switch, stats, rule rows, delete in the header; Stop reward in danger red.
 - [ ] Everything in `13-customers-rewards.md` §13 (definition of done).
+- [ ] **RV1**: calendar tab with the amber badge (= waiting requests, hidden at 0); requests banner hidden at 0; Today / Tomorrow lists with C37 chips; no calendar strip; no phone or email.
+- [ ] **RV2**: oldest first; card head → RV3; inline Decline / Accept; note quote on 1 line.
+- [ ] **RV3/RV5**: duration, price and "With <name>" only when the booking has them; offer strip only with an offer; Call opens the dialer, Copy copies the email.
+- [ ] **RV4**: exactly two reasons, Fully booked preselected, no message field; dismiss sends nothing.
+- [ ] **RV6**: No-show / Yes, done; auto-done the next day; only done visits count.
+- [ ] Same screens render a service, a table and an event booking correctly; no gendered pronouns.
+- [ ] Everything in `14-reservations.md` §13 (definition of done).

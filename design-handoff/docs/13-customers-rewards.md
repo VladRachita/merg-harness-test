@@ -43,7 +43,7 @@ flowchart LR
 ```
 
 Rules:
-1. **Who is a customer**: someone who booked with this business in the app. Nobody else is listed or can receive a reward.
+1. **Who is a customer**: someone who booked with this business in the app. Nobody else is listed or can receive a reward. A **visit** is a reservation marked **done** (`14-reservations.md`, RV6); no-shows, declined and cancelled reservations do not count.
 2. **A reward is single use**: a % or RON discount for **one booking**, valid from the day it is sent for the chosen length. It shows in the customer's "My activity" until used or ended.
 3. **By hand** (CR1 → CR3): pick people (filter by group, Select all), compose, send.
 4. **Automatic** (CR5 → CR8) is **monthly only**: it sends on the same day every month, starting from the first send. A month without that day (29–31) sends on its last day.

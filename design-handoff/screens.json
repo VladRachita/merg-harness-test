@@ -703,6 +703,196 @@
       ]
     },
     {
+      "id": "RV1-reservations",
+      "area": "host-reservations",
+      "title": "Host · Reservations tab",
+      "purpose": "Requests banner on top, then today and tomorrow (time, name, what · people, status).",
+      "source": "RS-Reservations.dc.html",
+      "files": {
+        "small": {
+          "html": "screens/small/rv1-reservations.html",
+          "png": "screenshots/small/rv1-reservations.png",
+          "width": 360,
+          "height": 640
+        },
+        "medium": {
+          "html": "screens/medium/rv1-reservations.html",
+          "png": "screenshots/medium/rv1-reservations.png",
+          "width": 390,
+          "height": 844
+        },
+        "large": {
+          "html": "screens/large/rv1-reservations.html",
+          "png": "screenshots/large/rv1-reservations.png",
+          "width": 430,
+          "height": 932
+        }
+      },
+      "links_to": [
+        "rv2-requests",
+        "rv5-confirmed",
+        "rv6-after-visit"
+      ]
+    },
+    {
+      "id": "RV2-requests",
+      "area": "host-reservations",
+      "title": "Host · Requests to answer",
+      "purpose": "Oldest first; each card shows the date, time, who, what · people, chips, note, and Decline / Accept.",
+      "source": "RS-Requests.dc.html",
+      "files": {
+        "small": {
+          "html": "screens/small/rv2-requests.html",
+          "png": "screenshots/small/rv2-requests.png",
+          "width": 360,
+          "height": 640
+        },
+        "medium": {
+          "html": "screens/medium/rv2-requests.html",
+          "png": "screenshots/medium/rv2-requests.png",
+          "width": 390,
+          "height": 844
+        },
+        "large": {
+          "html": "screens/large/rv2-requests.html",
+          "png": "screenshots/large/rv2-requests.png",
+          "width": 430,
+          "height": 932
+        }
+      },
+      "links_to": [
+        "rv1-reservations",
+        "rv3-request",
+        "rv4-decline",
+        "rv5-confirmed"
+      ]
+    },
+    {
+      "id": "RV3-request",
+      "area": "host-reservations",
+      "title": "Host · Reservation request",
+      "purpose": "Everything about one request: summary, offer used, customer with call / copy email, special requests, Decline / Accept.",
+      "source": "RS-Request.dc.html",
+      "files": {
+        "small": {
+          "html": "screens/small/rv3-request.html",
+          "png": "screenshots/small/rv3-request.png",
+          "width": 360,
+          "height": 640
+        },
+        "medium": {
+          "html": "screens/medium/rv3-request.html",
+          "png": "screenshots/medium/rv3-request.png",
+          "width": 390,
+          "height": 844
+        },
+        "large": {
+          "html": "screens/large/rv3-request.html",
+          "png": "screenshots/large/rv3-request.png",
+          "width": 430,
+          "height": 932
+        }
+      },
+      "links_to": [
+        "rv2-requests",
+        "rv4-decline",
+        "rv5-confirmed"
+      ]
+    },
+    {
+      "id": "RV4-decline",
+      "area": "host-reservations",
+      "title": "Host · Decline (reason sheet)",
+      "purpose": "Two reasons only: Fully booked or Closed that day; red Decline request.",
+      "source": "RS-Decline.dc.html",
+      "files": {
+        "small": {
+          "html": "screens/small/rv4-decline.html",
+          "png": "screenshots/small/rv4-decline.png",
+          "width": 360,
+          "height": 640
+        },
+        "medium": {
+          "html": "screens/medium/rv4-decline.html",
+          "png": "screenshots/medium/rv4-decline.png",
+          "width": 390,
+          "height": 844
+        },
+        "large": {
+          "html": "screens/large/rv4-decline.html",
+          "png": "screenshots/large/rv4-decline.png",
+          "width": 430,
+          "height": 932
+        }
+      },
+      "links_to": [
+        "rv2-requests",
+        "rv3-request",
+        "rv4-decline",
+        "rv5-confirmed"
+      ]
+    },
+    {
+      "id": "RV5-confirmed",
+      "area": "host-reservations",
+      "title": "Host · Reservation confirmed",
+      "purpose": "Accepted banner, the confirmed reservation, customer, Cancel reservation.",
+      "source": "RS-Confirmed.dc.html",
+      "files": {
+        "small": {
+          "html": "screens/small/rv5-confirmed.html",
+          "png": "screenshots/small/rv5-confirmed.png",
+          "width": 360,
+          "height": 640
+        },
+        "medium": {
+          "html": "screens/medium/rv5-confirmed.html",
+          "png": "screenshots/medium/rv5-confirmed.png",
+          "width": 390,
+          "height": 844
+        },
+        "large": {
+          "html": "screens/large/rv5-confirmed.html",
+          "png": "screenshots/large/rv5-confirmed.png",
+          "width": 430,
+          "height": 932
+        }
+      },
+      "links_to": [
+        "rv1-reservations"
+      ]
+    },
+    {
+      "id": "RV6-after-visit",
+      "area": "host-reservations",
+      "title": "Host · After the visit",
+      "purpose": "Did they come? No-show / Yes, done; done by itself the next day.",
+      "source": "RS-After.dc.html",
+      "files": {
+        "small": {
+          "html": "screens/small/rv6-after-visit.html",
+          "png": "screenshots/small/rv6-after-visit.png",
+          "width": 360,
+          "height": 640
+        },
+        "medium": {
+          "html": "screens/medium/rv6-after-visit.html",
+          "png": "screenshots/medium/rv6-after-visit.png",
+          "width": 390,
+          "height": 844
+        },
+        "large": {
+          "html": "screens/large/rv6-after-visit.html",
+          "png": "screenshots/large/rv6-after-visit.png",
+          "width": 430,
+          "height": 932
+        }
+      },
+      "links_to": [
+        "rv1-reservations"
+      ]
+    },
+    {
       "id": "PA1-profile-rooms",
       "area": "public-accommodation",
       "title": "Public · Accommodation profile · Rooms",
