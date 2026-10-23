@@ -37,11 +37,18 @@
 | 33 | Send time | CR5 | Time of day for automatic sends is not shown. Proposal: 10:00 in the business's time zone. |
 | 34 | **Auto-accept** | RV1–RV3 | The designs make every booking a request. Whether a business can accept all bookings automatically (a setting) is not designed. |
 | 35 | Answer deadline | RV2 | 24 hours, then declined automatically (designed copy). For requests whose time starts sooner than 24 h away, proposal: the deadline is 1 hour before the start. Confirm. |
-| 36 | **Customer side of a request** | TB3/TB4, F4, R3 | With requests, the customer's last step should say the booking is waiting for the business ("Request sent"), then accepted / declined (with the reason) / cancelled. TB4 currently says booked. Not designed; ties to #1 and #15. |
+| 36 | **Customer side of a request** | TB3/TB4, F4, R3 | My activity (MA1, MA3, MA4, MA5) now shows Waiting / Confirmed / Declined with the reason / Cancelled. Still open: the last booking step should say "Request sent" instead of booked (TB4 says booked); ties to #1 and #15. |
 | 37 | Notifications | RV1, RV5 | Push to the host for a new request, and to the customer for accepted / declined / cancelled / auto-declined, are not designed. |
 | 38 | Time held while waiting | RV2 | Proposal: a waiting request holds its time (not offered to others) until it is answered or declined automatically. Confirm. |
 | 39 | Cancel reservation | RV5 | Confirmation dialog, whether a reason is asked, and the customer message are not designed (use the platform's destructive dialog). |
 | 40 | **No-show** | RV6, RV1 | Not counted as a visit. The "No-show" chip on RV1 (proposal: `status.danger` text on `bg.soft`) and any consequence (repeated no-shows, deposits) are not designed. |
 | 41 | Days after tomorrow, empty states | RV1 | The tab shows Today and Tomorrow only (no calendar, by decision). Where later reservations are seen (proposal: the Quick Actions **Calendar** / **Bookings** tiles) and the empty states ("No reservations today", no banner) are not designed. |
 | 42 | Who / which table | RV3 | Changing the team member on a request, or assigning a restaurant table, is not designed. "With <name>" is read-only. |
+| 43 | Empty states | MA1–MA3 | No upcoming reservations, no rewards, no history: not designed. Proposal: an icon, one line ("Nothing booked") and a **Find a place** button, as the current app does. |
+| 44 | **Rate** target | MA3 | The review sheet was removed by decision; Rate opens the app's existing review flow. Its design (stars, text, where reviews show) is not part of this handoff. |
+| 45 | **Pick a reward when booking** | TB3, F4 / R3 confirm | MA2 / MA6 say "pick it at the last step". That step has no reward picker yet (and whether a reward can be combined with a coupon is #27). |
+| 46 | Cancel rules | MA4, MA5 | Confirmation dialog and how late a customer can cancel are not designed. |
+| 47 | No-show in History | MA3 | Whether the customer sees a NO_SHOW visit, and how, is not decided. Not shown in the designs. |
+| 48 | Entry point | MA1 | My activity opens from the customer's profile, which is not in the canvas (the prototype's back goes to HP). |
+| 49 | Change a reservation | MA4, MA5 | Changing the time or people is not designed: cancel and book again. |
 

@@ -893,6 +893,202 @@
       ]
     },
     {
+      "id": "MA1-upcoming",
+      "area": "customer-activity",
+      "title": "Customer · My activity · Upcoming",
+      "purpose": "Tabs Upcoming / Rewards / History; upcoming reservations by day with Confirmed / Waiting.",
+      "source": "MA-B-Upcoming.dc.html",
+      "files": {
+        "small": {
+          "html": "screens/small/ma1-upcoming.html",
+          "png": "screenshots/small/ma1-upcoming.png",
+          "width": 360,
+          "height": 640
+        },
+        "medium": {
+          "html": "screens/medium/ma1-upcoming.html",
+          "png": "screenshots/medium/ma1-upcoming.png",
+          "width": 390,
+          "height": 844
+        },
+        "large": {
+          "html": "screens/large/ma1-upcoming.html",
+          "png": "screenshots/large/ma1-upcoming.png",
+          "width": 430,
+          "height": 932
+        }
+      },
+      "links_to": [
+        "hp-profile",
+        "ma1-upcoming",
+        "ma2-rewards",
+        "ma3-history",
+        "ma4-reservation-waiting",
+        "ma5-reservation-confirmed"
+      ]
+    },
+    {
+      "id": "MA2-rewards",
+      "area": "customer-activity",
+      "title": "Customer · My activity · Rewards",
+      "purpose": "Rewards ready to use (open the reward), then used or ended in grey.",
+      "source": "MA-B-Rewards.dc.html",
+      "files": {
+        "small": {
+          "html": "screens/small/ma2-rewards.html",
+          "png": "screenshots/small/ma2-rewards.png",
+          "width": 360,
+          "height": 640
+        },
+        "medium": {
+          "html": "screens/medium/ma2-rewards.html",
+          "png": "screenshots/medium/ma2-rewards.png",
+          "width": 390,
+          "height": 844
+        },
+        "large": {
+          "html": "screens/large/ma2-rewards.html",
+          "png": "screenshots/large/ma2-rewards.png",
+          "width": 430,
+          "height": 932
+        }
+      },
+      "links_to": [
+        "hp-profile",
+        "ma1-upcoming",
+        "ma2-rewards",
+        "ma3-history",
+        "ma6-reward"
+      ]
+    },
+    {
+      "id": "MA3-history",
+      "area": "customer-activity",
+      "title": "Customer · My activity · History",
+      "purpose": "Past reservations by month: Rate, your rating, or Book again after a decline / cancel.",
+      "source": "MA-B-History.dc.html",
+      "files": {
+        "small": {
+          "html": "screens/small/ma3-history.html",
+          "png": "screenshots/small/ma3-history.png",
+          "width": 360,
+          "height": 640
+        },
+        "medium": {
+          "html": "screens/medium/ma3-history.html",
+          "png": "screenshots/medium/ma3-history.png",
+          "width": 390,
+          "height": 844
+        },
+        "large": {
+          "html": "screens/large/ma3-history.html",
+          "png": "screenshots/large/ma3-history.png",
+          "width": 430,
+          "height": 932
+        }
+      },
+      "links_to": [
+        "hp-profile",
+        "ma1-upcoming",
+        "ma2-rewards",
+        "ma3-history",
+        "pf1-profile-fnb"
+      ]
+    },
+    {
+      "id": "MA4-reservation-waiting",
+      "area": "customer-activity",
+      "title": "Customer · Reservation · waiting",
+      "purpose": "Waiting for the place to answer: summary with the offer, place (copy address, call), special requests, Cancel request.",
+      "source": "MA-Waiting.dc.html",
+      "files": {
+        "small": {
+          "html": "screens/small/ma4-reservation-waiting.html",
+          "png": "screenshots/small/ma4-reservation-waiting.png",
+          "width": 360,
+          "height": 640
+        },
+        "medium": {
+          "html": "screens/medium/ma4-reservation-waiting.html",
+          "png": "screenshots/medium/ma4-reservation-waiting.png",
+          "width": 390,
+          "height": 844
+        },
+        "large": {
+          "html": "screens/large/ma4-reservation-waiting.html",
+          "png": "screenshots/large/ma4-reservation-waiting.png",
+          "width": 430,
+          "height": 932
+        }
+      },
+      "links_to": [
+        "ma1-upcoming",
+        "ps1-profile-services"
+      ]
+    },
+    {
+      "id": "MA5-reservation-confirmed",
+      "area": "customer-activity",
+      "title": "Customer · Reservation · confirmed",
+      "purpose": "Confirmed banner, summary, place (copy address, call), Cancel reservation.",
+      "source": "MA-Confirmed.dc.html",
+      "files": {
+        "small": {
+          "html": "screens/small/ma5-reservation-confirmed.html",
+          "png": "screenshots/small/ma5-reservation-confirmed.png",
+          "width": 360,
+          "height": 640
+        },
+        "medium": {
+          "html": "screens/medium/ma5-reservation-confirmed.html",
+          "png": "screenshots/medium/ma5-reservation-confirmed.png",
+          "width": 390,
+          "height": 844
+        },
+        "large": {
+          "html": "screens/large/ma5-reservation-confirmed.html",
+          "png": "screenshots/large/ma5-reservation-confirmed.png",
+          "width": 430,
+          "height": 932
+        }
+      },
+      "links_to": [
+        "ma1-upcoming",
+        "pf1-profile-fnb"
+      ]
+    },
+    {
+      "id": "MA6-reward",
+      "area": "customer-activity",
+      "title": "Customer · Reward",
+      "purpose": "The ticket, who it is from, days left, single use, Book with <place>.",
+      "source": "MA-Reward.dc.html",
+      "files": {
+        "small": {
+          "html": "screens/small/ma6-reward.html",
+          "png": "screenshots/small/ma6-reward.png",
+          "width": 360,
+          "height": 640
+        },
+        "medium": {
+          "html": "screens/medium/ma6-reward.html",
+          "png": "screenshots/medium/ma6-reward.png",
+          "width": 390,
+          "height": 844
+        },
+        "large": {
+          "html": "screens/large/ma6-reward.html",
+          "png": "screenshots/large/ma6-reward.png",
+          "width": 430,
+          "height": 932
+        }
+      },
+      "links_to": [
+        "ma2-rewards",
+        "ps1-profile-services"
+      ]
+    },
+    {
       "id": "PA1-profile-rooms",
       "area": "public-accommodation",
       "title": "Public · Accommodation profile · Rooms",

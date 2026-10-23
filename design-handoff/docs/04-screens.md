@@ -130,6 +130,30 @@ Summary (Today 23 Oct · 11:00 – 12:00 · Haircut) → Mihai Ionescu (4 visits
 
 ---
 
+## Customer — my activity
+
+Full spec, sizes and states: [`15-my-activity.md`](15-my-activity.md). Same screens for services, tables and events. Summary:
+
+### MA1-upcoming · Upcoming tab
+"My activity" → tabs **Upcoming · 2** (selected) · Rewards · 2 · History → **Tomorrow · Sat, 24 Oct**: 19:00 – 20:30 Maestro Bistro · Table · 2 people · **Confirmed** (→ MA5) → **Mon, 26 Oct**: 14:30 – 15:30 Maestro Host · Haircut · 1 person · **Waiting** · 15% OFF (→ MA4) → note about waiting requests.
+
+### MA2-rewards · Rewards tab
+**Ready to use · 2**: 10 RON OFF · See you again soon · Maestro Bistro · until Wed, 28 Oct; 15% OFF · Thanks for coming back · Maestro Host · until Sun, 22 Nov (each → MA6) → note "Each reward works for one booking at that place…" → **Used or ended · 2**: 20% OFF Welcome back (Used · 12 Oct), 10% OFF Come back soon (Ended · 30 Sep), faded.
+
+### MA3-history · History tab
+**October**: 20 Oct Maestro Bistro · Table · 2 people · **Rate**; 12 Oct Maestro Host · Haircut · ★ 5; 2 Oct Maestro Bistro · **Declined** · Fully booked · **Book again** → **September**: 18 Sep Maestro Host · Beard trim · ★ 4; 5 Sep Maestro Bistro · **Cancelled** · By you · **Book again**.
+
+### MA4-reservation-waiting · Reservation · waiting
+Amber banner "Waiting for Maestro Host · They answer within 24 hours…" → summary (Mon 26 Oct · 14:30 – 15:30 · Waiting · Haircut · 1 person · 60 min · 120 RON · With Andrei) + coupon strip "You pay 102 RON instead of 120 RON" → **Place** (Maestro Host · Barber & salon → PS1; Strada Republicii 12, Brașov · Copy; +40 721 000 123 · Call) → **Your special requests** → **Cancel request** + "Maestro Host is told right away."
+
+### MA5-reservation-confirmed · Reservation · confirmed
+Green banner "Confirmed · Maestro Bistro is expecting you." → summary with the dark tile (Sat 24 Oct · 19:00 – 20:30 · Confirmed · Table · 2 people · 1 h 30 min) → **Place** (Maestro Bistro · Restaurant → PF1; address · Copy; phone · Call) → **Cancel reservation** + note. No Add to calendar.
+
+### MA6-reward · Reward
+Ticket 15% OFF · Thanks for coming back → From Maestro Host · 30 days left (until Sun, 22 Nov) · Single use → note → pinned **Book with Maestro Host** (→ PS1).
+
+---
+
 ## Public — accommodation (Call only)
 
 ### PA1-profile-rooms · Accommodation profile · Rooms

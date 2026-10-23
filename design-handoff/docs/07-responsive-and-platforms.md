@@ -44,6 +44,7 @@ Column width = (screen width − 2×16 − gaps) ÷ columns. Inside cards, keep 
 - Team screens (TM1, TM3) scroll under their pinned bottom button on small phones; the TM2 sheet follows the sheet rule above.
 - Customers & rewards screens (CR1, CR2, CR4, CR6–CR10) scroll under their pinned bottom button on small phones; CR3 and CR5 fit.
 - Reservations: on small phones RV1 scrolls under the nav, RV3 under its pinned Decline / Accept bar, RV5 scrolls; RV2 (two request cards), the RV4 sheet and RV6 fit. Names and items ellipsize before a status chip or "N people" would move.
+- My activity: on small phones MA2, MA3 and MA4 scroll under the tabs / top bar; MA1, MA5 and MA6 fit. On MA3 the decline / cancel reason wraps under its chip instead of being cut.
 - Booking steps (TB1–TB3, F4 with offers) scroll under their pinned bottom bar at every size. On small phones the end of the content is under the fold in the references; that is expected.
 
 ## Safe areas

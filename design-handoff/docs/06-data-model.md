@@ -165,15 +165,35 @@ Reservation {
   requestedAt, answerBy,                          // answerBy = requestedAt + 24 h
   state: "WAITING" | "CONFIRMED" | "DECLINED" | "CANCELLED" | "DONE" | "NO_SHOW",
   declineReason?: "FULLY_BOOKED" | "CLOSED_THAT_DAY" | "NO_ANSWER",   // NO_ANSWER = declined automatically
-  answeredAt?, cancelledAt?, checkedAt?
+  answeredAt?, cancelledAt?, checkedAt?,
+  cancelledBy?: "CUSTOMER" | "BUSINESS",        // "By you" / "By the place" (My activity)
+  myRating?: 1 | 2 | 3 | 4 | 5,                  // customer's own rating of a DONE visit ("★ N")
+  place: { businessId, name, type: "Barber & salon", city, address, phone, avatarUrl?, avatarColor }   // customer side
 }
 ```
 - Created from a `TableBookingRequest` (TB3) or a services booking (F4 / R3) in state WAITING.
-- WAITING → CONFIRMED (Accept) · DECLINED (Decline with a reason, or `answerBy` passed → NO_ANSWER).
-- CONFIRMED → CANCELLED (host cancels) · NO_SHOW (host) · DONE (host, or automatically at the start of the day after `date` if still CONFIRMED).
+- WAITING → CONFIRMED (Accept) · DECLINED (Decline with a reason, or `answerBy` passed → NO_ANSWER) · CANCELLED (the customer cancels the request, MA4).
+- CONFIRMED → CANCELLED (host RV5 or customer MA5; `cancelledBy`) · NO_SHOW (host) · DONE (host, or automatically at the start of the day after `date` if still CONFIRMED).
 - RV1 day lists: CONFIRMED / DONE (and NO_SHOW) for today and tomorrow, by `from`. RV2: WAITING by `requestedAt` ascending. Tab badge = count of WAITING.
 - Visible to the host only: the customer's phone and email (RV3, RV5).
 
+## My activity (customer side)
+```ts
+MyActivity {
+  upcoming: Reservation[],        // state WAITING | CONFIRMED, start >= now; grouped by date, earliest first
+  history: Reservation[],         // DONE | DECLINED | CANCELLED; grouped by month, newest first
+  rewards: {
+    ready: RewardGrantView[],     // NOT_USED and validUntil >= today; validUntil ascending (ends soonest first)
+    usedOrEnded: RewardGrantView[]   // USED ("Used · usedAt") · ENDED / STOPPED ("Ended · validUntil or stoppedAt"); newest first
+  }
+}
+RewardGrantView { rewardId, place, discount, title, validUntil, state, usedAt? }
+```
+- Tab counts: `upcoming.length`, `rewards.ready.length`; hidden at 0.
+- History action: DONE without `myRating` → Rate; DONE with `myRating` → "★ N"; DECLINED / CANCELLED → Book again.
+- Decline reason text: FULLY_BOOKED → "Fully booked" · CLOSED_THAT_DAY → "Closed that day" · NO_ANSWER → "No answer". Cancelled: CUSTOMER → "By you" · BUSINESS → "By the place".
+
+## Display rules
 | Rule | Output |
 |---|---|
 | Discount | PERCENT → "20% OFF"; AMOUNT → "10 RON OFF" |
@@ -195,4 +215,6 @@ Reservation {
 | Reservation status chip | WAITING → "Waiting for you" (amber) · CONFIRMED → "Confirmed" (green) · DONE → "Done" (grey) |
 | Requested ago (RV2) | < 60 min → "N min ago"; otherwise "N h ago" |
 | Reservation facts | "what · N people"; add "60 min", "120 RON", "With <name>" only when the reservation has them |
+| Reward days left (MA6) | same as Time left: "N days left", red at Today / 1 day; "Until <Ddd, d Mon>" |
+| Coupon strip, customer side | "You pay <new> instead of <old>" (host side: "Pays …") |
 | Visits (RV2/RV3) | 0 done → "New customer" / "New customer · first visit"; else "N visits" / "N visits · last <d Mon>" |
