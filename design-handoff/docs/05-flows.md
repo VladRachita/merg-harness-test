@@ -139,3 +139,17 @@ Rules (details in `14-reservations.md` §1): every booking made in the app is a 
 
 Bookings that arrive here come from F4 / R3 (services) and TB3 (tables and events): after **Confirm** / **Confirm reservation** the customer's booking is a request, not yet confirmed (see `10-open-questions.md` #36).
 
+## J. Customer — my activity
+
+```mermaid
+flowchart LR
+  PR[Customer profile] -- My activity --> MA1[MA1 Upcoming]
+  MA1 <-- tabs --> MA2[MA2 Rewards] <-- tabs --> MA3[MA3 History]
+  MA1 -- waiting --> MA4[MA4 Reservation · waiting]
+  MA1 -- confirmed --> MA5[MA5 Reservation · confirmed]
+  MA2 -- ready reward --> MA6[MA6 Reward] -- Book with place --> PROF[PS1 / PF1]
+  MA4 & MA5 -- place --> PROF
+  MA3 -- Book again --> PROF
+```
+Rules (details in `15-my-activity.md` §1): Upcoming = WAITING + CONFIRMED; History = DONE, DECLINED (with the reason), CANCELLED; the host's Accept / Decline (§I) moves a row from Waiting to Confirmed or to History; rewards ready to use end soonest first and are used at the last booking step with that place; Rate only on unrated done visits; Book again on declined / cancelled.
+

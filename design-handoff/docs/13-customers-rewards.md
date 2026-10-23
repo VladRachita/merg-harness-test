@@ -44,7 +44,7 @@ flowchart LR
 
 Rules:
 1. **Who is a customer**: someone who booked with this business in the app. Nobody else is listed or can receive a reward. A **visit** is a reservation marked **done** (`14-reservations.md`, RV6); no-shows, declined and cancelled reservations do not count.
-2. **A reward is single use**: a % or RON discount for **one booking**, valid from the day it is sent for the chosen length. It shows in the customer's "My activity" until used or ended.
+2. **A reward is single use**: a % or RON discount for **one booking**, valid from the day it is sent for the chosen length. It shows in the customer's "My activity" (`15-my-activity.md`, MA2 / MA6) until used or ended.
 3. **By hand** (CR1 → CR3): pick people (filter by group, Select all), compose, send.
 4. **Automatic** (CR5 → CR8) is **monthly only**: it sends on the same day every month, starting from the first send. A month without that day (29–31) sends on its last day.
 5. **Who gets an automatic reward** is decided at every send from **visits in the month before the send** (for a send on 15 Nov: 15 Oct – 14 Nov): **exactly N** or **N or more** visits (N = 1–5). "A person can get it" **Only once** (ever, for this rule) or **Every month** (each month they match). **Skip people with an unused reward** (on by default) skips anyone who still has an unused reward from this rule.

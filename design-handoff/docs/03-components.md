@@ -36,6 +36,8 @@ Build these once and reuse them. Values are for the **medium** phone (390 × 844
 | Reservations tab | `calendar` (+ C35 badge) | Visit check (did they come) | `calendar-check` |
 | No-show | `user-x` | New customer | `sparkles` |
 | Accept / Decline | `check` / `x` | Copy email | `copy` |
+| Rewards (tab, from) | `gift` | History tab | `history` |
+| Book again | `repeat` | Waiting for an answer | `hourglass` |
 
 Stroke 1.8 at 20–26 px, 2–2.4 at 12–16 px. Filled: play, phone, star, more dots.
 
@@ -284,7 +286,8 @@ Optional "Brand" tone: tile `#EEEAFD`, icon `#5B3FD6`. Default is Mono.
 
 ## 37. Reservation status chip
 - 22 tall, radius 11, padding `0 8`, 11.5/600, never wraps: **Waiting for you** (`status.warningText` / `status.warningBg`), **Confirmed** (`status.successText` / `status.successBg`), **Done** (`text.secondary` / `bg.soft`).
-- Seen in: RV1, RV3, RV5.
+- Customer labels (My activity): **Waiting** (amber), **Confirmed** (green), **Declined** (`action.danger` on `bg.soft`), **Cancelled** (`text.secondary` on `bg.soft`).
+- Seen in: RV1, RV3, RV5, MA1, MA3–MA5.
 
 ## 38. Reservation row
 - Min 68, padding `10 8 10 14`: time column 50 (start 16/700, end 12 tertiary) · 3-wide bar (Confirmed `status.success`, Done `line.strong`) · name 15/600 + C37 chip · "what · `users` N people" 12.5 secondary · chevron. Item ellipsizes first; "N people" never truncates.
@@ -309,3 +312,27 @@ Optional "Brand" tone: tile `#EEEAFD`, icon `#5B3FD6`. Default is Mono.
 ## 43. Visit check card
 - White, radius 18, padding `18 16`, centred: circle 52 `bg.soft` + `calendar-check` 24 · "Did <name> come?" 20/700 · rule line 13.5 secondary · **No-show** (`action.secondary`, `user-x`) / **Yes, done** (ink, `check`), 52 each.
 - Seen in: RV6.
+
+## 44. Upcoming row (customer)
+- C38 with the **place** instead of the customer: time column · bar (Confirmed `status.success`, Waiting `status.warning`) · place 15/600 + C37 chip · what · people · optional offer sticker line · chevron.
+- Seen in: MA1. Full spec: `15-my-activity.md` §3.
+
+## 45. History row
+- Min 68, padding `10 10 10 14`: date column 50 ("20 Oct" 15/700 + time 12 tertiary) · place 15/600 · what · people, or C37 chip + reason (wraps under the chip, never cut) · one action: **Rate** (outline pill 36, `star` filled `status.warning`), **★ N** (static), or **Book again** (`action.secondary` pill 36, `repeat`). The row itself is not tappable.
+- Seen in: MA3.
+
+## 46. Status banner
+- Radius 16, padding `12 14`: circle 36 + icon 18 · title 15/700 · line 12.5. Waiting: `status.warningBg`, `status.warning` circle, `hourglass`, `status.warningText`. Confirmed: `status.successBg`, `status.success` circle, white `check`, `status.successText`.
+- Seen in: MA4, MA5.
+
+## 47. Place card
+- White, radius 18: head (avatar 44 · name 15/600 · type 12.5 · chevron → place profile), then C41-style rows: `map-pin` address + **Copy** · `phone` number + **Call**. No Directions.
+- Seen in: MA4, MA5.
+
+## 48. Reward facts
+- Card of rows min 60: circle 36 `bg.soft` + icon 18 · title 15/600 · line 12.5: From <place> (`gift`), N days left (`hourglass`), Single use (`ticket`).
+- Seen in: MA6.
+
+## 49. Faded reward ticket
+- C28 with the stub in `line.strong`, value and title in `text.secondary`, last line "Used · <date>" / "Ended · <date>". Not tappable.
+- Seen in: MA2.

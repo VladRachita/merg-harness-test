@@ -54,3 +54,8 @@ Use this for every screen before calling it done.
 - [ ] **RV6**: No-show / Yes, done; auto-done the next day; only done visits count.
 - [ ] Same screens render a service, a table and an event booking correctly; no gendered pronouns.
 - [ ] Everything in `14-reservations.md` §13 (definition of done).
+- [ ] **MA1–MA3**: three tabs with counts (no Total / Completed / Upcoming counters); Upcoming = waiting + confirmed by day; History by month with Rate / ★ N / Book again.
+- [ ] **MA2**: ready rewards end soonest first and open MA6; used or ended are faded and not tappable.
+- [ ] **MA4/MA5**: status banner (amber / green), place card with Copy address and Call; no Add to calendar, no Directions; Cancel in danger red.
+- [ ] **MA6**: days left follows the Time left rule; Book with <place> pinned.
+- [ ] Everything in `15-my-activity.md` §13 (definition of done).

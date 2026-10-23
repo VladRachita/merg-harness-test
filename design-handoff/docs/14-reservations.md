@@ -50,14 +50,15 @@ stateDiagram-v2
   WAITING --> CONFIRMED: Accept
   WAITING --> DECLINED: Decline + reason
   WAITING --> DECLINED: no answer in 24 h
-  CONFIRMED --> CANCELLED: Cancel reservation
+  WAITING --> CANCELLED: customer cancels the request (My activity)
+  CONFIRMED --> CANCELLED: Cancel reservation (host or customer)
   CONFIRMED --> DONE: Yes, done
   CONFIRMED --> DONE: end time passed, no answer by the next day
   CONFIRMED --> NO_SHOW: No-show
 ```
 
 Rules:
-1. **Every booking is a request.** It is **Waiting for you** until the host answers. The customer is told when it is accepted, declined or cancelled. How they are told is not designed (see open questions).
+1. **Every booking is a request.** It is **Waiting for you** until the host answers. The customer is told when it is accepted, declined or cancelled, and sees it in **My activity** (`15-my-activity.md`: Waiting → Confirmed, or History with the reason). How they are notified is not designed (see open questions).
 2. **Oldest first.** RV2 lists waiting requests from the oldest. The host must answer within **24 hours**; after that the request is **declined automatically** and the customer is told.
 3. **Accept** confirms it as it is (time, people, offer). The customer gets a confirmation.
 4. **Decline needs one reason**, **Fully booked** or **Closed that day**. There is no free-text message. The customer sees the reason and can book another time.
