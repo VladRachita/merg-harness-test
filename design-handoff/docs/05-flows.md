@@ -107,3 +107,18 @@ flowchart LR
   TM3 -- Remove from team --> DEL((confirm — not designed))
 ```
 Rules (details in `12-team.md` §1): invites wait under **Invites** until accepted; **Paused** people are hidden from booking (R1, F3, "Can replace", "Anyone") but keep their bookings; TM3 services = "Who does it" on each service; the owner cannot be paused or removed.
+
+## H. Host — customers & rewards
+
+```mermaid
+flowchart LR
+  HP[HP Host profile] -- Customers tile --> CR1[CR1 People]
+  CR1 <-- tabs --> CR4[CR4 Rewards]
+  CR1 -- Send reward --> CR2[CR2 New reward] -- Send --> CR3[CR3 Sent]
+  CR3 -- See rewards --> CR4
+  CR4 -- New automatic reward --> CR5[CR5 When] --> CR6[CR6 Who] --> CR7[CR7 Reward] --> CR8[CR8 Check]
+  CR8 -- Turn on --> CR4
+  CR4 -- a rule --> CR9[CR9 Edit]
+  CR4 -- a sent reward --> CR10[CR10 Details]
+```
+Rules (details in `13-customers-rewards.md` §1): only people who booked in the app; rewards are single use (one booking); automatic rewards are monthly, Who is decided at each send from visits in the month before; switching off stops future sends only; Stop reward removes it for people who have not used it.

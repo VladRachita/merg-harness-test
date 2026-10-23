@@ -10,6 +10,7 @@ Each screen: id → files, then top-to-bottom content, actions and data. "C#" re
 Top bar (back, settings) → C18 profile block → **Quick Actions** 4-column grid (Calendar, Bookings, Hours, Services, Coupons, Customers, Team) → icon tabs (Videos, Reviews, Events) → C9 bottom nav (Profile active).
 - Services tile → HS1 (services hosts) or HR1 (accommodation hosts, label "Rooms").
 - Team tile → TM1 (not linked in the canvas prototype; implement it).
+- Customers tile → CR1 (not linked in the canvas prototype; implement it).
 - Icon set rules: `../screens/reference/icon-set.html`.
 
 ---
@@ -74,6 +75,33 @@ C26 over TM1: "ioana" typed → 2 people: Ioana Pop @ioana.nails "✓ Invited", 
 
 ### TM3-team-member · Team member
 Profile card (Andrei, @andrei.barber, Active, Joined Mar 2025) → **Status**: Active (selected) / Paused → **Services · 3 of 4** (C27): Haircut ✓, Beard trim ✓, Kids haircut ✓, Couples massage ✗ → **Remove from team** → **Save changes** → TM1.
+
+---
+
+## Host — customers & rewards
+
+Full spec, sizes and states: [`13-customers-rewards.md`](13-customers-rewards.md). Summary:
+
+### CR1-customers · Customers · People tab
+Tabs People / Rewards → group tiles (All 24 · **Regulars 8** · New 10 · Away 6) → "Regulars · 3+ visits · 2 selected" + Select all → rows (Elena ✓, Mihai ✓ with "10 RON OFF · not used", Cristina, Dan, Ioana with "15% OFF · not used") → **Send reward to 2 people** → CR2.
+
+### CR2-new-reward · New reward
+To: Elena and Mihai (Change) → ticket preview **15% OFF · Thanks for coming back** → Discount % / RON + 10–25% / Other → Message (22 / 40) → Valid for 1 week · 2 weeks · 3 weeks · **1 month** (Until Sun, 22 Nov) → **Send to 2 people** → CR3.
+
+### CR3-reward-sent · Reward sent
+Check, "Reward sent", "Elena and Mihai can use it for one booking until Sun, 22 Nov.", ticket, See rewards (→ CR4) / Done (→ CR1).
+
+### CR4-rewards-tab · Customers · Rewards tab
+**Automatic · 2 on**: Come back soon (every month on the 15th · 10% OFF · 5 days · exactly 1 visit in the month before · Next: Sun, 15 Nov · 10 people), Thanks for coming often (1st · 15% OFF · 1 week · 3 or more visits) → Idea to start: VIP thank you (+ Add) → **Sent · this month**: Come back soon (Auto, used by 4 of 9), Thanks for coming back (By you, used by 3 of 8) → **New automatic reward** → CR5.
+
+### CR5–CR8 · New automatic reward
+CR5 When (first send **Sun 15 Nov** on the week strip; next sends 15 Nov · 15 Dec · 15 Jan) → CR6 Who (**exactly 1** visit in the month before, **every month**, skip unused, 10 people match) → CR7 Reward (10% OFF, 5 days, "Come back soon" 14 / 40) → CR8 Check (sentence + When / Who / Reward with Change) → **Turn on** → CR4.
+
+### CR9-auto-edit · Edit automatic reward
+Trash in the header · Come back soon (On, switch) · 3 times sent · 27 people · 11 used · ticket · rule rows (When, Who, Discount, Valid for, Message) · **Save changes**.
+
+### CR10-reward-details · Reward details
+Ticket · 8 sent · 3 used · 5 not used yet · people with "Used · 14 Oct" / "Not used yet" · **Stop reward**.
 
 ---
 

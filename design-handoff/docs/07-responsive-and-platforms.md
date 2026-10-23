@@ -42,6 +42,7 @@ Column width = (screen width − 2×16 − gaps) ÷ columns. Inside cards, keep 
 - Bottom sheets: height = content, **max = screen height − 64**, then scroll inside.
 - Long forms (HS3/HS4/HR3/HR4) scroll; their reference boards are drawn taller to show the full form.
 - Team screens (TM1, TM3) scroll under their pinned bottom button on small phones; the TM2 sheet follows the sheet rule above.
+- Customers & rewards screens (CR1, CR2, CR4, CR6–CR10) scroll under their pinned bottom button on small phones; CR3 and CR5 fit.
 - Booking steps (TB1–TB3, F4 with offers) scroll under their pinned bottom bar at every size. On small phones the end of the content is under the fold in the references; that is expected.
 
 ## Safe areas

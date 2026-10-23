@@ -111,6 +111,44 @@ TableBookingRequest {
 }
 ```
 
+## Customer (host side)
+```ts
+Customer {
+  id, name: "Elena Popescu", initials: "E", avatarColor, avatarUrl?,
+  visitsCount: 6, lastVisitAt,                     // from bookings made in the app
+  groups: ("REGULAR" | "NEW" | "AWAY")[],          // REGULAR: 3+ visits · NEW: 1 visit · AWAY: no visit in 60 days (proposal)
+  unusedRewardIds: string[]                        // CR1 chip "10 RON OFF · not used"
+  // phone / email exist but are not shown in the list
+}
+```
+
+## Reward
+```ts
+Reward {
+  id, businessId, title: "Thanks for coming back",      // the message, max 40 characters
+  discount: { type: "PERCENT", value: 15 } | { type: "AMOUNT", value: 10, currency: "RON" },
+  sentAt, validUntil,                                     // validUntil = sentAt + length (1–3 weeks, 1 month; rules also 3 or 5 days)
+  source: "MANUAL" | { ruleId: string },                  // "By you" / "Auto"
+  grants: { customerId, state: "NOT_USED" | "USED" | "ENDED" | "STOPPED", usedAt?, bookingId? }[],
+  stoppedAt?
+}
+```
+- Single use: one grant can be used for one booking. "Used by U of N" = grants with state USED / all grants.
+
+## Automatic reward rule
+```ts
+RewardRule {
+  id, on: boolean, title: "Come back soon",
+  dayOfMonth: 15, firstSendAt: "2026-11-15",               // months without that day send on their last day
+  visits: { count: 1, mode: "EXACTLY" | "AT_LEAST" },      // counted in the month before each send
+  repeat: "ONCE" | "EVERY_MONTH",                          // "Only once" / "Every month"
+  skipIfUnused: true,
+  discount, validForDays: 3 | 5 | 7 | 30,
+  stats: { timesSent: 3, people: 27, used: 11 }
+}
+```
+- At each send: candidates = customers whose visits between the same day last month and the day before the send match `visits`; remove those already granted (ONCE) and, if `skipIfUnused`, those with a NOT_USED grant from this rule; create one Reward with a grant per person.
+
 ## Display rules
 | Rule | Output |
 |---|---|
