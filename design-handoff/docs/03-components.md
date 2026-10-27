@@ -395,5 +395,5 @@ Optional "Brand" tone: tile `#EEEAFD`, icon `#5B3FD6`. Default is Mono.
 - Seen in: EP1. Full spec: `17-new-post.md` §6.
 
 ## 62. Delete sheet
-- C13 sheet: "Delete this video?" 19/600 + X · one line 13.5 secondary · card listing what is deleted (rows min 56: circle 36 `bg.soft` + icon · title 15/500 · line 12.5): The video · Title and description · The tag (only with a tag) · Likes · red **Delete video** (C17 destructive confirm in a sheet, `trash-2`).
+- C13 sheet: "Delete this video?" 19/600 + X · one line 13.5 secondary · card listing what is deleted (rows min 56: circle 36 `bg.soft` + icon · title 15/500 · line 12.5): The video · Title and description · The tag (only with a tag) · Engagement ("Views and likes", no counts) · red **Delete video** (C17 destructive confirm in a sheet, `trash-2`).
 - Seen in: EP2. Full spec: `17-new-post.md` §7.

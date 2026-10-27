@@ -199,7 +199,7 @@ Full detail per screen is in the page sections below. ⚠ = a gap listed in §B.
 | `NP3-written` | as NP2 · `PostTag` → `BusinessProfile{name}` + item name (labels) | publish `CreatePostRequest{videoUploadId, title (1–30), description? (0–100), tag?{businessId, itemType?, itemId?}}` |
 | `NP4-tag-place` | `VisitForTag[]{businessId, name, verified, avatarUrl, category, what, itemType, itemId, date}` (DONE, newest first) · place search (A19 places + their services / rooms) | — (the tag is sent with publish / save) |
 | `EP1-edit-post` | `Post{id, title, description, tag, video.thumbnailUrl}` (own post) · tag labels as NP3 | save `UpdatePostRequest{title (1–30), description? (0–100), tag? \| null}` |
-| `EP2-delete-video` | `Post{title, tag → BusinessProfile.name + item name, likes}` | delete `DeletePost{postId}` |
+| `EP2-delete-video` | `Post{title, tag → BusinessProfile.name + item name}` | delete `DeletePost{postId}` |
 
 ---
 
@@ -1548,10 +1548,10 @@ Opens from the **+** in the bottom navigation, for any signed-in person; the pos
 |---|---|---|---|
 | Title and description | `Post.title` | `string` | 1 line, ellipsis. |
 | The tag | `Post.tag` → `BusinessProfile.name` + `Service.name` / `Room.name` | | "Maestro Host · Haircut". Row hidden without a tag. |
-| Likes | `Post.likes` | `int` | "24 likes" (localised plural). |
+| Engagement | — | | Fixed label "Views and likes": **no counts are read**. |
 
 **Actions:**
-- **Delete video** → `DeletePost{ postId }`. This permanently deletes the video file, the title, the description, the tag and the likes for everyone. Then → the profile.
+- **Delete video** → `DeletePost{ postId }`. This permanently deletes the video file, the title, the description, the tag and the engagement (views and likes) for everyone. Then → the profile.
 - X / dim → back to EP1, nothing deleted.
 
 ---
@@ -1579,7 +1579,7 @@ Opens from the **+** in the bottom navigation, for any signed-in person; the pos
 | A17 | **Team** | Search users by username; invites PENDING → ACCEPTED / DECLINED / CANCELLED; PAUSED members are excluded from R1 / F1 filters, F3, "Can replace" and "Anyone" (their existing reservations stay). The salon boards still show Maria, who is Paused on TM1: that sample data is older than the Team page, so follow the rule. | TM1–TM3, R1, F1, F3, R3, F4 |
 | A18 | **My activity** | Across all businesses for the signed-in customer: upcoming (WAITING + CONFIRMED, from now on), history (DONE, DECLINED, CANCELLED; newest first), reward grants (ready ending soonest first; used / ended newest first). | MA1–MA6 |
 | A19 | **Search** | One query over place names, types and cities, video titles and deal titles (diacritics and small typos: #60). **Ranks** the results (best match first, #51) and returns **blocks**: a place = one block; videos and deals in blocks of 1–2 (one grid row). ALL mixes the three types; each tab returns only its own. **Cursor paging** (`nextCursor`, null on the last page; page size #53). Deals: only bookable ones (not past `endsAt`, `quantityLeft > 0`, at a business that takes bookings in the app), `endsAt` ascending in the Deals tab; `firstDate` = the first day the deal applies. **Recent searches**: saved when results are shown, newest first, delete one / all (#54). No totals are needed. | SR1–SR6 |
-| A20 | **Posts** | Create a post on the author's profile: store the clip (`url`, `thumbnailUrl`, up to 100 MB; its length is not measured), `title` 1–30 and `description` 0–100 characters (enforced on the server), and an optional **single** `tag { businessId, itemType?, itemId? }` that must point to an existing place / service / room (FOOD_BEVERAGE: the place only). **From your visits** = the author's DONE reservations, newest first, with `what` and the booked service / room. A tag whose item is deleted falls back to the place. **Update**: only the author; title, description and tag (`null` removes it); the video can't change. **Delete**: only the author; permanently removes the video file, title, description, tag and likes for everyone. | NP1–NP4, EP1, EP2 |
+| A20 | **Posts** | Create a post on the author's profile: store the clip (`url`, `thumbnailUrl`, up to 100 MB; its length is not measured), `title` 1–30 and `description` 0–100 characters (enforced on the server), and an optional **single** `tag { businessId, itemType?, itemId? }` that must point to an existing place / service / room (FOOD_BEVERAGE: the place only). **From your visits** = the author's DONE reservations, newest first, with `what` and the booked service / room. A tag whose item is deleted falls back to the place. **Update**: only the author; title, description and tag (`null` removes it); the video can't change. **Delete**: only the author; permanently removes the video file, title, description, tag and engagement (views and likes) for everyone. | NP1–NP4, EP1, EP2 |
 
 ---
 
@@ -1645,7 +1645,7 @@ Opens from the **+** in the bottom navigation, for any signed-in person; the pos
 | **MyActivity** (customer) | `upcoming[]` and `history[]` (Reservation with `place`), `rewards.ready[]` / `rewards.usedOrEnded[]` (`RewardGrantView { rewardId, place, discount, title, validUntil, state, usedAt? }`), tab counts | MA1–MA6 |
 | **Search** | `SearchRequest { q, tab ALL\|VIDEOS\|PLACES\|DEALS, dealType? ALL\|EVENT\|COUPON, cursor? }` → `SearchPage { blocks[], nextCursor }`; `SearchBlock { type PLACE\|VIDEOS\|DEALS, place \| items[] }`; `PlaceResult { businessId, name, verified, category, subcategoryLabel, city, avatarUrl?, openingHours?, checkIn?, checkOut? }`; `VideoResult { itemId, itemType SERVICE\|ROOM, title, businessId, businessName, price { amount, currency, from? }, priceUnit?, people, durationMin?, thumbnailUrl }`; `DealResult { offerId, type, title, discount?, businessId, businessName, businessCategory, endsAt, quantityLeft, thumbnailUrl?, firstDate, serviceIds⚠ }` | SR1–SR6 |
 | **RecentSearch** | `query`, `searchedAt` (this person's, newest first; storage⚠) | SR1 |
-| **Post** | `id`, `authorUserId`, `publishedAt`, `video { url, thumbnailUrl }`, `title` (1–30), `description?` (0–100), `tag? { businessId, itemType? SERVICE\|ROOM, itemId? }` (one per post), `likes`; create: `CreatePostRequest { videoUploadId, title, description?, tag? }`; update: `UpdatePostRequest { title, description?, tag? \| null }`; delete: `DeletePost { postId }` | NP1–NP4, EP1, EP2 |
+| **Post** | `id`, `authorUserId`, `publishedAt`, `video { url, thumbnailUrl }`, `title` (1–30), `description?` (0–100), `tag? { businessId, itemType? SERVICE\|ROOM, itemId? }` (one per post); create: `CreatePostRequest { videoUploadId, title, description?, tag? }`; update: `UpdatePostRequest { title, description?, tag? \| null }`; delete: `DeletePost { postId }` | NP1–NP4, EP1, EP2 |
 | **VisitForTag** | `businessId`, `name`, `verified`, `avatarUrl?`, `category`, `what`, `itemType?`, `itemId?`, `date` (DONE reservations, newest first) | NP4 |
 
 *Screen ids with `*` cover all their states (for example, `TB2*` = TB2, TB2C, TB2E).*

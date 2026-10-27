@@ -48,7 +48,7 @@ Read in this order, then build:
   - `NP3` **written and tagged**: title **max 30** and description **max 100** characters (counters, shown at the caps so the longest case is checked at every size), the Tag icon white with a count badge.
   - `NP4` **Tag a place** (sheet): search places, or one tap on a visit (tags the place and what was booked there).
   - `EP1` **Edit post**: the same editor with the saved post (no Change video), **Delete video** bottom left, **Save** bottom right.
-  - `EP2` **Delete video** (sheet): the video and everything linked to it (title and description, tag, likes) are deleted for everyone.
+  - `EP2` **Delete video** (sheet): the video and everything linked to it (title and description, tag, engagement: views and likes) are deleted for everyone.
   - No hashtags, no people tags, no location, no tag pill on the video.
 
   Spec: [`docs/17-new-post.md`](docs/17-new-post.md). Small / medium / large references; components C57–C62; *Post* data in `docs/06`. The **+** on the host profile (HP) now opens NP1.

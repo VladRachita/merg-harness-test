@@ -78,7 +78,7 @@ Rules:
     - the video;
     - its title and description;
     - its tag;
-    - its likes.
+    - its engagement (views and likes).
 
     It cannot be undone. Then you go back to the profile. **X** or a tap on the dim area keeps the video.
 
@@ -156,7 +156,7 @@ A C13 bottom sheet over the dimmed EP1. Tapping the dim area or X goes back to E
 |---|---|
 | Head | "Delete this video?" 19/600 + X 22 (44 target) |
 | Line | "The video and everything linked to it are deleted for everyone. You can't undo this." 13.5 / 1.45 `text.secondary` |
-| **What is deleted** | 14 below: white card, radius 18, 1px `line.card`; rows min 56, padding `8 14`, gap 12, separators `line.rowSeparator`: circle 36 `bg.soft` + icon 18 · title 15/500 · line 12.5 `text.secondary` (1 line, ellipsis). **The video** (`video`, label only, no second line) · **Title and description** (`text`, the title) · **The tag** (`store`, "Maestro Host · Haircut"; hidden without a tag) · **Likes** (`heart`, "24 likes") |
+| **What is deleted** | 14 below: white card, radius 18, 1px `line.card`; rows min 56, padding `8 14`, gap 12, separators `line.rowSeparator`: circle 36 `bg.soft` + icon 18 · title 15/500 · line 12.5 `text.secondary` (1 line, ellipsis). **The video** (`video`, label only, no second line) · **Title and description** (`text`, the title) · **The tag** (`store`, "Maestro Host · Haircut"; hidden without a tag) · **Engagement** (`heart`, "Views and likes"; no counts) |
 | **Delete video** | 16 below: `action.danger` fill, white `trash-2` 20 + 16/500, 52 tall, radius 16, full width (C17 destructive confirm in a sheet) → the profile |
 
 The sheet fits without scrolling at every size.
@@ -187,10 +187,10 @@ Reused as they are:
 | NP2 / NP3 | **Change video** · "Add a title" · "Add a description" · "<n> / 30" · "<n> / 100" · "Tag" · "Add a title to publish" · "This is how people see it" · **Publish** |
 | NP4 | "Tag a place" · "A place, a service or a room. People open it from the Tag on your video." · "Search places" · "From your visits" · "<what> · <d Mon>" · **Done** |
 | EP1 | "Edit post" · **Delete video** · **Save** |
-| EP2 | "Delete this video?" · "The video and everything linked to it are deleted for everyone. You can't undo this." · "The video" · "Title and description" · "The tag" · "Likes" · "<n> likes" · **Delete video** |
+| EP2 | "Delete this video?" · "The video and everything linked to it are deleted for everyone. You can't undo this." · "The video" · "Title and description" · "The tag" · "Engagement" · "Views and likes" · **Delete video** |
 | Labels | "Close" · "Change video" · "Title, up to 30 characters" · "Description, up to 100 characters" · "Tag a place" / "Tagged: <place>, <item>" · "Verified" |
 
-The title and description are the person's own text and are not translated. The caps count characters as the person sees them (an emoji counts as one). Plurals ("1 like" / "24 likes") go through the localisation system.
+The title and description are the person's own text and are not translated. The caps count characters as the person sees them (an emoji counts as one).
 
 ## 10. Small / large phones
 
@@ -220,5 +220,5 @@ See `06-data-model.md` → *Post*:
 - [ ] Tag icon: dark without a tag; white with the green count badge with one; tap opens NP4.
 - [ ] NP4: search field, From your visits (newest first, with what was booked and the date), check to tag, Done. A visit tags the place and what was booked there; restaurants tag the place only; one tag per post.
 - [ ] EP1: "Edit post", no Change video, the saved text and tag, Delete video bottom left (danger on dark), Save bottom right.
-- [ ] EP2: the list of what is deleted, red Delete video; X or the dim area keeps the video. After deleting, the video, its title and description, its tag and its likes are gone for everyone.
+- [ ] EP2: the list of what is deleted, red Delete video; X or the dim area keeps the video. After deleting, the video, its title and description, its tag and its engagement (views and likes) are gone for everyone.
 - [ ] No hashtags, no people tags, no location, no tag pill on the video, no Cancel button.

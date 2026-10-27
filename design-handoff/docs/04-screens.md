@@ -199,7 +199,7 @@ Same screen with "Fresh cut for a sunny weekend!" (30 / 30) and a 100-character 
 Opens from More (⋯) → Edit on your own post. X · "Edit post" (no Change video) → the saved post: "Fresh cut for a sunny weekend!" (30 / 30), description (100 / 100), **Tag** white with "1" (→ NP4) → **Delete video** (→ EP2) · **Save** (→ the post).
 
 ### EP2-delete-video · Delete video (sheet)
-"Delete this video?" · "The video and everything linked to it are deleted for everyone. You can't undo this." → The video · Title and description · The tag · Maestro Host · Haircut · Likes · 24 likes → red **Delete video** (→ profile). X / dim → EP1.
+"Delete this video?" · "The video and everything linked to it are deleted for everyone. You can't undo this." → The video · Title and description · The tag · Maestro Host · Haircut · Engagement · Views and likes → red **Delete video** (→ profile). X / dim → EP1.
 
 ---
 

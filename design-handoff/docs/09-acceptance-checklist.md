@@ -68,5 +68,5 @@ Use this for every screen before calling it done.
 - [ ] **NP2/NP3**: the whole video with the frosted caption panel; title max 30 and description max 100 with counters; Publish greyed until there is a title; no tag pill on the video.
 - [ ] **NP4**: Tag sheet with search and From your visits (check to tag); the Tag icon turns white with the count badge.
 - [ ] **EP1**: "Edit post", no Change video, saved text and tag, Delete video (danger on dark) and Save on one row.
-- [ ] **EP2**: what is deleted (video, title and description, tag, likes), red Delete video; X or the dim area keeps it.
+- [ ] **EP2**: what is deleted (video, title and description, tag, engagement), no counts, red Delete video; X or the dim area keeps it.
 - [ ] Everything in `17-new-post.md` §12 (definition of done).
