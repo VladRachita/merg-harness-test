@@ -153,3 +153,18 @@ flowchart LR
 ```
 Rules (details in `15-my-activity.md` §1): Upcoming = WAITING + CONFIRMED; History = DONE, DECLINED (with the reason), CANCELLED; the host's Accept / Decline (§I) moves a row from Waiting to Confirmed or to History; rewards ready to use end soonest first and are used at the last booking step with that place; Rate only on unrated done visits; Book again on declined / cancelled.
 
+## K. Public — search
+
+```mermaid
+flowchart LR
+  NAV[Bottom nav · Search] --> SR1[SR1 Before you type]
+  SR1 -- type / recent --> SR3[SR3 All]
+  SR1 -- nothing found --> SR2[SR2 No results]
+  SR3 <-- tabs --> SR4[SR4 Videos]
+  SR3 <-- tabs --> SR5[SR5 Places]
+  SR3 <-- tabs --> SR6[SR6 Deals]
+  SR3 & SR5 -- place --> PROF[PS1 / PF1 / PA1]
+  SR3 & SR4 -- video --> VID[F2 / PA2]
+  SR3 & SR6 -- deal --> BOOK[F4C / F4E / TB2C / TB2E]
+```
+Rules (details in `16-search.md` §1): one field for places, videos and deals; results replace the start screen while typing, X goes back to SR1; tabs All · Videos · Places · Deals without counts (unselected greyed 0.4), the query stays across tabs; All is one mixed feed, best match first, and every list keeps loading; a place opens its profile by category; a video opens the item's video (services through the first-visit path, F2 → F3, since no team member is picked); a deal opens its booking with the deal already picked, on the first day it applies; deals end soonest first.

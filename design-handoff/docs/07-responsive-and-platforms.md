@@ -23,6 +23,7 @@ Card heights keep their aspect ratio with the column width:
 | Public video card | 1.676 | 265 | 290 | 324 |
 | Host video card | 1.769 | 279 | 306 | 341 |
 | Coupon ticket | 1.807 (stub fixed 50, media = rest) | 188 | 206 | 229 |
+| Deal card, 2 per row (search) | 1.676, as the public video card (stub fixed 76, media = rest) | 265 | 290 | 324 |
 | Video picker tile | 1.337 | 159 | 172 | 190 |
 
 Column width = (screen width − 2×16 − gaps) ÷ columns. Inside cards, keep top content anchored to the top, pills/panels anchored to the bottom, and the play button centred on the media area.
@@ -45,6 +46,7 @@ Column width = (screen width − 2×16 − gaps) ÷ columns. Inside cards, keep 
 - Customers & rewards screens (CR1, CR2, CR4, CR6–CR10) scroll under their pinned bottom button on small phones; CR3 and CR5 fit.
 - Reservations: on small phones RV1 scrolls under the nav, RV3 under its pinned Decline / Accept bar, RV5 scrolls; RV2 (two request cards), the RV4 sheet and RV6 fit. Names and items ellipsize before a status chip or "N people" would move.
 - My activity: on small phones MA2, MA3 and MA4 scroll under the tabs / top bar; MA1, MA5 and MA6 fit. On MA3 the decline / cancel reason wraps under its chip instead of being cut.
+- Search: on small phones SR3–SR6 scroll under the tabs (the nav stays pinned); SR1 and SR2 fit. Place names and status lines ellipsize; tabs, field and tiles keep their size. SR3's reference board is drawn taller (1731 / 1831 / 1967) to show one page of the feed.
 - Booking steps (TB1–TB3, F4 with offers) scroll under their pinned bottom bar at every size. On small phones the end of the content is under the fold in the references; that is expected.
 
 ## Safe areas

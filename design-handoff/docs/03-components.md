@@ -38,6 +38,8 @@ Build these once and reuse them. Values are for the **medium** phone (390 × 844
 | Accept / Decline | `check` / `x` | Copy email | `copy` |
 | Rewards (tab, from) | `gift` | History tab | `history` |
 | Book again | `repeat` | Waiting for an answer | `hourglass` |
+| Search field / no results | `search` | Recent search | `clock` |
+| Places tab (search) | `store` | Deals tab (search) | `ticket-percent` |
 
 Stroke 1.8 at 20–26 px, 2–2.4 at 12–16 px. Filled: play, phone, star, more dots.
 
@@ -90,6 +92,7 @@ Horizontal row, padding `14 16 0`, gap 4. Item 68 wide: avatar 52 (Everyone = in
 - **All** tile: ink background, `layout-grid` 18 top-left, label 12.5/600 + count 11 (white .8) at the bottom.
 - **Photo tile**: category image, bottom gradient 42–46 tall (`0 → rgba(0,0,0,.7)`), label + count bottom (left/right 9, bottom 7).
 - Selected: ring. Empty category (count 0): 0.4 and disabled.
+- Search Deals (SR6): plain icon tiles (All `layout-grid` · Events group icon · Coupons `percent`), 60 tall, white with 1px `line.card` at 0.4 when not selected, **no counts**. Spec: `16-search.md` §8.
 
 ## 7. Public video card (2 columns)
 - Height 290, radius 22, `dark.card` base, media full-bleed, **top scrim + bottom scrim** (tokens).
@@ -101,7 +104,8 @@ Horizontal row, padding `14 16 0`, gap 4. Item 68 wide: avatar 52 (Everyone = in
   - Services: `users` 15 + **N** · divider · `clock` 14 + "60 min" + `chevron-right` 14.
 - No-video variant: `dark.noVideo` background with the category icon (e.g. `scissors` 56, white .28) and no play button.
 - Tap play or pill → item video (or the booking step if there is no video — see flows).
-- Seen in: PA1, PS1, R1, F1.
+- Search variant (SR3, SR4): **the place's name** under the title (12.5, white .88, 1 line, ellipsis) instead of the avatar stack.
+- Seen in: PA1, PS1, R1, F1, SR3, SR4.
 
 ## 8. Host video card (2 columns)
 - Height 306, radius 22. Media full-bleed (no scrims). Play 44 at top 80 **or** "No video yet" (`video` 24 + 12/400 white .7) at top 76.
@@ -187,7 +191,7 @@ Full-bleed vertical video, video top & bottom scrims.
 - **Tear line** at the media bottom: two 14 px notches (page-bg circles with 1px `line.card` border, centred on the left/right card edges) + dashed 1.5 `line.outline` line inset 10.
 - **Stub** 50 tall, padding `0 9`, centred: title 12.5/600 **1 line, ellipsis** · facts 11/500 secondary: `hourglass` 12 + time left (**red** when "Today" or "1 day") · 1×11 divider · `ticket` 12 + quantity left.
 - No Event/Coupon label on the card (the filter tells the type).
-- Seen in: CE1.
+- Seen in: CE1. The 2-per-row version for search is C55.
 
 ## 17. Buttons
 | Button | Style |
@@ -336,3 +340,32 @@ Optional "Brand" tone: tile `#EEEAFD`, icon `#5B3FD6`. Default is Mono.
 ## 49. Faded reward ticket
 - C28 with the stub in `line.strong`, value and title in `text.secondary`, last line "Used · <date>" / "Ended · <date>". Not tappable.
 - Seen in: MA2.
+
+## 50. Search field
+- 52 tall, radius 14, white, padding `0 2 0 14`, gap 10: `search` 20 `text.secondary` · input 16 (placeholder `text.placeholder`) · clear `x` 18 `text.tertiary` in a 44 target, only with text. Border 1.5 `line.outline` when empty, `text.primary` when it has text.
+- Seen in: SR1–SR6. Full spec: `16-search.md` §2.
+
+## 51. Tabs, greyed variant
+- The CR1 / MA tabs with four equal columns: icon 20 + label 12.5, 56 tall, selected `text.primary` 500 + 2px underline; **unselected at opacity 0.4** (400). No counts.
+- Seen in: SR3–SR6 (All `layout-grid` · Videos `square-play` · Places `store` · Deals `ticket-percent`).
+
+## 52. Recent search row
+- Min 52, padding `4 4 4 14`, gap 12: `clock` 18 `text.tertiary` · query 15 (1 line, ellipsis; tap runs it) · remove `x` 16 in a 44 target. Heading "Recent" + **Clear all** (13/500 `brand.tintIcon`).
+- Seen in: SR1.
+
+## 53. No results card
+- White, radius 18, 1px `line.card`, padding `20 16`, centred: circle 52 `bg.soft` + `search` 24 · "No results for “<query>”" 18/700 · hint 13.5 / 1.45 `text.secondary` (max width 280).
+- Seen in: SR2.
+
+## 54. Place result row
+- Min 76, padding `12 8 12 14`, gap 12: avatar 48 (logo, or initial 17/600 on the place's colour) · name 15/600 + verified 16 · "<type> · <city>" 12.5 secondary, **no icon** · status line 12.5 (word 600 in the Opening status colour, or check-in for accommodation) · chevron. Whole row opens the profile.
+- Seen in: SR3, SR5.
+
+## 55. Deal card (2 per row)
+- C16 at the video-card height (290 at medium, scales like C7): radius 18; media = card − 76, play 40; sticker left 9 / bottom 8 (coupons only); tear line; stub 76, padding `0 12`: title 14.5/600 · place 12 secondary · `hourglass` 13 time left (red at Today / 1 day) | `ticket` 13 quantity left, 12/500.
+- Tap → the booking with the deal picked (F4C / F4E / TB2C / TB2E).
+- Seen in: SR3, SR6.
+
+## 56. Loading more
+- `role=status`, 44 tall, margin-top 16, gap 8: spinning ring 22 (track `line.divider`, arc `text.primary`) + "Loading more" 12.5 `text.secondary`. End of every infinite list.
+- Seen in: SR3–SR6.
