@@ -168,3 +168,17 @@ flowchart LR
   SR3 & SR6 -- deal --> BOOK[F4C / F4E / TB2C / TB2E]
 ```
 Rules (details in `16-search.md` §1): one field for places, videos and deals; results replace the start screen while typing, X goes back to SR1; tabs All · Videos · Places · Deals without counts (unselected greyed 0.4), the query stays across tabs; All is one mixed feed, best match first, and every list keeps loading; a place opens its profile by category; a video opens the item's video (services through the first-visit path, F2 → F3, since no team member is picked); a deal opens its booking with the deal already picked, on the first day it applies; deals end soonest first.
+
+## L. Profile — new post
+
+```mermaid
+flowchart LR
+  NAV[Bottom nav +] --> NP1[NP1 Pick a video]
+  NP1 -- Next --> NP2[NP2 On the video, empty]
+  NP2 -- type a title --> NP3[NP3 Written]
+  NP2 & NP3 -- Tag --> NP4[NP4 Tag a place]
+  NP4 -- Done --> NP3
+  NP2 & NP3 -- Change video --> NP1
+  NP3 -- Publish --> PROF[Own profile]
+```
+Rules (details in `17-new-post.md` §1): video first, one clip up to 100 MB, no Skip; title required (max 30), description optional (max 100), typing stops at the cap; Publish only with a title; a tag is a place, a service or a room (restaurants: the place only), picked from the person's visits or searched in the same sheet; the tag shows as the Tag icon on the side rail (white + count badge), never as a pill on the video; viewers open the tagged item from that icon. No hashtags, people tags or location.

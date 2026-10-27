@@ -10,6 +10,7 @@ Each screen: id → files, then top-to-bottom content, actions and data. "C#" re
 Top bar (back, settings) → C18 profile block → **Quick Actions** 4-column grid (Calendar, Bookings, Hours, Services, Coupons, Customers, Team) → icon tabs (Videos, Reviews, Events) → C9 bottom nav (Profile active).
 - The third icon tab (calendar) is **Reservations** → RV1, with the C35 amber badge = waiting requests (see `14-reservations.md`).
 - Services tile → HS1 (services hosts) or HR1 (accommodation hosts, label "Rooms").
+- **+** (Create post) in the bottom nav → NP1 New post (see `17-new-post.md`).
 - Team tile → TM1 (not linked in the canvas prototype; implement it).
 - Customers tile → CR1 (not linked in the canvas prototype; implement it).
 - Icon set rules: `../screens/reference/icon-set.html`.
@@ -175,6 +176,24 @@ One card: Maestro Host (verified, Barber & salon · Brașov, **Open now** · Clo
 
 ### SR6-deals · Deals tab
 Tiles **All** (selected) · Events · Coupons, no counts → 2 per row, ending soonest first: Haircut 15% OFF · Maestro Host · 1 day (red) · 20; Lunch 20% OFF · Maestro Bistro · 2 days · 50; Wine tasting · 4 days · 34; Late cuts · 8 days · 3 → note "Tap a deal to book with it…" → **Loading more**.
+
+---
+
+## Profile — new post
+
+Full spec, sizes and states: [`17-new-post.md`](17-new-post.md). Opens from the **+** in the bottom nav; anyone posts on their own profile. Summary:
+
+### NP1-pick-video · Pick a video
+C10 picker: "New post" · Recents · "Pick one clip · up to 100 MB" · one clip selected · "1 video · 0:24" · **Next** (→ NP2). No Skip.
+
+### NP2-empty · On the video, empty
+Full-screen video → X · **Change video** → Ana Ionescu · @ana.ionescu → caption panel "Add a title" · 0 / 30 · "Add a description" · 0 / 100 → **Tag** (dark) on the side rail → "Add a title to publish" · **Publish** greyed.
+
+### NP3-written · Written and tagged
+Same screen with "Fresh cut for a sunny weekend!" (30 / 30) and a 100-character description (100 / 100), **Tag** white with "1", "This is how people see it" · **Publish** (→ profile).
+
+### NP4-tag-place · Tag a place (sheet)
+"Tag a place" · "A place, a service or a room. People open it from the Tag on your video." → Search places → **From your visits**: Maestro Host · Haircut · 20 Oct (checked), Maestro Bistro · Table for 2 · 12 Oct, Maestro Rooms · Double Room · 28 Sep → **Done** (→ NP3).
 
 ---
 

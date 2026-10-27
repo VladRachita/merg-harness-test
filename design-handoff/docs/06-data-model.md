@@ -241,6 +241,32 @@ RecentSearch { query: "haircut brașov", searchedAt }   // this person's, newest
 - **Recent searches**: saved when results are shown; tapping one runs it again; remove one; clear all.
 - **Status line** (place row): SERVICES / FOOD_BEVERAGE use the Opening status rule; ACCOMMODATION shows "Check-in HH:MM · Check-out HH:MM".
 
+## Post (profile, any person)
+```ts
+Post {
+  id, authorUserId, publishedAt,
+  video: { url, thumbnailUrl, durationSec },       // one clip, up to 100 MB
+  title: "Fresh cut for a sunny weekend!",          // required, 1–30 characters
+  description?: string,                             // 0–100 characters
+  tag?: PostTag                                     // designs show one (open question #62)
+}
+PostTag {
+  businessId,                                       // the place
+  itemType?: "SERVICE" | "ROOM",                    // SERVICES → a service, ACCOMMODATION → a room; FOOD_BEVERAGE: none
+  itemId?
+}
+CreatePostRequest { videoUploadId, title, description?, tag?: PostTag }
+VisitForTag {                                       // "From your visits" (NP4): this person's DONE reservations, newest first
+  businessId, name, verified, avatarUrl?, category,
+  what: "Haircut" | "Table for 2" | "Double Room",  // Reservation.what
+  itemType?, itemId?,                               // what was booked, when it is a service or a room
+  date
+}
+```
+- Caps count characters as shown (an emoji counts as one); the server enforces them too.
+- Publish needs a title with at least one non-space character.
+- Viewer: `tag.itemId` → the service / room video (F2 / PA2); place only → the profile (PS1 / PF1 / PA1); no tag → no Tag icon.
+
 ## Display rules
 | Rule | Output |
 |---|---|

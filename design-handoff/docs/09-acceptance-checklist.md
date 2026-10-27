@@ -64,3 +64,7 @@ Use this for every screen before calling it done.
 - [ ] **SR5**: place rows without a category icon; verified badge only for verified places; status colour per the Opening status rule.
 - [ ] **SR6**: deals 2 per row, ending soonest first, tiles without counts; a deal opens F4C / F4E / TB2C / TB2E with the deal picked.
 - [ ] Everything in `16-search.md` §14 (definition of done).
+- [ ] **NP1**: the + opens the picker; one clip, up to 100 MB, no Skip.
+- [ ] **NP2/NP3**: the whole video with the frosted caption panel; title max 30 and description max 100 with counters; Publish greyed until there is a title; no tag pill on the video.
+- [ ] **NP4**: Tag sheet with search and From your visits (check to tag); the Tag icon turns white with the count badge.
+- [ ] Everything in `17-new-post.md` §10 (definition of done).
