@@ -195,6 +195,12 @@ Same screen with "Fresh cut for a sunny weekend!" (30 / 30) and a 100-character 
 ### NP4-tag-place · Tag a place (sheet)
 "Tag a place" · "A place, a service or a room. People open it from the Tag on your video." → Search places → **From your visits**: Maestro Host · Haircut · 20 Oct (checked), Maestro Bistro · Table for 2 · 12 Oct, Maestro Rooms · Double Room · 28 Sep → **Done** (→ NP3).
 
+### EP1-edit-post · Edit post
+Opens from More (⋯) → Edit on your own post. X · "Edit post" (no Change video) → the saved post: "Fresh cut for a sunny weekend!" (30 / 30), description (100 / 100), **Tag** white with "1" (→ NP4) → **Delete video** (→ EP2) · **Save** (→ the post).
+
+### EP2-delete-video · Delete video (sheet)
+"Delete this video?" · "The video and everything linked to it are deleted for everyone. You can't undo this." → The video · 0:24 · Title and description · The tag · Maestro Host · Haircut · Likes · 24 likes → red **Delete video** (→ profile). X / dim → EP1.
+
 ---
 
 ## Public — accommodation (Call only)

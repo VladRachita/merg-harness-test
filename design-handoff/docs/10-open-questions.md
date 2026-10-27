@@ -64,12 +64,3 @@
 | 59 | Deals at accommodation places | SR3, SR6 | Accommodation is Call only, so its coupons and events cannot be booked in the app. Proposal: they are not shown in search. Confirm. |
 | 60 | Matching | SR1–SR6 | Proposal: ignore diacritics ("brasov" finds "Brașov") and allow small typos. Not decided. |
 | 61 | Deal → which service | SR3, SR6 → F4C / F4E | F4C / F4E open on one service, but a coupon or event can apply to several (`appliesTo.serviceIds`). Proposal: with one service, open on it; with several, open the place's services list (F1) showing only those. Decide. |
-| 62 | **How many tags** | NP3, NP4 | The designs show one (badge "1"); the visit rows have checks. Proposal: up to 3, for a video that shows a stay and a restaurant. Decide. |
-| 63 | Tag a place never booked | NP4 | Search finds any place in the app; visits come first. Proposal: allowed. Decide whether only visited places can be tagged (more trustworthy). |
-| 64 | Search results in the Tag sheet | NP4 | Not drawn. Proposal: in the same list, places (C54 row without the status line), then their services or rooms (icon + name + "place · facts"); tap to tag. |
-| 65 | **What people see** | — | The published post is not drawn (removed by decision). Proposal: the R2 / PA2 overlay with the title, the full description, like, and the Tag icon on the side rail that opens the tagged item. No info bar and no Book. |
-| 66 | Video limits | NP1 | 100 MB is designed. Max length, formats, the upload progress and a failed upload are not designed. |
-| 67 | Close with text | NP2, NP3 | A discard confirmation is not designed. Proposal: the platform dialog "Discard post?". |
-| 68 | After Publish | NP3 | Where the post shows (proposal: first on the person's profile, Videos tab), the uploading state and a "Posted" message are not designed. |
-| 69 | Edit, delete, who can see | — | Editing or deleting a post, and whether posts are public, are not designed. |
-| 70 | The tagged business | NP4 | Whether the business is told it was tagged, and whether it can remove a tag, is not designed. |

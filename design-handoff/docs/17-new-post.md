@@ -6,6 +6,8 @@ The full spec of the **Profile · New post** page in the design canvas. Anyone u
 - optionally tag a **place**, a **service** or a **room**, so people can open it from the video;
 - Publish.
 
+Later they can **edit** the post, or **delete** the video and everything linked to it.
+
 It opens from the **+** in the bottom navigation. Read `01`–`07` first; this file only adds what is specific to these screens.
 
 **A post is general**, not a service or a room: the host's video-first service and room flows (HS1–HR4) stay as they are.
@@ -19,12 +21,15 @@ References for every screen at three sizes:
 | On the video, empty | `NP2-empty` | 2 · On the video: title and description still empty |
 | Written and tagged | `NP3-written` | 3 · Written at the caps (title 30, description 100) and tagged |
 | Tag a place (sheet) | `NP4-tag-place` | 4 · Tag a place (sheet): from your visits or search |
+| Edit post | `EP1-edit-post` | 5 · Edit post (More on your own post): title, description, tag · Delete video |
+| Delete video (sheet) | `EP2-delete-video` | 6 · Delete video (sheet): the video and everything linked to it |
 
 Decisions, so they are not added back:
 - **No #hashtags**, **no people tags or @mentions**, **no Location**. The post is on the person's own profile; a place tag already says where it was filmed.
 - **No Cancel button**: the X closes. **No empty "Upload video" box**: the + opens the gallery (video first).
 - **No tag pill on the video.** A tag shows only as the **Tag** icon on the side rail (white with a count badge).
 - **No extra screens** for searching a place or picking its service: both happen inside the Tag sheet.
+- **The video can't be changed after publishing.** Edit post changes the title, the description and the tag; to use another video, delete and post again.
 
 ---
 
@@ -39,7 +44,12 @@ flowchart LR
   NP4 -- Done --> NP3
   NP2 & NP3 -- Change video --> NP1
   NP3 -- Publish --> PROF[Own profile]
-  NP2 & NP3 -- X --> PROF
+  POST[Your post · More] -- Edit --> EP1[EP1 Edit post]
+  EP1 -- Tag --> NP4
+  EP1 -- Save --> PROF
+  EP1 -- Delete video --> EP2[EP2 Delete video]
+  EP2 -- Delete video --> PROF
+  EP2 -- X --> EP1
 ```
 
 Rules:
@@ -52,19 +62,25 @@ Rules:
    - a **service** at a services place;
    - a **room** at an accommodation.
 
-   Food & beverage places are tagged as the place only.
+   Food & beverage places are tagged as the place only. **One tag per post.**
 6. **From your visits** (NP4) lists this person's done visits, newest first: one row per place, with what was booked and the date. Tapping a row tags the place **and** what was booked there (a table tags the place). Tapping it again removes the tag.
-7. **Search places** filters inside the same sheet: places, then their services or rooms as rows. Tap one to tag it. The results list is not drawn (`10` #64).
+7. **Search places** filters inside the same sheet. It shows places as the Search place rows (C54 without the status line), each followed by its services or rooms (icon + name + "place · facts"). Tap one to tag it. Any place in the app can be tagged; visits only come first.
 8. **The Tag icon** on the side rail:
    - dark when nothing is tagged;
    - white with a green count badge once something is tagged ("1").
 
    Tapping it opens NP4.
-9. **What people see.** The published post shows the title, the description, and the **Tag** icon on the side rail. Tapping it opens the tagged service or room video (F2 / PA2) or the place's profile (PS1 / PF1 / PA1). Without a tag, there is no Tag icon. This screen is not drawn (`10` #65).
+9. **What people see.** The published post opens in the existing video overlay (R2 / PA2 look) with the title, the full description, like, and the **Tag** icon on the side rail. There is no info bar and no Book. The Tag icon opens the tagged service or room video (F2 / PA2) or the place's profile (PS1 / PF1 / PA1). Without a tag, there is no Tag icon.
 10. **The + opens NP1** from every screen that shows the bottom navigation. In the canvas prototype it is wired on the profile (HP).
-11. **X** closes and goes back to the profile. A discard confirmation when there is text is not designed (`10` #67).
+11. **X** closes and goes back to the profile.
+12. **Edit post (EP1)** opens from **More (⋯) → Edit** on your own post. It is the same editor with the saved title, description and tag. **Save** stores the changes and goes back to the post.
+13. **Delete video** (EP1, bottom left) opens **EP2**, which says what is deleted. **Delete video** there deletes, for everyone:
+    - the video;
+    - its title and description;
+    - its tag;
+    - its likes.
 
-Not designed yet, do not invent: `10-open-questions.md` #62–#70 (how many tags, tagging places never booked, search results in the sheet, what people see, video limits, discard, after Publish, edit / delete, the tagged business).
+    It cannot be undone. Then you go back to the profile. **X** or a tap on the dim area keeps the video.
 
 ## 2. NP1 · Pick a video
 
@@ -117,11 +133,35 @@ A C13 bottom sheet over the dimmed editor (`rgba(0,0,0,0.45)`; tap → close).
 | Search | 14 below: field 52, radius 14, 1.5 `line.outline`, `search` 20 `text.secondary`, placeholder "Search places" 16 |
 | From your visits | heading 13/600 (`16 4 4`); rows full width of the sheet |
 | **Visit row** | min 64, padding `8 12 8 14`, gap 12, separators `line.rowSeparator`: avatar 40 (logo, or initial on the place's colour) · name 15/600 (1 line, ellipsis) + verified 16 · `calendar` 13 + "<what> · <d Mon>" 12.5 `text.secondary` · check 26 (on: `status.success` circle with a white check; off: 2px `line.strong` ring). `role=checkbox`. |
-| Done | 14 below: ink 52, radius 16, 16/500 → back to the editor |
+| Done | 14 below: ink 52, radius 16, 16/500 → back to the editor (NP3, or EP1 when editing) |
 
 The sheet fits without scrolling at every size (3 visits). With more visits the list scrolls inside the sheet (max height = screen − 64).
 
-## 6. New components
+## 6. EP1 · Edit post
+
+C57 with these differences:
+
+| Part | Spec |
+|---|---|
+| Top | X (as NP2) → back to the post · "Edit post" 16/500 white, centred, text-shadow. **No Change video.** |
+| Caption panel and Tag tool | as NP3, filled with the saved title, description and tag; same caps and counters |
+| **Delete video** (C61) | bottom row left: pill 52, radius 26, padding `0 18 0 14`, 1px `rgba(255,255,255,0.22)`, `rgba(0,0,0,0.45)`, `trash-2` 19 + "Delete video" 15/500 in `status.dangerOnDark` → EP2 |
+| **Save** | bottom row right: the white pill of Publish with `check` 20 + "Save" 16/500 → back to the post |
+
+## 7. EP2 · Delete video (C62)
+
+A C13 bottom sheet over the dimmed EP1. Tapping the dim area or X goes back to EP1.
+
+| Part | Spec |
+|---|---|
+| Head | "Delete this video?" 19/600 + X 22 (44 target) |
+| Line | "The video and everything linked to it are deleted for everyone. You can't undo this." 13.5 / 1.45 `text.secondary` |
+| **What is deleted** | 14 below: white card, radius 18, 1px `line.card`; rows min 56, padding `8 14`, gap 12, separators `line.rowSeparator`: circle 36 `bg.soft` + icon 18 · title 15/500 · line 12.5 `text.secondary` (1 line, ellipsis). **The video** (`video`, its length "0:24") · **Title and description** (`text`, the title) · **The tag** (`store`, "Maestro Host · Haircut"; hidden without a tag) · **Likes** (`heart`, "24 likes") |
+| **Delete video** | 16 below: `action.danger` fill, white `trash-2` 20 + 16/500, 52 tall, radius 16, full width (C17 destructive confirm in a sheet) → the profile |
+
+The sheet fits without scrolling at every size.
+
+## 8. New components
 
 | # | Component | Spec |
 |---|---|---|
@@ -129,42 +169,56 @@ The sheet fits without scrolling at every size (3 visits). With more visits the 
 | C58 | **Caption panel** | §3 — frosted panel; title (30) and description (100) fields that grow; divider with the title counter; description counter |
 | C59 | **Tag tool** | §4 — rail button 44 with `store`, dark or white, count badge, label "Tag" |
 | C60 | **Tag sheet** | §5 — C13 sheet: search field, From your visits rows with a check, Done |
+| C61 | **Delete video button on the video** | §6 — dark translucent pill, `trash-2` + label in `status.dangerOnDark` |
+| C62 | **Delete sheet** | §7 — C13 sheet: question, one line, the list of what is deleted, red Delete video |
 
 Reused as they are:
 - C10 video picker;
 - C13 bottom sheet;
+- C17 destructive confirm in a sheet;
 - the verified badge;
 - the poster avatar from the video overlays (R2).
 
-## 7. Copy (EN)
+## 9. Copy (EN)
 
 | Where | Copy |
 |---|---|
 | NP1 | "New post" · "Recents" · "Pick one clip · up to 100 MB" · "1 video · <m:ss>" · **Next** |
 | NP2 / NP3 | **Change video** · "Add a title" · "Add a description" · "<n> / 30" · "<n> / 100" · "Tag" · "Add a title to publish" · "This is how people see it" · **Publish** |
 | NP4 | "Tag a place" · "A place, a service or a room. People open it from the Tag on your video." · "Search places" · "From your visits" · "<what> · <d Mon>" · **Done** |
+| EP1 | "Edit post" · **Delete video** · **Save** |
+| EP2 | "Delete this video?" · "The video and everything linked to it are deleted for everyone. You can't undo this." · "The video" · "Title and description" · "The tag" · "Likes" · "<n> likes" · **Delete video** |
 | Labels | "Close" · "Change video" · "Title, up to 30 characters" · "Description, up to 100 characters" · "Tag a place" / "Tagged: <place>, <item>" · "Verified" |
 
-The title and description are the person's own text and are not translated. The caps count characters as the person sees them (an emoji counts as one).
+The title and description are the person's own text and are not translated. The caps count characters as the person sees them (an emoji counts as one). Plurals ("1 like" / "24 likes") go through the localisation system.
 
-## 8. Small / large phones
+## 10. Small / large phones
 
 - Everything is placed from the edges. The caption panel is the screen width − 92, so the fields wrap earlier on small phones.
-- **Small (360 × 640)**: the 30-character title still fits on one line and the 100-character description on three. The panel and poster sit higher; nothing changes size. The NP4 sheet fits.
+- **Small (360 × 640)**:
+  - the 30-character title still fits on one line and the 100-character description on three;
+  - the panel and poster sit higher; nothing changes size;
+  - on EP1, Delete video and Save share the bottom row;
+  - the NP4 and EP2 sheets fit.
 - **Large (430 × 932)**: same layout with more video above the caption.
 - NP1 tiles scale with the column width (159 / 172 / 190).
 
-## 9. Data
+## 11. Data
 
-See `06-data-model.md` → *Post*: the post with its title, description, video and optional tag, the create request, and the visits that feed **From your visits**.
+See `06-data-model.md` → *Post*:
+- the post with its title, description, video and optional tag;
+- the create, update and delete requests;
+- the visits that feed **From your visits**.
 
-## 10. Definition of done for this page
+## 12. Definition of done for this page
 
-- [ ] NP1–NP4 match their screenshots at small, medium and large (overlay at 50 %: no shifted or resized elements).
+- [ ] NP1–NP4, EP1 and EP2 match their screenshots at small, medium and large (overlay at 50 %: no shifted or resized elements).
 - [ ] The + in the bottom navigation opens NP1. One clip, up to 100 MB, no Skip; Next → NP2.
 - [ ] The editor is the whole video: X, Change video, poster, frosted caption panel, Tag on the side rail, Publish bottom right.
 - [ ] Title max 30, description max 100: typing stops at the cap, counters "n / 30" (on the divider) and "n / 100". At the caps the title is one line and the description three, at every size.
 - [ ] Publish is greyed with "Add a title to publish" until there is a title.
 - [ ] Tag icon: dark without a tag; white with the green count badge with one; tap opens NP4.
-- [ ] NP4: search field, From your visits (newest first, with what was booked and the date), check to tag, Done. A visit tags the place and what was booked there; restaurants tag the place only.
+- [ ] NP4: search field, From your visits (newest first, with what was booked and the date), check to tag, Done. A visit tags the place and what was booked there; restaurants tag the place only; one tag per post.
+- [ ] EP1: "Edit post", no Change video, the saved text and tag, Delete video bottom left (danger on dark), Save bottom right.
+- [ ] EP2: the list of what is deleted, red Delete video; X or the dim area keeps the video. After deleting, the video, its title and description, its tag and its likes are gone for everyone.
 - [ ] No hashtags, no people tags, no location, no tag pill on the video, no Cancel button.

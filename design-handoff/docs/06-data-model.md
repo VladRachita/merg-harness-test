@@ -248,7 +248,7 @@ Post {
   video: { url, thumbnailUrl, durationSec },       // one clip, up to 100 MB
   title: "Fresh cut for a sunny weekend!",          // required, 1–30 characters
   description?: string,                             // 0–100 characters
-  tag?: PostTag                                     // designs show one (open question #62)
+  tag?: PostTag                                     // one tag per post
 }
 PostTag {
   businessId,                                       // the place
@@ -256,6 +256,8 @@ PostTag {
   itemId?
 }
 CreatePostRequest { videoUploadId, title, description?, tag?: PostTag }
+UpdatePostRequest { title, description?, tag?: PostTag | null }   // EP1 Save; null removes the tag; the video can't change
+DeletePost { postId }                                              // EP2: deletes the video file, title, description, tag and likes
 VisitForTag {                                       // "From your visits" (NP4): this person's DONE reservations, newest first
   businessId, name, verified, avatarUrl?, category,
   what: "Haircut" | "Table for 2" | "Double Room",  // Reservation.what
@@ -266,6 +268,8 @@ VisitForTag {                                       // "From your visits" (NP4):
 - Caps count characters as shown (an emoji counts as one); the server enforces them too.
 - Publish needs a title with at least one non-space character.
 - Viewer: `tag.itemId` → the service / room video (F2 / PA2); place only → the profile (PS1 / PF1 / PA1); no tag → no Tag icon.
+- Only the author can edit or delete a post. Delete is permanent and removes everything linked to the post for everyone.
+- EP2 shows the video length (`video.durationSec`), the title, the tag (place · item) and the likes count.
 
 ## Display rules
 | Rule | Output |

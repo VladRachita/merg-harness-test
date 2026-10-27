@@ -180,5 +180,9 @@ flowchart LR
   NP4 -- Done --> NP3
   NP2 & NP3 -- Change video --> NP1
   NP3 -- Publish --> PROF[Own profile]
+  POST[Your post · More] -- Edit --> EP1[EP1 Edit post]
+  EP1 -- Save --> PROF
+  EP1 -- Delete video --> EP2[EP2 Delete video]
+  EP2 -- Delete video --> PROF
 ```
-Rules (details in `17-new-post.md` §1): video first, one clip up to 100 MB, no Skip; title required (max 30), description optional (max 100), typing stops at the cap; Publish only with a title; a tag is a place, a service or a room (restaurants: the place only), picked from the person's visits or searched in the same sheet; the tag shows as the Tag icon on the side rail (white + count badge), never as a pill on the video; viewers open the tagged item from that icon. No hashtags, people tags or location.
+Rules (details in `17-new-post.md` §1): video first, one clip up to 100 MB, no Skip; title required (max 30), description optional (max 100), typing stops at the cap; Publish only with a title; a tag is a place, a service or a room (restaurants: the place only), picked from the person's visits or searched in the same sheet; the tag shows as the Tag icon on the side rail (white + count badge), never as a pill on the video; viewers open the tagged item from that icon; one tag per post. Edit post changes the title, description and tag (not the video); Delete video deletes the video and everything linked to it (title, description, tag, likes) for everyone, after the EP2 confirmation. No hashtags, people tags or location.

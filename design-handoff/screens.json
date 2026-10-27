@@ -1427,6 +1427,71 @@
       ]
     },
     {
+      "id": "EP1-edit-post",
+      "area": "profile-new-post",
+      "title": "Profile · Edit post",
+      "purpose": "Your published post on the same editor: change the title, description or tag; Delete video bottom left, Save bottom right.",
+      "source": "EP-Edit.dc.html",
+      "files": {
+        "small": {
+          "html": "screens/small/ep1-edit-post.html",
+          "png": "screenshots/small/ep1-edit-post.png",
+          "width": 360,
+          "height": 640
+        },
+        "medium": {
+          "html": "screens/medium/ep1-edit-post.html",
+          "png": "screenshots/medium/ep1-edit-post.png",
+          "width": 390,
+          "height": 844
+        },
+        "large": {
+          "html": "screens/large/ep1-edit-post.html",
+          "png": "screenshots/large/ep1-edit-post.png",
+          "width": 430,
+          "height": 932
+        }
+      },
+      "links_to": [
+        "ep2-delete-video",
+        "hp-profile",
+        "np4-tag-place"
+      ]
+    },
+    {
+      "id": "EP2-delete-video",
+      "area": "profile-new-post",
+      "title": "Profile · Delete video (sheet)",
+      "purpose": "Delete this video? The video and everything linked to it (title and description, the tag, likes) are deleted for everyone; red Delete video.",
+      "source": "EP-Delete.dc.html",
+      "files": {
+        "small": {
+          "html": "screens/small/ep2-delete-video.html",
+          "png": "screenshots/small/ep2-delete-video.png",
+          "width": 360,
+          "height": 640
+        },
+        "medium": {
+          "html": "screens/medium/ep2-delete-video.html",
+          "png": "screenshots/medium/ep2-delete-video.png",
+          "width": 390,
+          "height": 844
+        },
+        "large": {
+          "html": "screens/large/ep2-delete-video.html",
+          "png": "screenshots/large/ep2-delete-video.png",
+          "width": 430,
+          "height": 932
+        }
+      },
+      "links_to": [
+        "ep1-edit-post",
+        "ep2-delete-video",
+        "hp-profile",
+        "np4-tag-place"
+      ]
+    },
+    {
       "id": "PA1-profile-rooms",
       "area": "public-accommodation",
       "title": "Public · Accommodation profile · Rooms",
