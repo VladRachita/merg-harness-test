@@ -245,7 +245,7 @@ RecentSearch { query: "haircut brașov", searchedAt }   // this person's, newest
 ```ts
 Post {
   id, authorUserId, publishedAt,
-  video: { url, thumbnailUrl, durationSec },       // one clip, up to 100 MB
+  video: { url, thumbnailUrl },                    // one clip, up to 100 MB; its length is not measured
   title: "Fresh cut for a sunny weekend!",          // required, 1–30 characters
   description?: string,                             // 0–100 characters
   tag?: PostTag                                     // one tag per post
@@ -269,7 +269,7 @@ VisitForTag {                                       // "From your visits" (NP4):
 - Publish needs a title with at least one non-space character.
 - Viewer: `tag.itemId` → the service / room video (F2 / PA2); place only → the profile (PS1 / PF1 / PA1); no tag → no Tag icon.
 - Only the author can edit or delete a post. Delete is permanent and removes everything linked to the post for everyone.
-- EP2 shows the video length (`video.durationSec`), the title, the tag (place · item) and the likes count.
+- EP2 shows the title, the tag (place · item) and the likes count; "The video" has no length.
 
 ## Display rules
 | Rule | Output |

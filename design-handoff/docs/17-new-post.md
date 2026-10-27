@@ -156,7 +156,7 @@ A C13 bottom sheet over the dimmed EP1. Tapping the dim area or X goes back to E
 |---|---|
 | Head | "Delete this video?" 19/600 + X 22 (44 target) |
 | Line | "The video and everything linked to it are deleted for everyone. You can't undo this." 13.5 / 1.45 `text.secondary` |
-| **What is deleted** | 14 below: white card, radius 18, 1px `line.card`; rows min 56, padding `8 14`, gap 12, separators `line.rowSeparator`: circle 36 `bg.soft` + icon 18 · title 15/500 · line 12.5 `text.secondary` (1 line, ellipsis). **The video** (`video`, its length "0:24") · **Title and description** (`text`, the title) · **The tag** (`store`, "Maestro Host · Haircut"; hidden without a tag) · **Likes** (`heart`, "24 likes") |
+| **What is deleted** | 14 below: white card, radius 18, 1px `line.card`; rows min 56, padding `8 14`, gap 12, separators `line.rowSeparator`: circle 36 `bg.soft` + icon 18 · title 15/500 · line 12.5 `text.secondary` (1 line, ellipsis). **The video** (`video`, label only, no second line) · **Title and description** (`text`, the title) · **The tag** (`store`, "Maestro Host · Haircut"; hidden without a tag) · **Likes** (`heart`, "24 likes") |
 | **Delete video** | 16 below: `action.danger` fill, white `trash-2` 20 + 16/500, 52 tall, radius 16, full width (C17 destructive confirm in a sheet) → the profile |
 
 The sheet fits without scrolling at every size.
