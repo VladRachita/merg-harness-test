@@ -241,6 +241,36 @@ RecentSearch { query: "haircut brașov", searchedAt }   // this person's, newest
 - **Recent searches**: saved when results are shown; tapping one runs it again; remove one; clear all.
 - **Status line** (place row): SERVICES / FOOD_BEVERAGE use the Opening status rule; ACCOMMODATION shows "Check-in HH:MM · Check-out HH:MM".
 
+## Post (profile, any person)
+```ts
+Post {
+  id, authorUserId, publishedAt,
+  video: { url, thumbnailUrl },                    // one clip, up to 100 MB; its length is not measured
+  title: "Fresh cut for a sunny weekend!",          // required, 1–30 characters
+  description?: string,                             // 0–100 characters
+  tag?: PostTag                                     // one tag per post
+}
+PostTag {
+  businessId,                                       // the place
+  itemType?: "SERVICE" | "ROOM",                    // SERVICES → a service, ACCOMMODATION → a room; FOOD_BEVERAGE: none
+  itemId?
+}
+CreatePostRequest { videoUploadId, title, description?, tag?: PostTag }
+UpdatePostRequest { title, description?, tag?: PostTag | null }   // EP1 Save; null removes the tag; the video can't change
+DeletePost { postId }                                              // EP2: deletes the video file, title, description, tag and engagement (views, likes)
+VisitForTag {                                       // "From your visits" (NP4): this person's DONE reservations, newest first
+  businessId, name, verified, avatarUrl?, category,
+  what: "Haircut" | "Table for 2" | "Double Room",  // Reservation.what
+  itemType?, itemId?,                               // what was booked, when it is a service or a room
+  date
+}
+```
+- Caps count characters as shown (an emoji counts as one); the server enforces them too.
+- Publish needs a title with at least one non-space character.
+- Viewer: `tag.itemId` → the service / room video (F2 / PA2); place only → the profile (PS1 / PF1 / PA1); no tag → no Tag icon.
+- Only the author can edit or delete a post. Delete is permanent and removes everything linked to the post for everyone.
+- EP2 shows the title and the tag (place · item); "The video" and "Engagement · Views and likes" are labels with no length and no counts.
+
 ## Display rules
 | Rule | Output |
 |---|---|

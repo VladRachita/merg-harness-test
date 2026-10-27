@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Edit post</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+
+
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+button,input,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+a{color:inherit}
+::placeholder{color:#6E6A78;opacity:1}
+input:focus,textarea:focus{outline:none}
+.col{scrollbar-width:none}
+.col::-webkit-scrollbar{display:none}
+.col > *{flex-shrink:0}
+.dark ::placeholder{color:rgba(255,255,255,0.7)}
+.ph:empty::before{content:attr(data-placeholder);color:rgba(255,255,255,0.7)}
+.ph:focus{outline:none}
+</style>
+
+<div style="position: relative; width: 390px; height: 844px; box-sizing: border-box; display: flex; flex-direction: column; overflow: hidden; background: linear-gradient(160deg, #5A4A63 0%, #2E2535 50%, #141016 100%); color: #FFFFFF; font-family: Roboto, system-ui, -apple-system, 'Segoe UI', sans-serif">
+  <span aria-hidden="true" style="position: absolute; left: 0; right: 0; top: 0; height: 140px; background: linear-gradient(to bottom, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0) 100%)"></span>
+  <span aria-hidden="true" style="position: absolute; left: 0; right: 0; bottom: 0; height: 460px; background: linear-gradient(to bottom, rgba(0,0,0,0) 0%, rgba(0,0,0,0.35) 35%, rgba(0,0,0,0.8) 100%)"></span>
+  <div class="dark" style="position: absolute; inset: 0">
+  <div style="position: absolute; top: 40px; left: 8px; right: 8px; height: 44px; display: flex; align-items: center; justify-content: space-between">
+    <a href="hp-profile.html" aria-label="Close" style="width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; color: #FFFFFF"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex-shrink: 0; filter: drop-shadow(0 1px 2px rgba(0,0,0,0.5))"><path d="M18 6L6 18"></path><path d="M6 6l12 12"></path></svg></a>
+    <h1 style="position: absolute; left: 60px; right: 60px; top: 0; height: 44px; margin: 0; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 500; text-shadow: 0 1px 3px rgba(0,0,0,0.5)">Edit post</h1>
+  </div>
+  <div aria-label="Tools" style="position: absolute; right: 8px; bottom: 116px; width: 60px; display: flex; flex-direction: column; align-items: center; gap: 10px">
+    <a href="np4-tag-place.html" style="position: relative; width: 60px; text-decoration: none; color: #FFFFFF; display: flex; flex-direction: column; align-items: center; gap: 4px">
+      <span style="width: 44px; height: 44px; border-radius: 50%; background: #FFFFFF; color: #1D1B22; display: flex; align-items: center; justify-content: center"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex-shrink: 0"><path d="M3 9l1.6-5h14.8L21 9"></path><path d="M4 9v11h16V9"></path><path d="M3 9h18"></path><path d="M10 20v-5h4v5"></path></svg></span><span aria-hidden="true" style="position: absolute; top: -3px; right: 5px; min-width: 18px; height: 18px; padding: 0 5px; box-sizing: border-box; border-radius: 9px; background: #1F8A55; color: #FFFFFF; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700">1</span>
+      <span style="font-size: 12px; font-weight: 500; text-shadow: 0 1px 2px rgba(0,0,0,0.6)">Tag</span>
+    </a>
+  </div>
+  <div style="position: absolute; left: 12px; right: 80px; bottom: 112px; display: flex; flex-direction: column; gap: 10px; text-shadow: 0 1px 3px rgba(0,0,0,0.5)">
+    <div style="margin-left: 4px; display: flex; align-items: center; gap: 10px">
+      <span style="width: 36px; height: 36px; flex-shrink: 0; border-radius: 50%; background: #5A4A63; display: flex; align-items: center; justify-content: center; font-size: 15px; font-weight: 600; text-shadow: none">A</span>
+      <span style="min-width: 0; display: flex; flex-direction: column"><span style="font-size: 14px; font-weight: 600">Ana Ionescu</span><span style="font-size: 12px; color: rgba(255,255,255,0.8)">@ana.ionescu</span></span>
+    </div>
+    <div style="padding: 10px 12px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.22); background: rgba(20,18,24,0.55); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); display: flex; flex-direction: column; gap: 4px; text-shadow: none">
+      <div id="d-title" class="ph" role="textbox" aria-label="Title, up to 30 characters" contenteditable="true" data-placeholder="Add a title" data-max="30" style="font-size: 16px; line-height: 1.3; font-weight: 600; color: #FFFFFF; overflow-wrap: anywhere">Fresh cut for a sunny weekend!</div>
+      <div aria-hidden="true" style="margin: 4px 0; display: flex; align-items: center; gap: 8px"><span style="flex: 1 1 auto; height: 1px; background: rgba(255,255,255,0.22)"></span><span style="font-size: 11.5px; color: rgba(255,255,255,0.65)">30 / 30</span></div>
+      <div id="d-desc" class="ph" role="textbox" aria-label="Description, up to 100 characters" aria-multiline="true" contenteditable="true" data-placeholder="Add a description" data-max="100" style="font-size: 14px; line-height: 1.4; color: rgba(255,255,255,0.9); overflow-wrap: anywhere">Loved the result, done in an hour. Clean fade, sharp line-up and a great chat. Will book again soon.</div>
+      <span aria-hidden="true" style="align-self: flex-end; margin-top: 2px; font-size: 11.5px; color: rgba(255,255,255,0.65)">100 / 100</span>
+    </div>
+  </div>
+  <div style="position: absolute; left: 16px; right: 16px; bottom: 28px; display: flex; align-items: center; gap: 12px">
+    <a href="ep2-delete-video.html" style="flex-shrink: 0; height: 52px; box-sizing: border-box; padding: 0 18px 0 14px; border-radius: 26px; border: 1px solid rgba(255,255,255,0.22); background: rgba(0,0,0,0.45); color: #FFB4AB; display: flex; align-items: center; gap: 8px; text-decoration: none; font-size: 15px; font-weight: 500"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex-shrink: 0"><path d="M3 6h18"></path><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"></path><path d="M10 11v6"></path><path d="M14 11v6"></path></svg>Delete video</a><span style="flex: 1 1 auto"></span>
+    <a href="hp-profile.html" style="height: 52px; padding: 0 24px 0 20px; border-radius: 26px; background: #FFFFFF; color: #1D1B22; display: flex; align-items: center; gap: 8px; text-decoration: none; font-size: 16px; font-weight: 500"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex-shrink: 0"><path d="M20 6L9 17l-5-5"></path></svg>Save</a>
+  </div>
+  </div>
+</div>
+
+
+</body>
+</html>

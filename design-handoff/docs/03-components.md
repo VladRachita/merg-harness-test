@@ -40,6 +40,9 @@ Build these once and reuse them. Values are for the **medium** phone (390 × 844
 | Book again | `repeat` | Waiting for an answer | `hourglass` |
 | Search field / no results | `search` | Recent search | `clock` |
 | Places tab (search) | `store` | Deals tab (search) | `ticket-percent` |
+| Tag a place (new post) | `store` | Change video | `refresh-cw` |
+| Publish (new post) | `upload` | Title and description (delete list) | `text` |
+| Save (edit post) | `check` | Delete video | `trash-2` |
 
 Stroke 1.8 at 20–26 px, 2–2.4 at 12–16 px. Filled: play, phone, star, more dots.
 
@@ -122,7 +125,7 @@ Horizontal row, padding `14 16 0`, gap 4. Item 68 wide: avatar 52 (Everyone = in
 - Sub-header 48: "Recents ▾" button + hint 13 white .62 ("Pick a clip that shows the service" / "…the room").
 - Grid 3 columns, gap 2, tiles 172 tall; duration 12/500 bottom-right; selection circle 24 top-right (unselected: 1.5 border white .85; selected: white circle with ink check + inset 3px white frame on the tile). **Single selection.**
 - Bottom: "1 video · 0:24" 14 white .72 + **Next** (white pill 48, radius 24, ink 16/500). No record, no edit.
-- Seen in: HS2, HR2.
+- Seen in: HS2, HR2, NP1 (title "New post", hint "Pick one clip · up to 100 MB", **no Skip**).
 
 ## 11. Host form
 Header (back + title; edit screens add red trash). Then, gap 12:
@@ -369,3 +372,28 @@ Optional "Brand" tone: tile `#EEEAFD`, icon `#5B3FD6`. Default is Mono.
 ## 56. Loading more
 - `role=status`, 44 tall, margin-top 16, gap 8: spinning ring 22 (track `line.divider`, arc `text.primary`) + "Loading more" 12.5 `text.secondary`. End of every infinite list.
 - Seen in: SR3–SR6.
+
+## 57. Post editor on the video
+- The whole screen is the picked video: top scrim 140, bottom scrim 460; X (top 40, left 8) → profile; **Change video** pill top right (34, radius 17, `rgba(0,0,0,.4)`, `refresh-cw` 15 + 13/500) → NP1; poster (avatar 36, name 14/600, "@username" 12); C58 caption panel; C59 Tag tool on the side rail; bottom row: hint 13 white .8 + **Publish** white pill 52 (radius 26, `upload` 20 + 16/500), disabled at 0.4 until there is a title.
+- Seen in: NP2, NP3 (and behind NP4); EP1 uses it with "Edit post" centred instead of Change video, C61 bottom left and **Save** (`check`) instead of Publish. Full spec: `17-new-post.md` §3, §6.
+
+## 58. Caption panel
+- Left 12, right 80, bottom 112; padding `10 12`, radius 16, 1px `rgba(255,255,255,.22)`, frosted `rgba(20,18,24,.55)` + blur 12.
+- Title field 16/600 (max **30**) · divider row: 1px line + "n / 30" 11.5 white .65 · description 14 / 1.4 white .9 (max **100**) · "n / 100" right. Fields grow with the text; placeholders "Add a title" / "Add a description" white .7.
+- Seen in: NP2, NP3.
+
+## 59. Tag tool
+- Side rail button: circle 44, `store` 21; dark `rgba(0,0,0,.4)` + white icon without a tag, white + ink icon with one; badge 18 `status.success` with the count (11/700 white); label "Tag" 12/500. Opens C60.
+- Seen in: NP2, NP3.
+
+## 60. Tag sheet
+- C13 sheet: "Tag a place" 19/600 + X · line 13 secondary · search field 52 (`search`, "Search places") · "From your visits" 13/600 · visit rows min 64 (avatar 40 · name 15/600 + verified · `calendar` 13 + "what · d Mon" · check 26) · **Done** ink 52.
+- Seen in: NP4. Full spec: `17-new-post.md` §5.
+
+## 61. Delete video button on the video
+- Bottom row left on EP1: pill 52, radius 26, padding `0 18 0 14`, 1px `rgba(255,255,255,.22)`, `rgba(0,0,0,.45)`; `trash-2` 19 + "Delete video" 15/500 in `status.dangerOnDark`. Opens C62.
+- Seen in: EP1. Full spec: `17-new-post.md` §6.
+
+## 62. Delete sheet
+- C13 sheet: "Delete this video?" 19/600 + X · one line 13.5 secondary · card listing what is deleted (rows min 56: circle 36 `bg.soft` + icon · title 15/500 · line 12.5): The video · Title and description · The tag (only with a tag) · Engagement ("Views and likes", no counts) · red **Delete video** (C17 destructive confirm in a sheet, `trash-2`).
+- Seen in: EP2. Full spec: `17-new-post.md` §7.

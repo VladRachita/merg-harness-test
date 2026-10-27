@@ -41,7 +41,9 @@
           "height": 932
         }
       },
-      "links_to": []
+      "links_to": [
+        "np1-pick-video"
+      ]
     },
     {
       "id": "HS1-services-list",
@@ -1294,6 +1296,199 @@
         "sr6-deals",
         "tb2c-guests-time-coupon",
         "tb2e-guests-time-event"
+      ]
+    },
+    {
+      "id": "NP1-pick-video",
+      "area": "profile-new-post",
+      "title": "Profile · New post · Pick a video",
+      "purpose": "The + button opens the gallery: pick one clip (up to 100 MB), then Next. No Skip: a post needs a video.",
+      "source": "NP-Pick.dc.html",
+      "files": {
+        "small": {
+          "html": "screens/small/np1-pick-video.html",
+          "png": "screenshots/small/np1-pick-video.png",
+          "width": 360,
+          "height": 640
+        },
+        "medium": {
+          "html": "screens/medium/np1-pick-video.html",
+          "png": "screenshots/medium/np1-pick-video.png",
+          "width": 390,
+          "height": 844
+        },
+        "large": {
+          "html": "screens/large/np1-pick-video.html",
+          "png": "screenshots/large/np1-pick-video.png",
+          "width": 430,
+          "height": 932
+        }
+      },
+      "links_to": [
+        "hp-profile",
+        "np2-empty"
+      ]
+    },
+    {
+      "id": "NP2-empty",
+      "area": "profile-new-post",
+      "title": "Profile · New post · On the video, empty",
+      "purpose": "The whole video with an empty title (0 / 30) and description (0 / 100) where people will read them; Tag on the side rail; Publish greyed until there is a title.",
+      "source": "NP-Empty.dc.html",
+      "files": {
+        "small": {
+          "html": "screens/small/np2-empty.html",
+          "png": "screenshots/small/np2-empty.png",
+          "width": 360,
+          "height": 640
+        },
+        "medium": {
+          "html": "screens/medium/np2-empty.html",
+          "png": "screenshots/medium/np2-empty.png",
+          "width": 390,
+          "height": 844
+        },
+        "large": {
+          "html": "screens/large/np2-empty.html",
+          "png": "screenshots/large/np2-empty.png",
+          "width": 430,
+          "height": 932
+        }
+      },
+      "links_to": [
+        "hp-profile",
+        "np1-pick-video",
+        "np4-tag-place"
+      ]
+    },
+    {
+      "id": "NP3-written",
+      "area": "profile-new-post",
+      "title": "Profile · New post · Written and tagged",
+      "purpose": "Title and description at their caps (30 / 100), the Tag icon white with a badge (1 tag), Publish.",
+      "source": "NP-Edit.dc.html",
+      "files": {
+        "small": {
+          "html": "screens/small/np3-written.html",
+          "png": "screenshots/small/np3-written.png",
+          "width": 360,
+          "height": 640
+        },
+        "medium": {
+          "html": "screens/medium/np3-written.html",
+          "png": "screenshots/medium/np3-written.png",
+          "width": 390,
+          "height": 844
+        },
+        "large": {
+          "html": "screens/large/np3-written.html",
+          "png": "screenshots/large/np3-written.png",
+          "width": 430,
+          "height": 932
+        }
+      },
+      "links_to": [
+        "hp-profile",
+        "np1-pick-video",
+        "np4-tag-place"
+      ]
+    },
+    {
+      "id": "NP4-tag-place",
+      "area": "profile-new-post",
+      "title": "Profile · New post · Tag a place (sheet)",
+      "purpose": "Tag a place, a service or a room: search places, or one tap on a visit (the place and what was booked there); Done.",
+      "source": "NP-Tag.dc.html",
+      "files": {
+        "small": {
+          "html": "screens/small/np4-tag-place.html",
+          "png": "screenshots/small/np4-tag-place.png",
+          "width": 360,
+          "height": 640
+        },
+        "medium": {
+          "html": "screens/medium/np4-tag-place.html",
+          "png": "screenshots/medium/np4-tag-place.png",
+          "width": 390,
+          "height": 844
+        },
+        "large": {
+          "html": "screens/large/np4-tag-place.html",
+          "png": "screenshots/large/np4-tag-place.png",
+          "width": 430,
+          "height": 932
+        }
+      },
+      "links_to": [
+        "hp-profile",
+        "np1-pick-video",
+        "np3-written",
+        "np4-tag-place"
+      ]
+    },
+    {
+      "id": "EP1-edit-post",
+      "area": "profile-new-post",
+      "title": "Profile · Edit post",
+      "purpose": "Your published post on the same editor: change the title, description or tag; Delete video bottom left, Save bottom right.",
+      "source": "EP-Edit.dc.html",
+      "files": {
+        "small": {
+          "html": "screens/small/ep1-edit-post.html",
+          "png": "screenshots/small/ep1-edit-post.png",
+          "width": 360,
+          "height": 640
+        },
+        "medium": {
+          "html": "screens/medium/ep1-edit-post.html",
+          "png": "screenshots/medium/ep1-edit-post.png",
+          "width": 390,
+          "height": 844
+        },
+        "large": {
+          "html": "screens/large/ep1-edit-post.html",
+          "png": "screenshots/large/ep1-edit-post.png",
+          "width": 430,
+          "height": 932
+        }
+      },
+      "links_to": [
+        "ep2-delete-video",
+        "hp-profile",
+        "np4-tag-place"
+      ]
+    },
+    {
+      "id": "EP2-delete-video",
+      "area": "profile-new-post",
+      "title": "Profile · Delete video (sheet)",
+      "purpose": "Delete this video? The video and everything linked to it (title and description, the tag, likes) are deleted for everyone; red Delete video.",
+      "source": "EP-Delete.dc.html",
+      "files": {
+        "small": {
+          "html": "screens/small/ep2-delete-video.html",
+          "png": "screenshots/small/ep2-delete-video.png",
+          "width": 360,
+          "height": 640
+        },
+        "medium": {
+          "html": "screens/medium/ep2-delete-video.html",
+          "png": "screenshots/medium/ep2-delete-video.png",
+          "width": 390,
+          "height": 844
+        },
+        "large": {
+          "html": "screens/large/ep2-delete-video.html",
+          "png": "screenshots/large/ep2-delete-video.png",
+          "width": 430,
+          "height": 932
+        }
+      },
+      "links_to": [
+        "ep1-edit-post",
+        "ep2-delete-video",
+        "hp-profile",
+        "np4-tag-place"
       ]
     },
     {
