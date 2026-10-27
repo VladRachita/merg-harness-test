@@ -154,6 +154,30 @@ Ticket 15% OFF · Thanks for coming back → From Maestro Host · 30 days left (
 
 ---
 
+## Public — search
+
+Full spec, sizes and states: [`16-search.md`](16-search.md). Opens from the **Search** tab of the bottom nav. Summary:
+
+### SR1-start · Before you type
+C50 search field (empty, "Search places, videos, coupons…") → **Recent** + **Clear all** → maestro · haircut brașov · wine tasting (each: `clock`, tap → SR3, X removes). No Browse / categories.
+
+### SR2-no-results · No results
+Field "sushi brașov" → C53 card "No results for “sushi brașov”" · "Check the spelling or try fewer words." No tabs.
+
+### SR3-all · All
+Field "maestro" → C51 tabs **All** (selected) · Videos · Places · Deals, the others greyed, no counts → one mixed feed, best match first: Maestro Host (place → PS1) · Haircut | Double Room (videos → F2 / PA2) · Maestro Bistro (→ PF1) · Haircut 15% OFF | Lunch 20% OFF (deals → F4C / TB2C) · Couples massage | Kids haircut · Maestro Rooms (→ PA1) · Wine tasting | Late cuts (events → TB2E / F4E) → **Loading more**.
+
+### SR4-videos · Videos tab
+2 per row: Haircut (Maestro Host, 120 RON, 1 · 60 min), Double Room (Maestro Rooms, 250 RON / night, 2 · Details), Couples massage, Kids haircut (from 70 RON) → **Loading more**.
+
+### SR5-places · Places tab
+One card: Maestro Host (verified, Barber & salon · Brașov, **Open now** · Closes 20:00), Maestro Bistro (verified, Restaurant, **Closes soon** · Until 22:30), Maestro Rooms (Guesthouse, **Check-in 14:00** · Check-out 11:00), Maestro Barber Shop (Cluj-Napoca, **Closed** · Opens 09:00), Maestro Café → **Loading more**.
+
+### SR6-deals · Deals tab
+Tiles **All** (selected) · Events · Coupons, no counts → 2 per row, ending soonest first: Haircut 15% OFF · Maestro Host · 1 day (red) · 20; Lunch 20% OFF · Maestro Bistro · 2 days · 50; Wine tasting · 4 days · 34; Late cuts · 8 days · 3 → note "Tap a deal to book with it…" → **Loading more**.
+
+---
+
 ## Public — accommodation (Call only)
 
 ### PA1-profile-rooms · Accommodation profile · Rooms

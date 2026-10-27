@@ -41,7 +41,7 @@ Types: `string`, `int`, `bool`, `money` = `{ amount: number, currency: "RON" }`,
 
 ---
 
-## Contents — 10 pages, 58 screens
+## Contents — 11 pages, 64 screens
 
 | Page | Screens |
 |---|---|
@@ -55,6 +55,7 @@ Types: `string`, `int`, `bool`, `money` = `{ amount: number, currency: "RON" }`,
 | Host · Customers & rewards | `CR1-customers` … `CR10-reward-details` |
 | Host · Reservations | `RV1-reservations` … `RV6-after-visit` |
 | Customer · My activity | `MA1-upcoming` … `MA6-reward` |
+| Public · Search | `SR1-start`, `SR2-no-results`, `SR3-all`, `SR4-videos`, `SR5-places`, `SR6-deals` |
 
 Start with the **quick index** below (what each screen reads and sends). Then each page in detail, then: **§A** rules and jobs the backend runs · **§B** gaps to decide · **§C** entity and field index.
 
@@ -176,6 +177,17 @@ Full detail per screen is in the page sections below. ⚠ = a gap listed in §B.
 | `MA4-reservation-waiting` | `Reservation{…all, durationMin, price, teamMemberId → TeamMember.name, offer{discount, pays}, specialRequests, place{businessId, name, type, address, phone, avatarUrl, avatarColor}}` | cancel (`cancelledBy: CUSTOMER`) |
 | `MA5-reservation-confirmed` | as MA4 | cancel (`cancelledBy: CUSTOMER`) |
 | `MA6-reward` | `RewardGrantView{discount, title, validUntil, place{businessId, name, type, city}}` | — (booking with it: `rewardGrantId`⚠) |
+
+**Public · Search**
+
+| Screen | Reads | Sends |
+|---|---|---|
+| `SR1-start` | `RecentSearch[]{query, searchedAt}` ⚠ | search `{q, tab: ALL}` · delete one recent `{query}` · clear all recents |
+| `SR2-no-results` | `SearchRequest.q` (echo) · `SearchPage.blocks` empty | — |
+| `SR3-all` | `SearchPage{blocks[], nextCursor}` (tab ALL): `PlaceResult{businessId, name, verified, category, subcategoryLabel, city, avatarUrl, openingHours, checkIn, checkOut}` · `VideoResult{itemId, itemType, title, businessName, price, priceUnit, people, durationMin, thumbnailUrl}` · `DealResult{offerId, type, title, discount, businessId, businessName, businessCategory, endsAt, quantityLeft, thumbnailUrl, firstDate, serviceIds⚠}` | search `{q, tab: ALL, cursor}` (next page) |
+| `SR4-videos` | `SearchPage` (tab VIDEOS) of `VideoResult` | search `{q, tab: VIDEOS, cursor}` |
+| `SR5-places` | `SearchPage` (tab PLACES) of `PlaceResult` | search `{q, tab: PLACES, cursor}` |
+| `SR6-deals` | `SearchPage` (tab DEALS) of `DealResult`, `endsAt` ascending | search `{q, tab: DEALS, dealType: ALL\|EVENT\|COUPON, cursor}` |
 
 ---
 
@@ -1324,6 +1336,104 @@ As MA4 (same fields) with:
 - **Book with <place>** → the place's booking start;
 - **⚠ gap:** picking the reward at the last booking step is not designed (#45). The booking request will need a `rewardGrantId?`.
 
+## Page: Public · Search
+
+Opens from the **Search** tab of the bottom navigation, for anyone (signed in or not ⚠ #54). One request shape serves every tab: `SearchRequest { q, tab, dealType?, cursor? }` → `SearchPage { blocks[], nextCursor }` (see `docs/06-data-model.md` → *Search*). **No result counts** are shown anywhere, so the backend does not need to send totals.
+
+### Screen 1 · Before you type (`SR1-start`, board *1 · Before you type: recent searches*)
+
+**Opens with:** nothing (the Search tab); the signed-in `userId` for recent searches.
+
+**Elements displayed**
+
+| Element | Field | Type | Notes |
+|---|---|---|---|
+| Recent list | `RecentSearch.query`, `.searchedAt` | list | This person's, **newest first**. *maestro · haircut brașov · wine tasting*. Hidden when empty. **⚠ gap:** stored on the device or the account, how many (proposal 10), signed-out people (#54). |
+
+**Inputs**
+
+| Input | Type | Rules |
+|---|---|---|
+| Search field | `q: string` | Trimmed. **⚠ gap:** max length (proposal 100) and when the request is sent (proposal: from 2 characters, 300 ms after the last key; #50). |
+
+**Actions:**
+- typing → search `{q, tab: ALL}` → SR3, or SR2 when nothing matches;
+- a recent row → the same search with that `query`;
+- **X** on a row → delete that recent search `{query}`;
+- **Clear all** → delete all recent searches;
+- a search is **saved to recents** when its results are shown (A19).
+
+### Screen 2 · No results (`SR2-no-results`, board *2 · No results*)
+
+**Opens with:** `q`.
+
+**Elements displayed**
+
+| Element | Field | Type | Notes |
+|---|---|---|---|
+| Query echo | `SearchRequest.q` | `string` | "No results for “sushi brașov”", as typed. |
+| When shown | `SearchPage.blocks` is empty on the first page of tab ALL | | No tabs on this screen. |
+
+**Actions:** clear **X** → SR1; editing the query → a new search.
+
+### Screen 3 · All (`SR3-all`, board *3 · All (one mixed feed: places, videos, deals; keeps loading)*)
+
+**Opens with:** `q` (tab ALL).
+
+**Elements displayed**
+
+| Element | Field | Type | Notes |
+|---|---|---|---|
+| Feed | `SearchPage.blocks[]` | `SearchBlock[]` | **In the order received** (the backend ranks, best match first; #51). `PLACE` = one row; `VIDEOS` / `DEALS` = one row of 1–2 cards. |
+| Place row | `PlaceResult.businessId`, `.name`, `.verified`, `.category`, `.subcategoryLabel`, `.city`, `.avatarUrl?` | | Initial on the place's colour when there is no logo (B28). "Barber & salon · Brașov". No icon. |
+| Place status line | `PlaceResult.openingHours` + now (A4), or `.checkIn` / `.checkOut` (ACCOMMODATION) | | "**Open now** · Closes 20:00", "**Closes soon** · Until 22:30", "**Closed** · Opens 09:00", "**Check-in 14:00** · Check-out 11:00". |
+| Video card | `VideoResult.itemId`, `.itemType`, `.title`, `.businessName`, `.price{amount, currency, from}`, `.priceUnit?`, `.people`, `.durationMin?`, `.thumbnailUrl` | | *Haircut · Maestro Host · 120 RON · 1 · 60 min*; *Double Room · 250 RON / night · 2 · Details* (rooms have no duration). |
+| Deal card | `DealResult.offerId`, `.type`, `.title`, `.discount?`, `.businessName`, `.endsAt`, `.quantityLeft`, `.thumbnailUrl?` | | Sticker "15% OFF" (coupons only); time left from `endsAt` (red at Today / 1 day); `ticket` + quantity left. |
+| Loading more | `SearchPage.nextCursor` | `string \| null` | Shown while the next page loads; `null` = last page (#53). |
+
+**Inputs:** tabs (All · Videos · Places · Deals; the query stays); the query.
+
+**Actions:**
+- near the end of the list → next page `{q, tab: ALL, cursor: nextCursor}`;
+- a place → its profile by `category`: SERVICES → PS1, FOOD_BEVERAGE → PF1, ACCOMMODATION → PA1 (`businessId`);
+- a video → SERVICE → F2 (`serviceId` = `itemId`, no team member), ROOM → PA2 (`roomId` = `itemId`);
+- a deal → the booking with the deal picked: SERVICES coupon → F4C, event → F4E; FOOD_BEVERAGE coupon → TB2C, event → TB2E (`businessId`, `offerId`, date = `firstDate`). **⚠ gap:** F4C / F4E also need a `serviceId`; which one when the offer applies to several services (B30).
+
+### Screen 4 · Videos tab (`SR4-videos`, board *4 · Videos tab*)
+
+**Opens with:** `q` (tab VIDEOS).
+
+**Elements displayed:** `SearchPage.blocks[]` of `VIDEOS` (rows of 2) — the video card fields as SR3. Loading more from `nextCursor`.
+
+**Actions:** next page `{q, tab: VIDEOS, cursor}`; a video → F2 / PA2 as SR3. **⚠ gap:** empty tab while All has results (#56).
+
+### Screen 5 · Places tab (`SR5-places`, board *5 · Places tab*)
+
+**Opens with:** `q` (tab PLACES).
+
+**Elements displayed:** `SearchPage.blocks[]` of `PLACE` — the place row and status line fields as SR3, all rows in one card. Loading more from `nextCursor`.
+
+**Actions:** next page `{q, tab: PLACES, cursor}`; a place → PS1 / PF1 / PA1 as SR3. **⚠ gap:** location / distance is not designed (#52).
+
+### Screen 6 · Deals tab (`SR6-deals`, board *6 · Deals tab (coupons and events)*)
+
+**Opens with:** `q` (tab DEALS), `dealType: ALL`.
+
+**Elements displayed**
+
+| Element | Field | Type | Notes |
+|---|---|---|---|
+| Filter tiles | — | | All · Events · Coupons, **no counts**. |
+| Deal cards | `SearchPage.blocks[]` of `DEALS` (rows of 2): the deal card fields as SR3 | | **Ending soonest first** (`endsAt` ascending). Only bookable deals: not ended, `quantityLeft > 0` (A19). |
+
+**Inputs**
+
+| Input | Type | Rules |
+|---|---|---|
+| Filter | `dealType: enum(ALL\|EVENT\|COUPON)` | One selected; default ALL. Changing it reloads the list from the first page. |
+
+**Actions:** next page `{q, tab: DEALS, dealType, cursor}`; a deal → F4C / F4E / TB2C / TB2E as SR3. **⚠ gap:** deals at accommodation places (Call only) — proposal: not returned (#59).
+
 ---
 
 ## A. Rules and jobs the screens rely on (backend logic, not one screen)
@@ -1333,7 +1443,7 @@ As MA4 (same fields) with:
 | A1 | **Service availability** | Per team member and day: `OPEN \| CLOSED \| FULLY_BOOKED` and `Slot { start, state FREE\|TAKEN }`, with the slot length = service duration. Also `nextFree(member, service)` and "Anyone" = the earliest free across the service's members. Week by week. | R3, F3, F4, F4C, F4E |
 | A2 | **Table availability** | Per day `FREE \| FEW_LEFT \| FULL \| CLOSED` (month and week). Per service period, `TimeSlot { start, FREE\|TAKEN }` **for a given guest count**. `capacity`, `tableHoldMin`, `bookingHorizonMonths`, `services[]`. | TB1, TB2 |
 | A3 | **Offers per day** | For a date (and service, for salons): coupons with that day's `windows[]`; events with `sittings[] { id, from, to, seatsLeft }`. A month list for TB1. `quantityLeft` and `endsAt` for CE1. | TB1, TB2*, TB3*, F4*, CE1 |
-| A4 | **Opening status** | From `openingHours` + now in the business time zone: open / closes soon (< 60 min, proposal) / closed + the next opening time. Can be computed in the app if the hours are sent. | PS1, PF1 |
+| A4 | **Opening status** | From `openingHours` + now in the business time zone: open / closes soon (< 60 min, proposal) / closed + the next opening time. Can be computed in the app if the hours are sent. | PS1, PF1, SR3, SR5 |
 | A5 | **Reservation lifecycle** | Every booking creates a `Reservation` in WAITING with `answerBy = requestedAt + 24 h`. Accept → CONFIRMED; Decline + reason → DECLINED; the customer can cancel (WAITING or CONFIRMED); the host can cancel CONFIRMED. | RV1–RV6, MA1–MA5, TB3, F4, R3 |
 | A6 | **Auto-decline job** | WAITING past `answerBy` → DECLINED with `NO_ANSWER`, and the customer is told. | RV2, MA3 |
 | A7 | **Auto-done job** | CONFIRMED still unanswered at the start of the day after `date` → DONE. | RV6 |
@@ -1348,6 +1458,7 @@ As MA4 (same fields) with:
 | A16 | **Social** | Follow / unfollow, posts / followers / following counts, rating + reviews count, `myRating` per DONE reservation. | HP, PA1, PS1, PF1, MA3 |
 | A17 | **Team** | Search users by username; invites PENDING → ACCEPTED / DECLINED / CANCELLED; PAUSED members are excluded from R1 / F1 filters, F3, "Can replace" and "Anyone" (their existing reservations stay). The salon boards still show Maria, who is Paused on TM1: that sample data is older than the Team page, so follow the rule. | TM1–TM3, R1, F1, F3, R3, F4 |
 | A18 | **My activity** | Across all businesses for the signed-in customer: upcoming (WAITING + CONFIRMED, from now on), history (DONE, DECLINED, CANCELLED; newest first), reward grants (ready ending soonest first; used / ended newest first). | MA1–MA6 |
+| A19 | **Search** | One query over place names, types and cities, video titles and deal titles (diacritics and small typos: #60). **Ranks** the results (best match first, #51) and returns **blocks**: a place = one block; videos and deals in blocks of 1–2 (one grid row). ALL mixes the three types; each tab returns only its own. **Cursor paging** (`nextCursor`, null on the last page; page size #53). Deals: only bookable ones (not past `endsAt`, `quantityLeft > 0`, at a business that takes bookings in the app), `endsAt` ascending in the Deals tab; `firstDate` = the first day the deal applies. **Recent searches**: saved when results are shown, newest first, delete one / all (#54). No totals are needed. | SR1–SR6 |
 
 ---
 
@@ -1383,6 +1494,8 @@ As MA4 (same fields) with:
 | B26 | Reservation: no-show display, later days on RV1, cancel confirmation and reason, auto-accept, the answer deadline for requests that start soon, holding the time while WAITING | RV1–RV6 | Open questions #34–#42. |
 | B27 | My activity: empty states, the Rate target (existing review flow), picking a reward at booking (`rewardGrantId` on the booking request), cancel rules, no-show visibility, the entry point | MA1–MA6 | Open questions #43–#49. |
 | B28 | Avatar fallback colour: stored or derived | all people / places | Derive in the app from the id. |
+| B29 | Search: when the request is sent, ranking, location / distance, page size and the end of a list, where recent searches are kept (and how many, signed-out people), one tab empty, matching (diacritics, typos), deals at accommodation places, query max length | SR1–SR6 | Open questions #50–#60; query max 100 (proposal). |
+| B30 | A deal opens F4C / F4E, which also need a **service**: an offer's `appliesTo.serviceIds` can list several | SR3, SR6 | Open question #61. Proposal: `DealResult.serviceIds`; with one service open on it, with several open the services list (F1) showing only those. |
 
 ---
 
@@ -1390,18 +1503,18 @@ As MA4 (same fields) with:
 
 | Entity | Fields used by the screens | Used on |
 |---|---|---|
-| **BusinessProfile** | `id`, `handle`, `name`, `verified`, `category`, `subcategoryLabel?`, `avatarUrl?`, `stats { posts, followers, following⚠, rating?, reviewsCount }`, `phone`, `address { line, city, lat, lng }`, `openingHours`, `checkIn?`, `checkOut?`, `priceLevel`, `timeZone⚠`, currency | HP, PA1, PS1, PF1, PA2, R1–R3, F1–F4, TB1–TB4, MA4–MA6 |
+| **BusinessProfile** | `id`, `handle`, `name`, `verified`, `category`, `subcategoryLabel?`, `avatarUrl?`, `stats { posts, followers, following⚠, rating?, reviewsCount }`, `phone`, `address { line, city, lat, lng }`, `openingHours`, `checkIn?`, `checkOut?`, `priceLevel`, `timeZone⚠`, currency | HP, PA1, PS1, PF1, PA2, R1–R3, F1–F4, TB1–TB4, MA4–MA6, SR3, SR5 |
 | **Viewer state** | `isFollowing⚠`, `hasLiked⚠` (per video), signed-in `userId` + role⚠ | PA1, PS1, PF1, PA2, R2, F2, TM1 |
-| **Video** | `id`, `url`, `thumbnailUrl`, `durationSec`, `views`, `publishedAt`, `likes` | HS1–HS4, HR1–HR4, PA1, PA2, PS1, R1, R2, F1, F2, CE1 |
-| **Service** | `id`, `name`, `shortDescription`, `category⚠ form`, `price { amount, currency, unit VISIT\|PERSON, from⚠ form }`, `durationMin`, `peoplePerBooking`, `included[]`, `notIncluded[]`, `notAllowed[]`, `teamMemberIds[]`, `video?`; categories list for R1 / F1 tiles: `{ category, count, imageUrl⚠ }` | HS1–HS4, PS1, R1–R3, SV, F1–F4, TM3, RV*, MA* |
-| **Room** | `id`, `name`, `shortDescription`, `pricePerNight`, `guestsMax`, `included[] { group⚠, item }`, `notIncluded[]`, `notAllowed[]`, `video?` | HR1–HR4, PA1–PA3 |
+| **Video** | `id`, `url`, `thumbnailUrl`, `durationSec`, `views`, `publishedAt`, `likes` | HS1–HS4, HR1–HR4, PA1, PA2, PS1, R1, R2, F1, F2, CE1, SR3, SR4, SR6 |
+| **Service** | `id`, `name`, `shortDescription`, `category⚠ form`, `price { amount, currency, unit VISIT\|PERSON, from⚠ form }`, `durationMin`, `peoplePerBooking`, `included[]`, `notIncluded[]`, `notAllowed[]`, `teamMemberIds[]`, `video?`; categories list for R1 / F1 tiles: `{ category, count, imageUrl⚠ }` | HS1–HS4, PS1, R1–R3, SV, F1–F4, TM3, RV*, MA*, SR3, SR4 |
+| **Room** | `id`, `name`, `shortDescription`, `pricePerNight`, `guestsMax`, `included[] { group⚠, item }`, `notIncluded[]`, `notAllowed[]`, `video?` | HR1–HR4, PA1–PA3, SR3, SR4 |
 | **TeamMember** | `id`, `userId⚠`, `name`, `initials`, `avatarUrl?`, `avatarColor`, `username`, `status ACTIVE\|PAUSED`, `isOwner`, `joinedAt`, `role`, `yearsExperience`, `specialties[]`, `languages[]`, `rating`, `reviewsCount`; derived: services count, `nextFree` | HS3, HS4, TM1–TM3, PS1, R1–R3, F1–F4, RV3, RV5, MA4 |
 | **TeamInvite** | `id`, `username` / `userId`, `invitedAt`, `state PENDING\|ACCEPTED\|DECLINED\|CANCELLED` | TM1, TM2 |
 | **User search result** | `userId`, `name`, `username`, `avatarUrl?`, invite state | TM2 |
 | **Service availability** | `DayAvailability { date, state OPEN\|CLOSED\|FULLY_BOOKED }`, `Slot { start, end, state FREE\|TAKEN }`, `nextFree(member, service)`, "Any time" range⚠ | R3, F3, F4* |
 | **RestaurantBookingSettings** | `capacity`, `bookingHorizonMonths`, `tableHoldMin`, `slotStepMin`, `services[] { name, from, to }` | TB1, TB2*, TB3* |
 | **Table availability** | `DayAvailability { date, state FREE\|FEW_LEFT\|FULL\|CLOSED }`, `TimeSlot { start, state }` per guest count | TB1, TB2* |
-| **Offer** (coupon / event) | `id`, `type`, `title`, `discount?`, `startsAt?`, `endsAt`, `quantityLeft`, `video?`, `appliesTo`, `windows[] { date, from, to }`, `sittings[] { id, date, from, to, seatsLeft }`, `minGuests?`, `maxGuests?` | CE1, TB1, TB2*, TB3*, F4*, RV2, RV3, MA1, MA4 |
+| **Offer** (coupon / event) | `id`, `type`, `title`, `discount?`, `startsAt?`, `endsAt`, `quantityLeft`, `video?`, `appliesTo`, `windows[] { date, from, to }`, `sittings[] { id, date, from, to, seatsLeft }`, `minGuests?`, `maxGuests?` | CE1, TB1, TB2*, TB3*, F4*, RV2, RV3, MA1, MA4, SR3, SR6 |
 | **TableBookingRequest** (table booking) | `businessId`, `date`, `from`, `to`, `guests`, `offerId?`, `sittingId?`, `firstName`, `lastName`, `phone { country, number }`, `email`, `specialRequests?` (max 1000), `rewardGrantId?⚠` | TB3* → creates Reservation |
 | **ServiceBookingRequest** (service booking) | `businessId`, `serviceId`, `teamMemberId \| ANY`, `date`, `from`, `to`, `offerId?`, `sittingId?`, customer details⚠, `rewardGrantId?⚠` | R3, F4* → creates Reservation |
 | **Reservation** | `id`, `businessId`, `customerId`, `kind SERVICE\|TABLE\|EVENT`, `what`, `people`, `date`, `from`, `to`, `durationMin?`, `price?`, `teamMemberId?` (+ name), `offer? { COUPON: discount, pays } \| { EVENT: title, sittingId }`, `specialRequests?`, `requestedAt`, `answerBy`, `state WAITING\|CONFIRMED\|DECLINED\|CANCELLED\|DONE\|NO_SHOW`, `declineReason? FULLY_BOOKED\|CLOSED_THAT_DAY\|NO_ANSWER`, `answeredAt?`, `cancelledAt?`, `cancelledBy? CUSTOMER\|BUSINESS`, `checkedAt?`, `myRating?`, `place { businessId, name, type, city, address, phone, avatarUrl?, avatarColor }` | RV1–RV6, MA1–MA5, TB4, HP badge |
@@ -1409,5 +1522,7 @@ As MA4 (same fields) with:
 | **Reward** | `id`, `businessId`, `title` (max 40), `discount`, `validFor` (input: 1_WEEK \| 2_WEEKS \| 3_WEEKS \| 1_MONTH), `sentAt`, `validUntil`, `source MANUAL \| { ruleId }`, `audienceGroup?⚠`, `grants[] { customerId, state NOT_USED\|USED\|ENDED\|STOPPED, usedAt?, bookingId? }`, `stoppedAt?`; derived: used / total | CR2–CR4, CR10, MA2, MA6 |
 | **RewardRule** | `id`, `on`, `title`, `dayOfMonth`, `firstSendAt`, `visits { count 1–5, mode EXACTLY\|AT_LEAST }`, `repeat ONCE\|EVERY_MONTH`, `skipIfUnused`, `discount`, `validForDays 3\|5\|7\|30`, `stats { timesSent, people, used }`; derived: `nextSendAt`, `matchingNow` (count + the first 3 people) | CR4–CR9 |
 | **MyActivity** (customer) | `upcoming[]` and `history[]` (Reservation with `place`), `rewards.ready[]` / `rewards.usedOrEnded[]` (`RewardGrantView { rewardId, place, discount, title, validUntil, state, usedAt? }`), tab counts | MA1–MA6 |
+| **Search** | `SearchRequest { q, tab ALL\|VIDEOS\|PLACES\|DEALS, dealType? ALL\|EVENT\|COUPON, cursor? }` → `SearchPage { blocks[], nextCursor }`; `SearchBlock { type PLACE\|VIDEOS\|DEALS, place \| items[] }`; `PlaceResult { businessId, name, verified, category, subcategoryLabel, city, avatarUrl?, openingHours?, checkIn?, checkOut? }`; `VideoResult { itemId, itemType SERVICE\|ROOM, title, businessId, businessName, price { amount, currency, from? }, priceUnit?, people, durationMin?, thumbnailUrl }`; `DealResult { offerId, type, title, discount?, businessId, businessName, businessCategory, endsAt, quantityLeft, thumbnailUrl?, firstDate, serviceIds⚠ }` | SR1–SR6 |
+| **RecentSearch** | `query`, `searchedAt` (this person's, newest first; storage⚠) | SR1 |
 
 *Screen ids with `*` cover all their states (for example, `TB2*` = TB2, TB2C, TB2E).*

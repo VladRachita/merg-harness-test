@@ -52,3 +52,15 @@
 | 48 | Entry point | MA1 | My activity opens from the customer's profile, which is not in the canvas (the prototype's back goes to HP). |
 | 49 | Change a reservation | MA4, MA5 | Changing the time or people is not designed: cancel and book again. |
 
+| 50 | When to search | SR1 → SR3 | Results replace the start screen while typing. When the request is sent is not designed. Proposal: from 2 characters, 300 ms after the last key; the keyboard's **Search** sends at once. |
+| 51 | **Ranking** | SR3–SR6 | "Best match first" is the backend's: how text match, distance, rating and open now are weighed, and how All mixes places, videos and deals. Deals tab: ending soonest first (designed). |
+| 52 | Location | SR3, SR5 | There is no "near me", city filter or distance in the designs; the city is only shown. Proposal: with location permission, rank nearby places higher. Not designed. |
+| 53 | Paging and the end of a list | SR3–SR6 | Page size (proposal: 20), what shows after the last page (proposal: nothing, the loader goes away) and a failed page load (proposal: "Couldn't load more · Try again") are not designed. |
+| 54 | **Recent searches** | SR1 | Where they are kept (this device or the account), how many (proposal: 10) and whether people who are not signed in have them are not decided. |
+| 55 | Empty start screen | SR1 | With no recent searches only the field shows. Whether to show suggestions there is not designed (Browse / categories were removed by decision). |
+| 56 | One tab empty | SR4–SR6 | When All has results but a tab has none (e.g. no deals), the tab's empty state is not designed. Proposal: the C53 card under the tabs, "No deals for “<query>”". |
+| 57 | Greyed tabs elsewhere | CR1, MA1–MA3 | Search greys the unselected tabs at 0.4 (decision). Whether the Customers and My activity tabs should use the same look is not decided. |
+| 58 | Deal tap on CE1 | CE1 | In search a deal opens its booking with the deal picked. CE1's card tap is still #3. Proposal: the same as search. |
+| 59 | Deals at accommodation places | SR3, SR6 | Accommodation is Call only, so its coupons and events cannot be booked in the app. Proposal: they are not shown in search. Confirm. |
+| 60 | Matching | SR1–SR6 | Proposal: ignore diacritics ("brasov" finds "Brașov") and allow small typos. Not decided. |
+| 61 | Deal → which service | SR3, SR6 → F4C / F4E | F4C / F4E open on one service, but a coupon or event can apply to several (`appliesTo.serviceIds`). Proposal: with one service, open on it; with several, open the place's services list (F1) showing only those. Decide. |

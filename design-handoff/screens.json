@@ -1089,6 +1089,214 @@
       ]
     },
     {
+      "id": "SR1-start",
+      "area": "public-search",
+      "title": "Public · Search · Before you type",
+      "purpose": "Empty search field and recent searches (remove one, Clear all); tap a recent search to run it again.",
+      "source": "SR-Start.dc.html",
+      "files": {
+        "small": {
+          "html": "screens/small/sr1-start.html",
+          "png": "screenshots/small/sr1-start.png",
+          "width": 360,
+          "height": 640
+        },
+        "medium": {
+          "html": "screens/medium/sr1-start.html",
+          "png": "screenshots/medium/sr1-start.png",
+          "width": 390,
+          "height": 844
+        },
+        "large": {
+          "html": "screens/large/sr1-start.html",
+          "png": "screenshots/large/sr1-start.png",
+          "width": 430,
+          "height": 932
+        }
+      },
+      "links_to": [
+        "sr3-all"
+      ]
+    },
+    {
+      "id": "SR2-no-results",
+      "area": "public-search",
+      "title": "Public · Search · No results",
+      "purpose": "Nothing matches the words: the query repeated and a hint to check the spelling or use fewer words.",
+      "source": "SR-Empty.dc.html",
+      "files": {
+        "small": {
+          "html": "screens/small/sr2-no-results.html",
+          "png": "screenshots/small/sr2-no-results.png",
+          "width": 360,
+          "height": 640
+        },
+        "medium": {
+          "html": "screens/medium/sr2-no-results.html",
+          "png": "screenshots/medium/sr2-no-results.png",
+          "width": 390,
+          "height": 844
+        },
+        "large": {
+          "html": "screens/large/sr2-no-results.html",
+          "png": "screenshots/large/sr2-no-results.png",
+          "width": 430,
+          "height": 932
+        }
+      },
+      "links_to": []
+    },
+    {
+      "id": "SR3-all",
+      "area": "public-search",
+      "title": "Public · Search · All",
+      "purpose": "Tabs All / Videos / Places / Deals; All is one mixed feed of places, videos (2 per row) and deals (2 per row) that keeps loading.",
+      "source": "SR-A-All.dc.html",
+      "files": {
+        "small": {
+          "html": "screens/small/sr3-all.html",
+          "png": "screenshots/small/sr3-all.png",
+          "width": 360,
+          "height": 1731
+        },
+        "medium": {
+          "html": "screens/medium/sr3-all.html",
+          "png": "screenshots/medium/sr3-all.png",
+          "width": 390,
+          "height": 1831
+        },
+        "large": {
+          "html": "screens/large/sr3-all.html",
+          "png": "screenshots/large/sr3-all.png",
+          "width": 430,
+          "height": 1967
+        }
+      },
+      "links_to": [
+        "f2-video",
+        "f4c-pick-time-coupon",
+        "f4e-pick-time-event",
+        "pa1-profile-rooms",
+        "pa2-room-video",
+        "pf1-profile-fnb",
+        "ps1-profile-services",
+        "sr3-all",
+        "sr4-videos",
+        "sr5-places",
+        "sr6-deals",
+        "tb2c-guests-time-coupon",
+        "tb2e-guests-time-event"
+      ]
+    },
+    {
+      "id": "SR4-videos",
+      "area": "public-search",
+      "title": "Public · Search · Videos tab",
+      "purpose": "Only videos, 2 per row, the place name under the title; keeps loading.",
+      "source": "SR-A-Videos.dc.html",
+      "files": {
+        "small": {
+          "html": "screens/small/sr4-videos.html",
+          "png": "screenshots/small/sr4-videos.png",
+          "width": 360,
+          "height": 640
+        },
+        "medium": {
+          "html": "screens/medium/sr4-videos.html",
+          "png": "screenshots/medium/sr4-videos.png",
+          "width": 390,
+          "height": 844
+        },
+        "large": {
+          "html": "screens/large/sr4-videos.html",
+          "png": "screenshots/large/sr4-videos.png",
+          "width": 430,
+          "height": 932
+        }
+      },
+      "links_to": [
+        "f2-video",
+        "pa2-room-video",
+        "sr3-all",
+        "sr4-videos",
+        "sr5-places",
+        "sr6-deals"
+      ]
+    },
+    {
+      "id": "SR5-places",
+      "area": "public-search",
+      "title": "Public · Search · Places tab",
+      "purpose": "Only places: initial, name, verified, kind · city, opening status; keeps loading.",
+      "source": "SR-A-Places.dc.html",
+      "files": {
+        "small": {
+          "html": "screens/small/sr5-places.html",
+          "png": "screenshots/small/sr5-places.png",
+          "width": 360,
+          "height": 640
+        },
+        "medium": {
+          "html": "screens/medium/sr5-places.html",
+          "png": "screenshots/medium/sr5-places.png",
+          "width": 390,
+          "height": 844
+        },
+        "large": {
+          "html": "screens/large/sr5-places.html",
+          "png": "screenshots/large/sr5-places.png",
+          "width": 430,
+          "height": 932
+        }
+      },
+      "links_to": [
+        "pa1-profile-rooms",
+        "pf1-profile-fnb",
+        "ps1-profile-services",
+        "sr3-all",
+        "sr4-videos",
+        "sr5-places",
+        "sr6-deals"
+      ]
+    },
+    {
+      "id": "SR6-deals",
+      "area": "public-search",
+      "title": "Public · Search · Deals tab",
+      "purpose": "Coupons and events, 2 per row, filter All / Events / Coupons; a tap opens the booking with the deal picked.",
+      "source": "SR-A-Deals.dc.html",
+      "files": {
+        "small": {
+          "html": "screens/small/sr6-deals.html",
+          "png": "screenshots/small/sr6-deals.png",
+          "width": 360,
+          "height": 640
+        },
+        "medium": {
+          "html": "screens/medium/sr6-deals.html",
+          "png": "screenshots/medium/sr6-deals.png",
+          "width": 390,
+          "height": 844
+        },
+        "large": {
+          "html": "screens/large/sr6-deals.html",
+          "png": "screenshots/large/sr6-deals.png",
+          "width": 430,
+          "height": 932
+        }
+      },
+      "links_to": [
+        "f4c-pick-time-coupon",
+        "f4e-pick-time-event",
+        "sr3-all",
+        "sr4-videos",
+        "sr5-places",
+        "sr6-deals",
+        "tb2c-guests-time-coupon",
+        "tb2e-guests-time-event"
+      ]
+    },
+    {
       "id": "PA1-profile-rooms",
       "area": "public-accommodation",
       "title": "Public · Accommodation profile · Rooms",

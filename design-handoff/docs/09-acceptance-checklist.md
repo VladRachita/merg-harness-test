@@ -59,3 +59,8 @@ Use this for every screen before calling it done.
 - [ ] **MA4/MA5**: status banner (amber / green), place card with Copy address and Call; no Add to calendar, no Directions; Cancel in danger red.
 - [ ] **MA6**: days left follows the Time left rule; Book with <place> pinned.
 - [ ] Everything in `15-my-activity.md` §13 (definition of done).
+- [ ] **SR1/SR2**: field outline when empty, ink with clear X when typing; recent searches with remove and Clear all; no Browse / categories; no results card without tabs.
+- [ ] **SR3–SR6**: four tabs without counts, unselected greyed 0.4, the query kept across tabs; All mixes place blocks, video rows and deal rows in the received order, no headings, no See all; Loading more at the end of every list.
+- [ ] **SR5**: place rows without a category icon; verified badge only for verified places; status colour per the Opening status rule.
+- [ ] **SR6**: deals 2 per row, ending soonest first, tiles without counts; a deal opens F4C / F4E / TB2C / TB2E with the deal picked.
+- [ ] Everything in `16-search.md` §14 (definition of done).

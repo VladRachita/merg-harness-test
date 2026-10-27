@@ -193,6 +193,54 @@ RewardGrantView { rewardId, place, discount, title, validUntil, state, usedAt? }
 - History action: DONE without `myRating` → Rate; DONE with `myRating` → "★ N"; DECLINED / CANCELLED → Book again.
 - Decline reason text: FULLY_BOOKED → "Fully booked" · CLOSED_THAT_DAY → "Closed that day" · NO_ANSWER → "No answer". Cancelled: CUSTOMER → "By you" · BUSINESS → "By the place".
 
+## Search (public)
+```ts
+SearchRequest {
+  q: "maestro",                                   // as typed, trimmed
+  tab: "ALL" | "VIDEOS" | "PLACES" | "DEALS",
+  dealType?: "ALL" | "EVENT" | "COUPON",          // Deals tab tiles; default ALL
+  cursor?: string                                  // from the previous page; none = first page
+}
+SearchPage {
+  blocks: SearchBlock[],                           // ranked, best match first
+  nextCursor: string | null                        // null = last page (hide "Loading more")
+}
+SearchBlock =                                      // ALL mixes the three; a tab returns only its own type
+  | { type: "PLACE",  place: PlaceResult }                     // one row
+  | { type: "VIDEOS", items: VideoResult[] }                   // 1–2: one row of the 2-column grid
+  | { type: "DEALS",  items: DealResult[] }                    // 1–2: one row of the 2-column grid
+PlaceResult {
+  businessId, name: "Maestro Host", verified: boolean,
+  category: "SERVICES" | "ACCOMMODATION" | "FOOD_BEVERAGE",   // which profile opens (PS1 / PA1 / PF1)
+  subcategoryLabel: "Barber & salon", city: "Brașov", avatarUrl?,
+  openingHours?: WeeklyHours,                      // SERVICES, FOOD_BEVERAGE → Opening status rule
+  checkIn?: "14:00", checkOut?: "11:00"            // ACCOMMODATION
+}
+VideoResult {
+  itemId, itemType: "SERVICE" | "ROOM",            // SERVICE → F2, ROOM → PA2
+  title: "Haircut", businessId, businessName: "Maestro Host",
+  price: { amount, currency, from?: boolean }, priceUnit?: "NIGHT",
+  people: 1,                                       // Service.peoplePerBooking / Room.guestsMax
+  durationMin?: 60,                                // services only; rooms show "Details"
+  thumbnailUrl
+}
+DealResult {
+  offerId, type: "COUPON" | "EVENT", title: "Haircut" | "Wine tasting",
+  discount?: { type: "PERCENT", value: 15 } | { type: "AMOUNT", value: 10, currency: "RON" },   // coupons only
+  businessId, businessName: "Maestro Bistro",
+  businessCategory: "SERVICES" | "FOOD_BEVERAGE",  // F4C / F4E vs TB2C / TB2E
+  endsAt, quantityLeft: 50, thumbnailUrl?,
+  firstDate: "2026-10-26",                         // first day the deal applies: the booking opens on it
+  serviceIds?: string[]                            // SERVICES deals: the services it applies to (open question #61)
+}
+RecentSearch { query: "haircut brașov", searchedAt }   // this person's, newest first
+```
+- **Ranking** of ALL (and inside each tab) is the backend's; the app shows the blocks in the order received and never re-sorts. Deals inside the Deals tab: `endsAt` ascending (ending soonest first).
+- **Rows of two** come from the backend as one block; a block with a single item shows one card in the left column.
+- **Only bookable deals**: not past `endsAt`, `quantityLeft > 0`, at a business that takes bookings in the app.
+- **Recent searches**: saved when results are shown; tapping one runs it again; remove one; clear all.
+- **Status line** (place row): SERVICES / FOOD_BEVERAGE use the Opening status rule; ACCOMMODATION shows "Check-in HH:MM · Check-out HH:MM".
+
 ## Display rules
 | Rule | Output |
 |---|---|
@@ -217,4 +265,6 @@ RewardGrantView { rewardId, place, discount, title, validUntil, state, usedAt? }
 | Reservation facts | "what · N people"; add "60 min", "120 RON", "With <name>" only when the reservation has them |
 | Reward days left (MA6) | same as Time left: "N days left", red at Today / 1 day; "Until <Ddd, d Mon>" |
 | Coupon strip, customer side | "You pay <new> instead of <old>" (host side: "Pays …") |
+| Search place status (SR3/SR5) | Opening status word (600, its colour) + " · " + the time in `text.secondary`; accommodation: "Check-in 14:00 · Check-out 11:00" |
+| Search query echo (SR2) | "No results for “<query>”", the query as typed |
 | Visits (RV2/RV3) | 0 done → "New customer" / "New customer · first visit"; else "N visits" / "N visits · last <d Mon>" |
