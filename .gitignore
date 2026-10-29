@@ -1,2 +1,6 @@
 __pycache__/
 *.pyc
+
+# generated campaign reports (run artifacts; the diff reads them locally).
+# Remove this line if you want to track report history in git.
+reports/
