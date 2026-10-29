@@ -43,6 +43,10 @@ Build these once and reuse them. Values are for the **medium** phone (390 × 844
 | Tag a place (new post) | `store` | Change video | `refresh-cw` |
 | Publish (new post) | `upload` | Title and description (delete list) | `text` |
 | Save (edit post) | `check` | Delete video | `trash-2` |
+| Email (account) | `mail` | Username | `at-sign` |
+| Date of birth | `cake` | Pick / change a date | `calendar` |
+| Password / show | `lock` / `eye` | Privacy & data | `shield` |
+| Too young (alert) | `circle-alert` | Signed-out avatar | `user` |
 
 Stroke 1.8 at 20–26 px, 2–2.4 at 12–16 px. Filled: play, phone, star, more dots.
 
@@ -397,3 +401,19 @@ Optional "Brand" tone: tile `#EEEAFD`, icon `#5B3FD6`. Default is Mono.
 ## 62. Delete sheet
 - C13 sheet: "Delete this video?" 19/600 + X · one line 13.5 secondary · card listing what is deleted (rows min 56: circle 36 `bg.soft` + icon · title 15/500 · line 12.5): The video · Title and description · The tag (only with a tag) · Engagement ("Views and likes", no counts) · red **Delete video** (C17 destructive confirm in a sheet, `trash-2`).
 - Seen in: EP2. Full spec: `17-new-post.md` §7.
+
+## 63. Signed-out profile
+- Profile tab before signing in: dashed avatar 96 (`user` 40 tertiary) · "Your profile" 22/600 · one line 14 secondary · **Create account** (ink 52) · **Sign in** (white 52, 1.5 ink border) · **Privacy & data** link (`shield` 16 + 13.5/500) at the bottom, above the C9 nav.
+- Seen in: AU1. Full spec: `18-account.md` §2.
+
+## 64. Account form card
+- The TB3 details card: rows min 56, icon 20 secondary, inputs 15: First name | Last name · username + "✓ Available" (`status.successText`) · date of birth + C65 · password + eye (Show / Hide).
+- Seen in: AU3, AU5. Full spec: `18-account.md` §4.
+
+## 65. Change pill
+- `bg.soft` pill 32, radius 16, padding `0 12 0 10`: `calendar` 16 + "Change" 13.5/500 ("Pick date" while empty). Says a picker opens; the whole row is the tap target.
+- Seen in: AU3, AU5.
+
+## 66. Date of birth dialog
+- Centred dialog (left / right 20, radius 24, padding `20 20 14`): title 19/600 · headers Day · Month · Year · three ink wheels (gap 10, 1 : 1.25 : 1.25, 5 rows of 44, picked row on a `rgba(255,255,255,.12)` band, 20/600 white; neighbours 17 at 0.5 and 15 at 0.25) · **Cancel** (text) / **Confirm** (ink 44, radius 14). Months as names.
+- Seen in: AU4. Full spec: `18-account.md` §5.

@@ -155,6 +155,27 @@ Ticket 15% OFF · Thanks for coming back → From Maestro Host · 30 days left (
 
 ---
 
+## Account — create or sign in
+
+Full spec, sizes and states: [`18-account.md`](18-account.md). No welcome wall: signed out, the Profile tab shows AU1. Summary:
+
+### AU1-profile-signed-out · Profile tab, signed out
+Dashed avatar → **Your profile** · "Sign in to post videos, book and keep your rewards." → **Create account** · **Sign in** (both → AU2) → **Privacy & data** at the bottom → bottom nav (Profile).
+
+### AU2-email · Continue with email
+"Continue with email" · email field (ana.ionescu@mail.com) · note "New email: you create an account. Known email: you sign in with your password." · **Continue** (→ AU3 for a new email).
+
+### AU3-create-account · Create account
+Email · **Change** → Ana | Ionescu · ana.ionescu ✓ Available · 12 Mar 1998 · **Change** (calendar, → AU4) · password (eye) → notes (16 or older; password 8+) → **Create account**.
+
+### AU4-date-of-birth · Date of birth (dialog)
+"Date of birth" · Day · Month · Year ink wheels on 12 · Mar · 1998 · **Cancel** / **Confirm** (→ AU3).
+
+### AU5-too-young · Under the minimum age
+AU3 with 12 Mar 2014 in red, "You need to be 16 or older to create an account." and **Create account** disabled.
+
+---
+
 ## Public — search
 
 Full spec, sizes and states: [`16-search.md`](16-search.md). Opens from the **Search** tab of the bottom nav. Summary:

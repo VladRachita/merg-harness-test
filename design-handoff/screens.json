@@ -1492,6 +1492,164 @@
       ]
     },
     {
+      "id": "AU1-profile-signed-out",
+      "area": "account",
+      "title": "Account · Profile tab, signed out",
+      "purpose": "The Profile tab before signing in: Your profile, Create account, Sign in; Privacy & data at the bottom; the bottom nav.",
+      "source": "AU-Profile.dc.html",
+      "files": {
+        "small": {
+          "html": "screens/small/au1-profile-signed-out.html",
+          "png": "screenshots/small/au1-profile-signed-out.png",
+          "width": 360,
+          "height": 640
+        },
+        "medium": {
+          "html": "screens/medium/au1-profile-signed-out.html",
+          "png": "screenshots/medium/au1-profile-signed-out.png",
+          "width": 390,
+          "height": 844
+        },
+        "large": {
+          "html": "screens/large/au1-profile-signed-out.html",
+          "png": "screenshots/large/au1-profile-signed-out.png",
+          "width": 430,
+          "height": 932
+        }
+      },
+      "links_to": [
+        "au2-email",
+        "np1-pick-video"
+      ]
+    },
+    {
+      "id": "AU2-email",
+      "area": "account",
+      "title": "Account · Continue with email",
+      "purpose": "One email field: a new email goes on to create an account, a known email to sign in.",
+      "source": "AU-Email.dc.html",
+      "files": {
+        "small": {
+          "html": "screens/small/au2-email.html",
+          "png": "screenshots/small/au2-email.png",
+          "width": 360,
+          "height": 640
+        },
+        "medium": {
+          "html": "screens/medium/au2-email.html",
+          "png": "screenshots/medium/au2-email.png",
+          "width": 390,
+          "height": 844
+        },
+        "large": {
+          "html": "screens/large/au2-email.html",
+          "png": "screenshots/large/au2-email.png",
+          "width": 430,
+          "height": 932
+        }
+      },
+      "links_to": [
+        "au1-profile-signed-out",
+        "au3-create-account"
+      ]
+    },
+    {
+      "id": "AU3-create-account",
+      "area": "account",
+      "title": "Account · Create account",
+      "purpose": "Email (Change), First name | Last name, username (Available), date of birth (Change pill opens AU4), password (show); Create account.",
+      "source": "AU-Create.dc.html",
+      "files": {
+        "small": {
+          "html": "screens/small/au3-create-account.html",
+          "png": "screenshots/small/au3-create-account.png",
+          "width": 360,
+          "height": 640
+        },
+        "medium": {
+          "html": "screens/medium/au3-create-account.html",
+          "png": "screenshots/medium/au3-create-account.png",
+          "width": 390,
+          "height": 844
+        },
+        "large": {
+          "html": "screens/large/au3-create-account.html",
+          "png": "screenshots/large/au3-create-account.png",
+          "width": 430,
+          "height": 932
+        }
+      },
+      "links_to": [
+        "au2-email",
+        "au4-date-of-birth",
+        "hp-profile"
+      ]
+    },
+    {
+      "id": "AU4-date-of-birth",
+      "area": "account",
+      "title": "Account · Date of birth (dialog)",
+      "purpose": "Dialog with three dark wheels Day · Month · Year, Cancel / Confirm.",
+      "source": "AU-DOB.dc.html",
+      "files": {
+        "small": {
+          "html": "screens/small/au4-date-of-birth.html",
+          "png": "screenshots/small/au4-date-of-birth.png",
+          "width": 360,
+          "height": 640
+        },
+        "medium": {
+          "html": "screens/medium/au4-date-of-birth.html",
+          "png": "screenshots/medium/au4-date-of-birth.png",
+          "width": 390,
+          "height": 844
+        },
+        "large": {
+          "html": "screens/large/au4-date-of-birth.html",
+          "png": "screenshots/large/au4-date-of-birth.png",
+          "width": 430,
+          "height": 932
+        }
+      },
+      "links_to": [
+        "au2-email",
+        "au3-create-account",
+        "au4-date-of-birth",
+        "hp-profile"
+      ]
+    },
+    {
+      "id": "AU5-too-young",
+      "area": "account",
+      "title": "Account · Create account · under the minimum age",
+      "purpose": "The date in red, \"You need to be 16 or older to create an account.\", Create account disabled.",
+      "source": "AU-Create-Young.dc.html",
+      "files": {
+        "small": {
+          "html": "screens/small/au5-too-young.html",
+          "png": "screenshots/small/au5-too-young.png",
+          "width": 360,
+          "height": 640
+        },
+        "medium": {
+          "html": "screens/medium/au5-too-young.html",
+          "png": "screenshots/medium/au5-too-young.png",
+          "width": 390,
+          "height": 844
+        },
+        "large": {
+          "html": "screens/large/au5-too-young.html",
+          "png": "screenshots/large/au5-too-young.png",
+          "width": 430,
+          "height": 932
+        }
+      },
+      "links_to": [
+        "au2-email",
+        "au4-date-of-birth"
+      ]
+    },
+    {
       "id": "PA1-profile-rooms",
       "area": "public-accommodation",
       "title": "Public · Accommodation profile · Rooms",
