@@ -200,4 +200,4 @@ flowchart LR
   AU3 -- too young --> AU5[AU5 Create account disabled]
   AU3 -- Create account --> PROF[Your profile]
 ```
-Rules (details in `18-account.md` §1): no welcome wall, people browse without an account; the Profile tab shows AU1 while signed out; email only (no Apple / Google); the email decides create or sign in; create needs first and last name, a free username, a date of birth (dialog with Day · Month · Year wheels) and a password of 8+; under the minimum age (16, to confirm) Create account stays disabled; the date of birth is never shown.
+Rules (details in `18-account.md` §1): no welcome wall, people browse without an account; the Profile tab shows AU1 while signed out; email only (no Apple / Google); the email decides create or sign in; create needs first and last name, a free username, a date of birth (dialog with Day · Month · Year wheels) and a password of 8+; under the minimum age (16) Create account stays disabled; the date of birth is never shown.

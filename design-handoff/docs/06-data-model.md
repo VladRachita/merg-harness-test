@@ -282,7 +282,7 @@ SignUpRequest {
   password                                                   // at least 8 characters
 }
 ```
-- **Minimum age** (16, to confirm): age on the sign-up day = years between `dateOfBirth` and today. Under it, the app disables Create account (AU5) and the server refuses the request too.
+- **Minimum age: 16** — age on the sign-up day = years between `dateOfBirth` and today. Under it, the app disables Create account (AU5) and the server refuses the request too.
 - The date picker opens on 2000-01-01 when empty; valid dates only (no 31 Feb); years back to 100 years ago.
 - Signed out, the Profile tab shows AU1; no other screen asks for an account.
 

@@ -49,7 +49,6 @@ Rules:
    - a new one goes to AU3;
    - a known one goes to sign in with the password.
 
-   The sign-in screen (password, Forgot password) is not designed yet (`10` #63).
 3. **Create account (AU3)** needs all of:
    - **first name** and **last name**: two fields on one row, never "Full name";
    - a **username** that is free ("✓ Available", checked while typing);
@@ -62,17 +61,15 @@ Rules:
    - show months as names ("Mar"), never as numbers.
 
    **Confirm** writes the date into the row; **Cancel** or a tap outside changes nothing.
-5. **Age check.** The person must be at least the **minimum age (16, to confirm: `10` #62)** on the day they sign up. When younger (AU5):
+5. **Age check.** The person must be at least the **minimum age: 16** on the day they sign up. When younger (AU5):
    - the date turns `action.danger`;
    - the line "You need to be 16 or older to create an account." appears in `action.danger` with a `circle-alert` icon;
    - **Create account** is disabled (0.4).
 
    Picking an old-enough date clears it. The date of birth is never shown on the profile.
 6. **Create account** is enabled when every field is valid and the age is old enough. It creates the account, signs the person in and opens their profile.
-7. **Privacy & data** (AU1) opens the app's privacy screen: the policies and what this device shares. That screen is not designed yet (`10` #64).
-8. **Actions that need an account** while signed out (the +, Book, Like) take the person to AU1 (proposal, `10` #66).
-
-Not designed yet, do not invent: `10-open-questions.md` #62–#66 (minimum age, sign in with a known email, the Privacy & data screen, email verification, actions that need an account).
+7. **Privacy & data** (AU1) opens the app's privacy screen: the policies and what this device shares.
+8. **Actions that need an account** while signed out (the +, Book, Like) take the person to AU1. After signing in, they come back to where they were.
 
 ## 2. AU1 · Profile tab, signed out (C63)
 

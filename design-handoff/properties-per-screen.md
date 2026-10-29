@@ -210,7 +210,7 @@ Full detail per screen is in the page sections below. ⚠ = a gap listed in §B.
 | `AU2-email` | — | email check `EmailCheck{email}` → `{exists}` |
 | `AU3-create-account` | `UsernameCheck` → `{available}` (while typing) | sign up `SignUpRequest{email, firstName, lastName, username, dateOfBirth, password}` |
 | `AU4-date-of-birth` | today (for the age) | — (the date is sent with sign up) |
-| `AU5-too-young` | `MIN_AGE` ⚠ | — (Create account disabled; the server refuses too) |
+| `AU5-too-young` | `MIN_AGE` (16) | — (Create account disabled; the server refuses too) |
 
 ---
 
@@ -1577,7 +1577,7 @@ Signed out, people use the app without an account; the **Profile tab** shows AU1
 
 **Elements displayed:** fixed copy only; no backend data.
 
-**Actions:** **Create account** / **Sign in** → AU2; **Privacy & data** → the privacy screen (⚠ not designed, #64).
+**Actions:** **Create account** / **Sign in** → AU2; **Privacy & data** → the privacy screen.
 
 ### Screen 2 · Continue with email (`AU2-email`, board *2 · Continue with email*)
 
@@ -1587,7 +1587,7 @@ Signed out, people use the app without an account; the **Profile tab** shows AU1
 |---|---|---|
 | Email | `string` (email) | Required, valid email format. |
 
-**Actions:** **Continue** → `EmailCheck{ email }` → `{ exists: bool }`: `false` → AU3; `true` → sign in with the password (⚠ not designed, #63).
+**Actions:** **Continue** → `EmailCheck{ email }` → `{ exists: bool }`: `false` → AU3; `true` → sign in with the password.
 
 ### Screen 3 · Create account (`AU3-create-account`, board *3 · New email: create account (date of birth checks the age)*)
 
@@ -1606,11 +1606,11 @@ Signed out, people use the app without an account; the **Profile tab** shows AU1
 |---|---|---|
 | First name | `string` | Required. |
 | Last name | `string` | Required. |
-| Username | `string` | Required, unique. ⚠ allowed characters and length not defined. |
-| Date of birth | `date` | Required; picked in AU4. Age on the sign-up day ≥ `MIN_AGE` (16, ⚠ #62). Never shown on the profile. |
+| Username | `string` | Required, unique. |
+| Date of birth | `date` | Required; picked in AU4. Age on the sign-up day ≥ `MIN_AGE` (16). Never shown on the profile. |
 | Password | `string` | Required, at least 8 characters. |
 
-**Actions:** **Create account** → `SignUpRequest{ email, firstName, lastName, username, dateOfBirth, password }` → signed in → the person's profile. ⚠ email verification (#65).
+**Actions:** **Create account** → `SignUpRequest{ email, firstName, lastName, username, dateOfBirth, password }` → signed in → the person's profile.
 
 ### Screen 4 · Date of birth (`AU4-date-of-birth`, board *4 · Date of birth (dialog): Day · Month · Year wheels, Cancel / Confirm*)
 
@@ -1652,7 +1652,7 @@ Signed out, people use the app without an account; the **Profile tab** shows AU1
 | A18 | **My activity** | Across all businesses for the signed-in customer: upcoming (WAITING + CONFIRMED, from now on), history (DONE, DECLINED, CANCELLED; newest first), reward grants (ready ending soonest first; used / ended newest first). | MA1–MA6 |
 | A19 | **Search** | One query over place names, types and cities, video titles and deal titles (diacritics and small typos: #60). **Ranks** the results (best match first, #51) and returns **blocks**: a place = one block; videos and deals in blocks of 1–2 (one grid row). ALL mixes the three types; each tab returns only its own. **Cursor paging** (`nextCursor`, null on the last page; page size #53). Deals: only bookable ones (not past `endsAt`, `quantityLeft > 0`, at a business that takes bookings in the app), `endsAt` ascending in the Deals tab; `firstDate` = the first day the deal applies. **Recent searches**: saved when results are shown, newest first, delete one / all (#54). No totals are needed. | SR1–SR6 |
 | A20 | **Posts** | Create a post on the author's profile: store the clip (`url`, `thumbnailUrl`, up to 100 MB; its length is not measured), `title` 1–30 and `description` 0–100 characters (enforced on the server), and an optional **single** `tag { businessId, itemType?, itemId? }` that must point to an existing place / service / room (FOOD_BEVERAGE: the place only). **From your visits** = the author's DONE reservations, newest first, with `what` and the booked service / room. A tag whose item is deleted falls back to the place. **Update**: only the author; title, description and tag (`null` removes it); the video can't change. **Delete**: only the author; permanently removes the video file, title, description, tag and engagement (views and likes) for everyone. | NP1–NP4, EP1, EP2 |
-| A21 | **Accounts** | `EmailCheck` (exists or not); `UsernameCheck` (free or not, while typing); `SignUpRequest` creates the account and signs the person in. **Age**: years between `dateOfBirth` and today ≥ `MIN_AGE` (16, to confirm), checked on the server too; `dateOfBirth` is private (never on the profile). Sign in with a password, forgot password and email verification are not designed. | AU1–AU5 |
+| A21 | **Accounts** | `EmailCheck` (exists or not); `UsernameCheck` (free or not, while typing); `SignUpRequest` creates the account and signs the person in. **Age**: years between `dateOfBirth` and today ≥ `MIN_AGE` (16), checked on the server too; `dateOfBirth` is private (never on the profile). Signed out, actions that need an account (+, Book, Like) open AU1 and return to where the person was after signing in. | AU1–AU5 |
 
 ---
 
@@ -1690,7 +1690,6 @@ Signed out, people use the app without an account; the **Profile tab** shows AU1
 | B28 | Avatar fallback colour: stored or derived | all people / places | Derive in the app from the id. |
 | B29 | Search: when the request is sent, ranking, location / distance, page size and the end of a list, where recent searches are kept (and how many, signed-out people), one tab empty, matching (diacritics, typos), deals at accommodation places, query max length | SR1–SR6 | Open questions #50–#60; query max 100 (proposal). |
 | B30 | A deal opens F4C / F4E, which also need a **service**: an offer's `appliesTo.serviceIds` can list several | SR3, SR6 | Open question #61. Proposal: `DealResult.serviceIds`; with one service open on it, with several open the services list (F1) showing only those. |
-| B31 | Account: the minimum age, the sign-in and forgot-password screens and requests, the Privacy & data screen, email verification, username rules (characters, length), what happens to actions that need an account while signed out | AU1–AU5 | Open questions #62–#66. |
 
 ---
 
@@ -1720,7 +1719,7 @@ Signed out, people use the app without an account; the **Profile tab** shows AU1
 | **Search** | `SearchRequest { q, tab ALL\|VIDEOS\|PLACES\|DEALS, dealType? ALL\|EVENT\|COUPON, cursor? }` → `SearchPage { blocks[], nextCursor }`; `SearchBlock { type PLACE\|VIDEOS\|DEALS, place \| items[] }`; `PlaceResult { businessId, name, verified, category, subcategoryLabel, city, avatarUrl?, openingHours?, checkIn?, checkOut? }`; `VideoResult { itemId, itemType SERVICE\|ROOM, title, businessId, businessName, price { amount, currency, from? }, priceUnit?, people, durationMin?, thumbnailUrl }`; `DealResult { offerId, type, title, discount?, businessId, businessName, businessCategory, endsAt, quantityLeft, thumbnailUrl?, firstDate, serviceIds⚠ }` | SR1–SR6 |
 | **RecentSearch** | `query`, `searchedAt` (this person's, newest first; storage⚠) | SR1 |
 | **Post** | `id`, `authorUserId`, `publishedAt`, `video { url, thumbnailUrl }`, `title` (1–30), `description?` (0–100), `tag? { businessId, itemType? SERVICE\|ROOM, itemId? }` (one per post); create: `CreatePostRequest { videoUploadId, title, description?, tag? }`; update: `UpdatePostRequest { title, description?, tag? \| null }`; delete: `DeletePost { postId }` | NP1–NP4, EP1, EP2 |
-| **Account** | `EmailCheck { email } → { exists }`; `UsernameCheck { username } → { available }`; `SignUpRequest { email, firstName, lastName, username, dateOfBirth, password }`; `MIN_AGE` (16 ⚠) | AU2–AU5 |
+| **Account** | `EmailCheck { email } → { exists }`; `UsernameCheck { username } → { available }`; `SignUpRequest { email, firstName, lastName, username, dateOfBirth, password }`; `MIN_AGE` (16) | AU2–AU5 |
 | **VisitForTag** | `businessId`, `name`, `verified`, `avatarUrl?`, `category`, `what`, `itemType?`, `itemId?`, `date` (DONE reservations, newest first) | NP4 |
 
 *Screen ids with `*` cover all their states (for example, `TB2*` = TB2, TB2C, TB2E).*

@@ -48,9 +48,9 @@ Read in this order, then build:
   - `AU2` **Continue with email**: a new email creates an account, a known email signs in. Email only.
   - `AU3` **Create account**: First name | Last name, username (✓ Available), **date of birth** with a calendar **Change** pill, password.
   - `AU4` **Date of birth**: a dialog with three dark wheels Day · Month · Year, Cancel / Confirm.
-  - `AU5` **under the minimum age** (16, to confirm): red date and message, Create account disabled.
+  - `AU5` **under the minimum age** (16): red date and message, Create account disabled.
 
-  Spec: [`docs/18-account.md`](docs/18-account.md). Small / medium / large references; components C63–C66; *Account* data in `docs/06`; open questions #62–#66 (minimum age, sign in with a known email, the Privacy & data screen, email verification, actions that need an account).
+  Spec: [`docs/18-account.md`](docs/18-account.md). Small / medium / large references; components C63–C66; *Account* data in `docs/06`.
 
 ### Earlier updates
 

@@ -64,8 +64,3 @@
 | 59 | Deals at accommodation places | SR3, SR6 | Accommodation is Call only, so its coupons and events cannot be booked in the app. Proposal: they are not shown in search. Confirm. |
 | 60 | Matching | SR1–SR6 | Proposal: ignore diacritics ("brasov" finds "Brașov") and allow small typos. Not decided. |
 | 61 | Deal → which service | SR3, SR6 → F4C / F4E | F4C / F4E open on one service, but a coupon or event can apply to several (`appliesTo.serviceIds`). Proposal: with one service, open on it; with several, open the place's services list (F1) showing only those. Decide. |
-| 62 | **Minimum age** | AU3, AU5 | 16 is designed as a proposal (several EU countries use 16, many apps use 13). Confirm the number with legal. |
-| 63 | **Sign in with a known email** | AU2 | The password screen and **Forgot password** are not designed. Proposal: the AU2 layout with a password field (eye) and a "Forgot password?" link. |
-| 64 | Privacy & data screen | AU1 | The policies and the device-sharing choices behind the link are not designed. |
-| 65 | Email verification | AU3 | Whether a new account confirms its email (code or link) before it can post or book is not designed. |
-| 66 | Actions that need an account | +, Book, Like | Signed out, these open the Profile tab (AU1) — proposal, by decision there is no sign-in sheet. After signing in, the person comes back to where they were (proposal). |
