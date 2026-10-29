@@ -305,6 +305,66 @@ def route_tasks(cfg, payload):
 
 
 # ─────────────────────────────────────────────────────────────────────────────
+#  PLAN + SWEEP  (shared by the CLI below and scripts/campaign.py)
+# ─────────────────────────────────────────────────────────────────────────────
+def build_plan(cfg, targets, corpus):
+    """Expand (targets x corpus) into a flat list of (target, payload, item)."""
+    builders = {"login": login_tasks, "register": register_tasks, "routes": route_tasks}
+    plan = []
+    for payload in corpus:
+        for tgt in targets:
+            b = builders.get(tgt)
+            if not b:
+                continue
+            for item in b(cfg, payload):
+                plan.append((tgt, payload, item))
+    return plan
+
+
+def sweep(cfg, plan, *, timeout=15.0, delay=0.0, session=None):
+    """Execute a plan, returning (findings, requests_sent). One source of truth
+    for the CLI and the campaign runner."""
+    s = session or requests.Session()
+    s.verify = cfg.verify_tls
+    fz = Fuzzer(cfg, s, timeout)
+    if any(p.get("time_based") for _, p, _ in plan):
+        fz.measure_baseline()
+
+    findings, sent = [], 0
+    for _tgt, payload, item in plan:
+        name, field, req, is_route = item
+        if is_route:
+            method, path = req
+            status, body, ctype, elapsed = fz._send(method, path)
+        else:
+            m, p = fz._spec(name)
+            status, body, ctype, elapsed = fz._send(m, p, json_body=req)
+        sent += 1
+
+        extra = []
+        if name == "login" and 200 <= status < 300:
+            try:
+                jb = json.loads(body)
+                if isinstance(jb, dict) and (dotget(jb, cfg.token_json_path) or jb.get("access_token")):
+                    extra.append("AUTH BYPASS: token returned on wrong password")
+            except Exception:
+                pass
+
+        sigs = analyze(payload["value"], status, body, ctype, elapsed, fz.baseline, payload) + extra
+        if sigs:
+            findings.append({
+                "target": name, "field": field, "payload_id": payload["id"],
+                "category": payload["category"],
+                "payload": (payload["value"] if isinstance(payload["value"], str)
+                            else json.dumps(payload["value"]))[:120],
+                "status": status, "elapsed_s": round(elapsed, 2), "signals": sigs,
+            })
+        if delay:
+            time.sleep(delay)
+    return findings, sent
+
+
+# ─────────────────────────────────────────────────────────────────────────────
 #  MAIN
 # ─────────────────────────────────────────────────────────────────────────────
 def main(argv=None):
@@ -329,17 +389,8 @@ def main(argv=None):
     if args.limit:
         corpus = corpus[:args.limit]
 
-    builders = {"login": login_tasks, "register": register_tasks, "routes": route_tasks}
-
     # build the full plan so we can show counts up front
-    plan = []  # (target, field, payload, kind, request)
-    for payload in corpus:
-        for tgt in targets:
-            b = builders.get(tgt)
-            if not b:
-                continue
-            for item in b(cfg, payload):
-                plan.append((tgt, payload, item))
+    plan = build_plan(cfg, targets, corpus)
 
     print(f"target     : {cfg.base_url}")
     print(f"corpus     : {len(corpus)} payloads across "
@@ -358,47 +409,7 @@ def main(argv=None):
 
     print("WARNING: this mutates state (creates junk accounts). Disposable instance only.\n")
 
-    s = requests.Session()
-    s.verify = cfg.verify_tls
-    fz = Fuzzer(cfg, s, args.timeout)
-    if any(p.get("time_based") for p in corpus):
-        fz.measure_baseline()
-
-    findings = []
-    sent_count = 0
-    for tgt, payload, item in plan:
-        # item is (name, field, request, raw_path) where request is body-dict or (method,path)
-        name, field, req, is_route = item
-        if is_route:
-            method, path = req
-            status, body, ctype, elapsed = fz._send(method, path, raw_path=True)
-        else:
-            m, p = fz._spec(name)
-            body_dict = req
-            status, body, ctype, elapsed = fz._send(m, p, json_body=body_dict)
-        sent_count += 1
-
-        # auth-bypass: a login/register field payload that yields a token on bad creds
-        extra = []
-        if name == "login" and 200 <= status < 300:
-            try:
-                jb = json.loads(body)
-                if isinstance(jb, dict) and (dotget(jb, cfg.token_json_path) or jb.get("access_token")):
-                    extra.append("AUTH BYPASS: token returned on wrong password")
-            except Exception:
-                pass
-
-        sigs = analyze(payload["value"], status, body, ctype, elapsed, fz.baseline, payload) + extra
-        if sigs:
-            findings.append({
-                "target": name, "field": field, "payload_id": payload["id"],
-                "category": payload["category"],
-                "payload": (payload["value"] if isinstance(payload["value"], str)
-                            else json.dumps(payload["value"]))[:120],
-                "status": status, "elapsed_s": round(elapsed, 2), "signals": sigs,
-            })
-        if args.delay:
-            time.sleep(args.delay)
+    findings, sent_count = sweep(cfg, plan, timeout=args.timeout, delay=args.delay)
 
     # ---- report ----
     print(f"sent {sent_count} requests; {len(findings)} with signals worth a look:\n")

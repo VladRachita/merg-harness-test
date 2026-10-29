@@ -107,6 +107,40 @@ files create no injected DB row (and never crash or reflect the payload).
 injected payloads don't execute. Needs `requirements-xss.txt` + a browser; run via
 `python -m sentinel.cli run --suite xss` or the standalone `sentinel/suites/xss.py`.
 
+## October-2026 threat suite, fuzzer & campaign report
+
+Three additions model this month's real app-level attacks and make a fast,
+repeatable pass that produces an improvement report:
+
+- **`oct2026` suite** (`--suite oct2026`): checks mapped to October-2026
+  incidents — OAuth state/token confusion (Better Auth CVE-2026-110862),
+  reset-endpoint SQLi & token replay (Metabase CVE-2026-72898), unauthenticated
+  privileged ops (BeyondTrust CVE-2026-102764), media SSRF and malicious-media /
+  transcode abuse (Plex CVE-2026-96652/54/55/56), verb-tampering on edge APIs,
+  BOLA, and mass assignment. Validated against the reference controls
+  (10 blocked on secure; 8 leaks on vulnerable).
+- **`scripts/fuzz.py`**: a fast, config-driven input fuzzer — 87 payloads (SQLi,
+  XSS, HTML-entity/encoding, traversal, command/template injection, NoSQL/LDAP,
+  CRLF, and a large validation/boundary set) swept across login/registration/
+  route fields, with response-signal detection (reflection, SQL errors, stack
+  traces, auth bypass, 5xx, time-based latency). `--dry-run` shows the plan;
+  signals are leads for human review, not confirmed vulns.
+- **`scripts/campaign.py`**: runs the suites (plus the fuzzer against an HTTP
+  target) on a loop for `--minutes N`, then writes
+  `reports/appsec-report-<ts>.md` + a `.json` sidecar — strong vs. weak points
+  (each weakness mapped to its technique and fix), coverage gaps, fuzzer signals,
+  and a diff vs. the previous run so you can track improvement run-over-run.
+
+```bash
+# 0. confirm the config maps to videosanity's real routes (guards false PASS)
+python scripts/preflight.py --config config/target.videosanity.yaml
+# 1. a 10-minute threat-informed campaign that writes a Markdown report
+SENTINEL_CONFIG=config/target.videosanity.yaml python scripts/campaign.py --target http --minutes 10
+```
+
+These are defensive, authorized tests; run them against a **disposable**
+instance (they mutate state / create junk accounts).
+
 ## Exit codes & reports
 
 The CLI exits non-zero if any attack is unblocked (gate CI with it). `--json PATH`
