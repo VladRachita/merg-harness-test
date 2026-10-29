@@ -186,3 +186,18 @@ flowchart LR
   EP2 -- Delete video --> PROF
 ```
 Rules (details in `17-new-post.md` §1): video first, one clip up to 100 MB, no Skip; title required (max 30), description optional (max 100), typing stops at the cap; Publish only with a title; a tag is a place, a service or a room (restaurants: the place only), picked from the person's visits or searched in the same sheet; the tag shows as the Tag icon on the side rail (white + count badge), never as a pill on the video; viewers open the tagged item from that icon; one tag per post. Edit post changes the title, description and tag (not the video); Delete video deletes the video and everything linked to it (title, description, tag, engagement: views and likes) for everyone, after the EP2 confirmation. No hashtags, people tags or location.
+
+## M. Account — create or sign in
+
+```mermaid
+flowchart LR
+  TAB[Profile tab, signed out] --> AU1[AU1 Your profile]
+  AU1 -- Create account / Sign in --> AU2[AU2 Continue with email]
+  AU2 -- new email --> AU3[AU3 Create account]
+  AU2 -- known email --> SIGNIN((Sign in with password))
+  AU3 -- Change on the date --> AU4[AU4 Date of birth]
+  AU4 -- Confirm / Cancel --> AU3
+  AU3 -- too young --> AU5[AU5 Create account disabled]
+  AU3 -- Create account --> PROF[Your profile]
+```
+Rules (details in `18-account.md` §1): no welcome wall, people browse without an account; the Profile tab shows AU1 while signed out; email only (no Apple / Google); the email decides create or sign in; create needs first and last name, a free username, a date of birth (dialog with Day · Month · Year wheels) and a password of 8+; under the minimum age (16) Create account stays disabled; the date of birth is never shown.

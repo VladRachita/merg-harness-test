@@ -70,3 +70,8 @@ Use this for every screen before calling it done.
 - [ ] **EP1**: "Edit post", no Change video, saved text and tag, Delete video (danger on dark) and Save on one row.
 - [ ] **EP2**: what is deleted (video, title and description, tag, engagement), no counts, red Delete video; X or the dim area keeps it.
 - [ ] Everything in `17-new-post.md` §12 (definition of done).
+- [ ] **AU1**: signed out, the Profile tab shows Your profile, Create account, Sign in, Privacy & data at the bottom; no welcome wall, tagline, terms line or Skip.
+- [ ] **AU2–AU3**: email decides create or sign in; First name | Last name, username ✓ Available, date of birth with the calendar Change pill, password with show / hide.
+- [ ] **AU4**: centred dialog with three ink wheels (months as names), Cancel / Confirm.
+- [ ] **AU5**: under the minimum age, red date and alert line, Create account disabled.
+- [ ] Everything in `18-account.md` §11 (definition of done).
