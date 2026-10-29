@@ -147,16 +147,174 @@ The CLI exits non-zero if any attack is unblocked (gate CI with it). `--json PAT
 writes a machine-readable report. The `reference-vulnerable` target inverts the
 verdict: it *expects* leaks and fails if it finds none (so the suites can't rot).
 
-## Adapting to your backend
+## Wiring it to YOUR API — full checklist & worked example (do this manually)
 
-Open `sentinel/adapters/http_target.py`. Each method is a thin, documented mapping;
-the spots most likely to need a tweak are marked `# ADAPT` (your client-IP header,
-CSRF/step-up signals, multipart field name, the "import from URL" field). Most
-real differences are just config: route paths, field names, and `token_json_path`.
+The harness is driven by **one config file** plus a few optional code tweaks.
+Until these match your real backend, results are meaningless: a wrong/missing
+route returns 404, which the suites count as "blocked" (a false PASS). Always run
+`scripts/preflight.py` after editing to confirm the routes resolve and login
+returns a token.
 
-Gray-box hooks (`hooks:` in config) are optional test-profile endpoints. Without
-them, ~8 attacks report SKIPPED; the rest run black-box. With them (as the demo
-shows), the full 48 run.
+### Where everything lives
+| File | Role |
+|------|------|
+| `config/target.<name>.yaml` | **The one file you edit.** Copy `config/target.videosanity.yaml` (or `target.example.yaml`) and fill it in. |
+| `sentinel/adapters/http_target.py` | A handful of request-shaping spots marked `# ADAPT` you may need to change (headers, field names). |
+| env vars `SENTINEL_*` | Override any single value without touching the YAML. Precedence: **built-in defaults < YAML < env vars**. |
+
+Point the run at your file with `--config config/target.videosanity.yaml` or
+`SENTINEL_CONFIG=config/target.videosanity.yaml`.
+
+### Step 1 — fill in the config (what every key is, and how to find it)
+| Key | What it is | How to find it | Example |
+|-----|-----------|----------------|---------|
+| `target.scheme/host/port/base_path` | Where the app listens | your deploy / container | `http` / `videosanity-videosanity-app-1` / `8080` / `/api/v1` |
+| `endpoints.<name>` | `"METHOD /path/with/{params}"` for each operation | your API routes / OpenAPI / controller code | `login: "POST /auth/login"` |
+| `fields.username/password/otp/email/token/new_password` | The **JSON field names** your API expects | a real request body (DevTools → Network) | `username: email` if login takes `email` |
+| `token_json_path` | Dot-path to the access token in the login JSON | a real login response | `data.accessToken` |
+| `refresh_json_path` | Dot-path to the refresh token | a real login response | `data.refreshToken` |
+| `auth_header` | How the token is sent | your auth docs | `Authorization: Bearer {token}` (or a cookie — see ADAPT) |
+| `users.user/user2/admin` | **Real throwaway accounts** that already exist | create them on the test instance | see example below |
+| `jwt_iss` / `jwt_aud` | Expected issuer/audience, so forged-token tests fail on the *algorithm*, not iss/aud | a decoded JWT (jwt.io) | `https://auth.videosanity.test` / `api` |
+| `jwks_url` | Public-key endpoint (enables the RS256→HS256 test, C2) | `/.well-known/jwks.json` if present | optional |
+| `features` | `[oauth, media_upload]` — attacks for a feature not listed are SKIPPED | what your app actually has | `[media_upload]` |
+| `hooks.*` | Optional **test-build** endpoints that unlock gray-box checks | only if you expose them | leave `null` for black-box |
+
+> **Field-name gotcha:** the login *identifier* value comes from
+> `users.<role>.username`, and it is sent under the JSON key `fields.username`.
+> So if your API logs in by email, set `fields.username: email` **and** put the
+> email address in each user's `username`. Same idea for `otp`→`totp`,
+> `new_password`→`newPassword`, etc.
+
+### Step 2 — adjust the `# ADAPT` spots in `sentinel/adapters/http_target.py`
+These are request details config can't express. Search the file for `# ADAPT`:
+| Spot (method) | Default | Change to |
+|---------------|---------|-----------|
+| `login` — client IP header | `X-Forwarded-For` | your real client-IP header (e.g. `X-Real-IP`), used by the brute-force/IP-limit checks |
+| `_mutate_headers` — CSRF signal | `Origin` / `X-CSRF-Token` | however your API distinguishes same-site vs cross-site writes |
+| `_mutate_headers` — step-up signal | `X-Step-Up: reauthed` | your re-auth / step-up signal (used by CT1, SES6) |
+| `change_email` — verified signal | `X-Email-Verified: true` | your "email re-verified" signal (AT4, OCT2) |
+| `upload_bytes` — multipart field | `file` | your upload form-field name (e.g. `media`) |
+| `upload` — import-by-URL field | `fetchUrl` | your "import from URL" field (e.g. `sourceUrl`), used by the SSRF checks (INJ6, OCT5) |
+
+> If the app authenticates with a **session cookie** instead of a bearer token,
+> set `auth_header` to a cookie (`Cookie: session={token}`) and make sure
+> `token_json_path` points at whatever the login returns (or the `sid` the
+> adapter lifts from `Set-Cookie`). `fields.token` is reused for **both** the
+> refresh-token and reset-token request bodies — if your API names them
+> differently, split them in `refresh_token()` / `reset_confirm()`.
+
+### Step 3 — worked example
+Say videosanity's real API (from its docs/code) looks like this:
+
+```
+POST /api/v1/auth/login     {"email","password","totp"}  -> 200 {"data":{"accessToken","refreshToken"}}
+POST /api/v1/auth/logout    Bearer                        -> 204
+POST /api/v1/auth/refresh   {"refreshToken"}              -> 200 {"data":{"accessToken"}}
+POST /api/v1/auth/register  {"email","password"}          -> 201
+GET  /api/v1/admin/users            Bearer(admin)
+DELETE /api/v1/admin/users/{target} Bearer(admin)
+GET  /api/v1/users/{owner_id}/library   Bearer (owner-only)
+GET  /api/v1/videos/{id}                Bearer (owner-only)
+POST /api/v1/account/password  {"currentPassword","newPassword"}
+POST /api/v1/account/payout             (step-up protected)
+POST /api/v1/account/email     {"email"}
+GET  /media/{path}
+POST /api/v1/uploads           multipart field "media"; import via {"sourceUrl"}
+POST /api/v1/auth/password/forgot {"email"}
+POST /api/v1/auth/password/reset  {"token","newPassword"}
+Auth: Authorization: Bearer <token>   ·   client IP from X-Real-IP
+```
+
+The matching `config/target.videosanity.yaml` is:
+
+```yaml
+target:
+  scheme: http
+  host: videosanity-videosanity-app-1
+  port: 8080
+  base_path: /api/v1            # prefixes every endpoint below (except absolute ones)
+
+endpoints:
+  login:           "POST /auth/login"
+  logout:          "POST /auth/logout"
+  refresh:         "POST /auth/refresh"
+  register:        "POST /auth/register"
+  admin_users:     "GET /admin/users"
+  admin_delete:    "DELETE /admin/users/{target}"
+  resource:        "GET /users/{owner_id}/library"
+  object:          "GET /videos/{id}"          # suite calls get_object(.,'video',102)
+  change_password: "POST /account/password"
+  sensitive:       "POST /account/payout"
+  change_email:    "POST /account/email"
+  media:           "GET /media/{path}"         # note: no /api/v1 prefix? then set base_path:"" and prefix each route
+  upload:          "POST /uploads"
+  reset_request:   "POST /auth/password/forgot"
+  reset_confirm:   "POST /auth/password/reset"
+  buggy:           "GET /videos/{id}"          # any route that parses input; reuse one you have
+
+fields:
+  username: email                # <-- login takes "email", so map it here
+  password: password
+  otp: totp
+  email: email
+  token: token                   # reset body uses {"token": ...}
+  new_password: newPassword
+
+token_json_path: "data.accessToken"
+refresh_json_path: "data.refreshToken"
+auth_header: "Authorization: Bearer {token}"
+
+users:
+  user:  { username: "alice@videosanity.test", password: "Alice-Pw-123!", id: 1001, email: "alice@videosanity.test" }
+  user2: { username: "bob@videosanity.test",   password: "Bob-Pw-123!",   id: 1002, email: "bob@videosanity.test" }
+  admin: { username: "admin@videosanity.test", password: "Admin-Pw-123!", id: 1,    email: "admin@videosanity.test" }
+
+jwt_iss: "https://auth.videosanity.test"
+jwt_aud: "api"
+
+features: [media_upload]         # add "oauth" only if videosanity exposes OAuth endpoints
+
+hooks:                           # leave null for black-box; ~8 checks then SKIP (honest)
+  reset: null
+  user_admin: null
+  other_aud_token: null
+  db_probe: null
+  reset_introspect: false
+```
+
+…plus two `# ADAPT` edits in `http_target.py`: change the client-IP header to
+`X-Real-IP`, the multipart field from `file` to `media`, and the import field
+from `fetchUrl` to `sourceUrl`.
+
+### Step 4 — which checks run, and what each hook/feature unlocks
+Without a capability, the dependent checks **SKIP** (honest) rather than fake a pass:
+
+| Capability | Turn it on with | Unlocks |
+|-----------|-----------------|---------|
+| `media_upload` | `features: [media_upload]` | INJ6, OUT5, UP2, UP3, MED1, MED2, MED4, **OCT5, OCT6** |
+| `oauth` | `features: [oauth]` + `oauth:` block | OA1–OA5, **OCT1** |
+| `two_accounts` | a real `users.user2` | AZ2, AZ3, **OCT8** |
+| `signing_key` | `jwks_url` | C2 (RS256→HS256 confusion) |
+| `reset_introspect` | `hooks.reset_introspect: true` (test build echoes the reset link) | AT1, AT3, ID3, **OCT3b** |
+| `user_admin` | `hooks.user_admin` (test endpoint to read/set a user) | AZ5, AZ6, **OCT9** |
+| `other_aud_token` | `hooks.other_aud_token` | SES7 |
+| `db_probe` | `hooks.db_probe` | MED3 |
+
+### Step 5 — verify, then run
+```bash
+# a) routes resolve + login returns a token (fails loudly if not)
+python scripts/preflight.py --config config/target.videosanity.yaml
+# b) sanity-check the suites themselves still pass/fail correctly
+python -m sentinel.cli run --target reference-secure --suite all
+python -m sentinel.cli run --target reference-vulnerable --suite all
+# c) the real run (single pass) or the timed campaign with a Markdown report
+SENTINEL_CONFIG=config/target.videosanity.yaml python -m sentinel.cli run --target http --suite all
+SENTINEL_CONFIG=config/target.videosanity.yaml python scripts/campaign.py --target http --minutes 10
+```
+
+Run against a **disposable** instance — the suites and fuzzer mutate state
+(change passwords/email, create accounts, upload files).
 
 ## Layout
 
