@@ -201,3 +201,14 @@ flowchart LR
   AU3 -- Create account --> PROF[Your profile]
 ```
 Rules (details in `18-account.md` §1): no welcome wall, people browse without an account; the Profile tab shows AU1 while signed out; email only (no Apple / Google); the email decides create or sign in; create needs first and last name, a free username, a date of birth (dialog with Day · Month · Year wheels) and a password of 8+; under the minimum age (16) Create account stays disabled; the date of birth is never shown.
+
+## N. Admin — dashboard (web)
+
+```text
+Reviews ──── Pending Reviews ⇄ Approved Videos ⇄ Rejected Videos      (A approve · R reject + reason · J next)
+Analytics ── Videos · People · Reservations · System Health ── "Open <page>" → Reviews / User Management / Reservations / System Health
+Platform Users ── Super Admin menu → Host Approval · User Management · Host Management · Reservations · Categories
+                  · General · Platform Settings · System Health · Audit Log (Overview · Feed · Search · Video Upload
+                  · Registration · Reservations · Playback Health)
+```
+Rules (details in `19-admin.md`): the three tabs and every page name stay; a role only sees and can only call what it is allowed (Moderator: Reviews, Analytics; Super Admin: everything), checked on the server; every approve / reject (videos and hosts) goes to the read-only Audit Log.

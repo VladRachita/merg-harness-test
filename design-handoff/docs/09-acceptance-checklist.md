@@ -75,3 +75,6 @@ Use this for every screen before calling it done.
 - [ ] **AU4**: centred dialog with three ink wheels (months as names), Cancel / Confirm.
 - [ ] **AU5**: under the minimum age, red date and alert line, Create account disabled.
 - [ ] Everything in `18-account.md` §11 (definition of done).
+- [ ] **AD1–AD3** (admin, web): three tabs, every page name kept; Reviews queue with R / A / J and Undo; Analytics in four sections with the period switch; Host Approval with the grouped Super Admin menu, table and detail card.
+- [ ] Admin roles enforced on the server; every decision in the read-only Audit Log.
+- [ ] Everything in `19-admin.md` §11 (definition of done).

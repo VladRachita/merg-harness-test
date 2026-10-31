@@ -41,7 +41,7 @@ Types: `string`, `int`, `bool`, `money` = `{ amount: number, currency: "RON" }`,
 
 ---
 
-## Contents — 13 pages, 75 screens
+## Contents — 14 pages, 78 screens
 
 | Page | Screens |
 |---|---|
@@ -58,6 +58,7 @@ Types: `string`, `int`, `bool`, `money` = `{ amount: number, currency: "RON" }`,
 | Public · Search | `SR1-start`, `SR2-no-results`, `SR3-all`, `SR4-videos`, `SR5-places`, `SR6-deals` |
 | Profile · New post | `NP1-pick-video`, `NP2-empty`, `NP3-written`, `NP4-tag-place`, `EP1-edit-post`, `EP2-delete-video` |
 | Account · Create or sign in | `AU1-profile-signed-out`, `AU2-email`, `AU3-create-account`, `AU4-date-of-birth`, `AU5-too-young` |
+| Admin · Dashboard (web) | `AD1-reviews`, `AD2-analytics`, `AD3-host-approval` |
 
 Start with the **quick index** below (what each screen reads and sends). Then each page in detail, then: **§A** rules and jobs the backend runs · **§B** gaps to decide · **§C** entity and field index.
 
@@ -211,6 +212,14 @@ Full detail per screen is in the page sections below. ⚠ = a gap listed in §B.
 | `AU3-create-account` | `UsernameCheck` → `{available}` (while typing) | sign up `SignUpRequest{email, firstName, lastName, username, dateOfBirth, password}` |
 | `AU4-date-of-birth` | today (for the age) | — (the date is sent with sign up) |
 | `AU5-too-young` | `MIN_AGE` (16) | — (Create account disabled; the server refuses too) |
+
+**Admin · Dashboard (web)** — every request checks `AdminRole` on the server.
+
+| Screen | Reads | Sends |
+|---|---|---|
+| `AD1-reviews` | `ReviewItem[]` PENDING oldest first (and APPROVED / REJECTED history) `{postId, title, author{name, username, role, memberSince, approvedBefore, rejectedBefore}, tag.label, uploadedAt, fileSizeMb, resolution}` · counts for the badges | `ReviewDecision{postId, decision, reason?}` · undo |
+| `AD2-analytics` | `AnalyticsSummary{period, videos, people, reservations, health, previous, series}` | — (period switch: `period` 24H / 7D / 30D) |
+| `AD3-host-approval` | `HostApplication[]` by state `{business, owner, documents, appliedAt}` · badge counts · System Health status | `HostDecision{applicationId, decision, reason?}` |
 
 ---
 
@@ -1626,6 +1635,57 @@ Signed out, people use the app without an account; the **Profile tab** shows AU1
 
 **Actions:** none until an old-enough date is picked; the server must refuse a sign-up under `MIN_AGE` too.
 
+## Page: Admin · Dashboard (web)
+
+The platform team's web app (1440 × 900). Every page and action checks the admin's role on the server (`AdminRole`: MODERATOR sees Reviews and Analytics; SUPER_ADMIN everything). See `docs/19-admin.md` §2 and `docs/06-data-model.md` → *Admin*.
+
+### Screen 1 · Reviews (`AD1-reviews`, board *1 · Reviews: one queue, the video in the middle, decide with A / R*)
+
+**Opens with:** the admin session; selects the oldest pending video.
+
+**Elements displayed**
+
+| Element | Field | Type | Notes |
+|---|---|---|---|
+| Tab badges | count of PENDING `ReviewItem`, count of PENDING `HostApplication` | `int` ×2 | Reviews 12 · Platform Users 3 |
+| List switch | counts: pending; approved / rejected today | `int` ×3 | "Pending Reviews 12", "128 today", "9 today" |
+| Oldest | the oldest pending `uploadedAt` | `datetime` | "Oldest: 1 h" |
+| Queue row | `ReviewItem.postId`, `.title`, `.author.username`, `.uploadedAt`, `.tag.label?` + the video thumbnail | | No tag → "No tag" |
+| Player | the post's video `url`, `thumbnailUrl`, title, description, author | | As people see it |
+| Uploader | `.author.name`, `.username`, `.role`, `.memberSince`, `.approvedBefore`, `.rejectedBefore` | | |
+| Post | `.tag.label`, `.uploadedAt`, `.fileSizeMb`, `.resolution`, waiting time | | |
+
+**Inputs:** the decision (A / R / J), the reject reason (one of four).
+
+**Actions:** `ReviewDecision{ postId, decision: APPROVE | REJECT, reason? }` (reason required for REJECT) → Audit Log entry; undo within a few seconds; the uploader is told the outcome.
+
+### Screen 2 · Analytics (`AD2-analytics`, board *2 · Analytics grouped by category, with a period switch*)
+
+**Opens with:** `period = 24H`.
+
+**Elements displayed:** `AnalyticsSummary` for the period: `videos { pending, approved, rejected, timeToReviewMin }`, `people { newUsers, newHosts, hostApplicationsWaiting }`, `reservations { requests, confirmed, declined, noShows }`, `health { playbackErrors, uploadFailures, uptimePct }`; the change lines from `previous`; the sparklines from `series`.
+
+**Inputs:** period 24H / 7D / 30D.
+
+**Actions:** none (each section links to its page).
+
+### Screen 3 · Platform Users · Host Approval (`AD3-host-approval`, board *3 · Platform Users: the Super Admin menu in groups; Host Approval*)
+
+**Opens with:** SUPER_ADMIN only.
+
+**Elements displayed**
+
+| Element | Field | Type | Notes |
+|---|---|---|---|
+| Menu badges | count of PENDING applications; System Health status | `int`; `enum(OK\|WARNING\|DOWN)` | Amber badge; green / amber / red dot |
+| Tabs | counts per state | `int` | "Pending 3" |
+| Row | `HostApplication.business.name`, `.business.category`, `.business.type`, `.business.city`, `.appliedAt`, `.owner.name`, `.owner.email` | | |
+| Detail | `.owner.phone`, `.business.address`, `.documents[] { name, url }` | | Personal data: host approvers only; `url` short-lived; each view logged. |
+
+**Actions:** **Refresh** (re-reads the list); `HostDecision{ applicationId, decision, reason? }` → the business becomes a host (APPROVE) or not; the owner is told; Audit Log entry.
+
+The other menu pages (User Management, Host Management, Reservations, Categories, General, Platform Settings, System Health, Audit Log pages) have no board yet: their data is listed when they are designed.
+
 ---
 
 ## A. Rules and jobs the screens rely on (backend logic, not one screen)
@@ -1653,6 +1713,7 @@ Signed out, people use the app without an account; the **Profile tab** shows AU1
 | A19 | **Search** | One query over place names, types and cities, video titles and deal titles (diacritics and small typos: #60). **Ranks** the results (best match first, #51) and returns **blocks**: a place = one block; videos and deals in blocks of 1–2 (one grid row). ALL mixes the three types; each tab returns only its own. **Cursor paging** (`nextCursor`, null on the last page; page size #53). Deals: only bookable ones (not past `endsAt`, `quantityLeft > 0`, at a business that takes bookings in the app), `endsAt` ascending in the Deals tab; `firstDate` = the first day the deal applies. **Recent searches**: saved when results are shown, newest first, delete one / all (#54). No totals are needed. | SR1–SR6 |
 | A20 | **Posts** | Create a post on the author's profile: store the clip (`url`, `thumbnailUrl`, up to 100 MB; its length is not measured), `title` 1–30 and `description` 0–100 characters (enforced on the server), and an optional **single** `tag { businessId, itemType?, itemId? }` that must point to an existing place / service / room (FOOD_BEVERAGE: the place only). **From your visits** = the author's DONE reservations, newest first, with `what` and the booked service / room. A tag whose item is deleted falls back to the place. **Update**: only the author; title, description and tag (`null` removes it); the video can't change. **Delete**: only the author; permanently removes the video file, title, description, tag and engagement (views and likes) for everyone. | NP1–NP4, EP1, EP2 |
 | A21 | **Accounts** | `EmailCheck` (exists or not); `UsernameCheck` (free or not, while typing); `SignUpRequest` creates the account and signs the person in. **Age**: years between `dateOfBirth` and today ≥ `MIN_AGE` (16), checked on the server too; `dateOfBirth` is private (never on the profile). Signed out, actions that need an account (+, Book, Like) open AU1 and return to where the person was after signing in. | AU1–AU5 |
+| A22 | **Admin** | `AdminRole` checked on every admin request (MODERATOR: Reviews, Analytics; SUPER_ADMIN: everything). `ReviewDecision` / `HostDecision` update the item, tell the author or owner, and append to the **read-only** Audit Log (who, what, when, reason). Undo within a few seconds. Two-factor sign-in for admins; password again before rejecting a host, Platform Settings changes and User Management actions. Host application personal data and documents only for host approvers, documents through short-lived links, every view logged. | AD1–AD3 |
 
 ---
 
@@ -1720,6 +1781,7 @@ Signed out, people use the app without an account; the **Profile tab** shows AU1
 | **RecentSearch** | `query`, `searchedAt` (this person's, newest first; storage⚠) | SR1 |
 | **Post** | `id`, `authorUserId`, `publishedAt`, `video { url, thumbnailUrl }`, `title` (1–30), `description?` (0–100), `tag? { businessId, itemType? SERVICE\|ROOM, itemId? }` (one per post); create: `CreatePostRequest { videoUploadId, title, description?, tag? }`; update: `UpdatePostRequest { title, description?, tag? \| null }`; delete: `DeletePost { postId }` | NP1–NP4, EP1, EP2 |
 | **Account** | `EmailCheck { email } → { exists }`; `UsernameCheck { username } → { available }`; `SignUpRequest { email, firstName, lastName, username, dateOfBirth, password }`; `MIN_AGE` (16) | AU2–AU5 |
+| **Admin** | `AdminRole`; `ReviewItem` (+ `ReviewDecision`); `AnalyticsSummary { period, videos, people, reservations, health, previous, series }`; `HostApplication` (+ `HostDecision`) | AD1–AD3 |
 | **VisitForTag** | `businessId`, `name`, `verified`, `avatarUrl?`, `category`, `what`, `itemType?`, `itemId?`, `date` (DONE reservations, newest first) | NP4 |
 
 *Screen ids with `*` cover all their states (for example, `TB2*` = TB2, TB2C, TB2E).*

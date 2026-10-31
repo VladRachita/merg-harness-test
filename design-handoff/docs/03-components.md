@@ -1,5 +1,7 @@
 # 03 · Components
 
+The admin dashboard (web) has its own components, AC1–AC6, in `19-admin.md` §8.
+
 Build these once and reuse them. Values are for the **medium** phone (390 × 844); see `07-responsive-and-platforms.md` for small/large. Exact markup for each component is in `../screens/medium/<screen>.html` (search the screen named in "Seen in").
 
 ---

@@ -1,4 +1,4 @@
-# Design handoff — Video-first profiles, booking, table booking, team, customer rewards, reservations, my activity, search, new post, account and host tools
+# Design handoff — Video-first profiles, booking, table booking, team, customer rewards, reservations, my activity, search, new post, account, host tools and the admin dashboard
 
 Everything an implementing agent needs to build the screens designed in the **Profile Quick Actions** design canvas, for **Android and iOS**, on **small, medium and large phones**, so the result looks exactly like the designs.
 
@@ -26,13 +26,15 @@ Read in this order, then build:
 15. [`docs/16-search.md`](docs/16-search.md) — the full spec of the public **Search** page (before you type with recent searches → tabs All · Videos · Places · Deals → one mixed feed that keeps loading → no results), with its own definition of done.
 16. [`docs/17-new-post.md`](docs/17-new-post.md) — the full spec of the **New post** page (the + button → pick a video → write the title and description on the video → tag a place, a service or a room → Publish; edit the post or delete the video later), with its own definition of done.
 17. [`docs/18-account.md`](docs/18-account.md) — the full spec of the **Account** page (the Profile tab when signed out → continue with email → create account with the date of birth and an age check), with its own definition of done.
-18. [`docs/10-open-questions.md`](docs/10-open-questions.md) — what is **not** designed yet. Do not invent these; ask.
+18. [`docs/19-admin.md`](docs/19-admin.md) — the full spec of the **Admin dashboard** (web, desktop): the three tabs Reviews · Analytics · Platform Users, every page name kept, the moderation queue, analytics by category, Host Approval, and the roles and security rules, with its own definition of done.
+19. [`docs/10-open-questions.md`](docs/10-open-questions.md) — what is **not** designed yet. Do not invent these; ask.
 
 ## What is in this folder
 
 | Path | What it is |
 |---|---|
 | `screenshots/{small,medium,large}/*.png` | Pixel reference for every screen at 2× (360×640, 390×844, 430×932 points). **What "done" looks like.** |
+| `screenshots/desktop/*.png`, `screens/desktop/*.html` | The admin dashboard (web) at 1440 × 900 (2× PNG), same format as the phone screens. |
 | `screens/{small,medium,large}/*.html` | The original design markup, standalone. Open in a browser to inspect exact values (every style is inline). Links between screens work, so it is also a clickable prototype. |
 | `screens/reference/icon-set.html` | The Quick Actions icon set and icon rules. |
 | `screens.json` | Manifest: every screen id, title, purpose, files per size, and the screens it links to. |
@@ -43,6 +45,16 @@ Read in this order, then build:
 
 ## What's new in this update
 
+- **Admin dashboard (web)** — the platform team's admin, restructured with **every page name kept**. Desktop screens at 1440 × 900:
+  - `AD1` **Reviews**: one moderation queue (Pending Reviews · Approved Videos · Rejected Videos), the video in the middle, **Reject (R) · Approve (A) · Next (J)**, uploader and post details on the right.
+  - `AD2` **Analytics**: grouped into Videos, People, Reservations and System Health, with a 24h / 7 days / 30 days switch.
+  - `AD3` **Platform Users · Host Approval**: the Super Admin menu in groups (Approvals, People, Bookings & catalog, Platform, Audit Log with its seven pages), the applications table and the selected application with Approve / Reject.
+  - Roles and security: the server checks every request; Moderator sees Reviews and Analytics, Super Admin everything; two-factor sign-in; every decision in a read-only Audit Log.
+
+  Spec: [`docs/19-admin.md`](docs/19-admin.md). Components AC1–AC6; *Admin* data in `docs/06`.
+
+### Earlier updates
+
 - **Account (create or sign in)** — replaces the current welcome screen. No welcome wall: people watch and search without an account, and the Profile tab is where they sign up:
   - `AU1` **Profile tab, signed out**: Your profile, **Create account**, **Sign in**, **Privacy & data** at the bottom. No tagline, no feature rows, no terms line, no Skip.
   - `AU2` **Continue with email**: a new email creates an account, a known email signs in. Email only.
@@ -51,9 +63,6 @@ Read in this order, then build:
   - `AU5` **under the minimum age** (16): red date and message, Create account disabled.
 
   Spec: [`docs/18-account.md`](docs/18-account.md). Small / medium / large references; components C63–C66; *Account* data in `docs/06`.
-
-### Earlier updates
-
 - **New post (profile)** — anyone posts a video on their own profile from the **+** in the bottom nav, the way people know from Instagram and TikTok:
   - `NP1` **pick a video**: one clip, up to 100 MB, no Skip.
   - `NP2` **on the video, empty**: the whole video, the title and description typed where people will read them, **Tag** on the side rail, **Publish** greyed until there is a title.
@@ -99,7 +108,7 @@ Read in this order, then build:
 - Small / medium / large references for all of the above; new tokens `color.calendar.*`, `color.offer.*` and radii for calendar cells, day tile and offer cards.
 - Booking form: **First name and Last name are two fields** on one row (never "Full name").
 
-## Screen inventory (75 screens × 3 sizes)
+## Screen inventory (75 phone screens × 3 sizes + 3 desktop screens)
 
 | Area | Screens |
 |---|---|
@@ -112,6 +121,7 @@ Read in this order, then build:
 | Customer — my activity | `MA1-upcoming`, `MA2-rewards`, `MA3-history`, `MA4-reservation-waiting`, `MA5-reservation-confirmed`, `MA6-reward` |
 | Profile — new post | `NP1-pick-video`, `NP2-empty`, `NP3-written`, `NP4-tag-place`, `EP1-edit-post`, `EP2-delete-video` |
 | Account — create or sign in | `AU1-profile-signed-out`, `AU2-email`, `AU3-create-account`, `AU4-date-of-birth`, `AU5-too-young` |
+| Admin — web dashboard (desktop) | `AD1-reviews`, `AD2-analytics`, `AD3-host-approval` |
 | Public — search | `SR1-start`, `SR2-no-results`, `SR3-all`, `SR4-videos`, `SR5-places`, `SR6-deals` |
 | Public — accommodation | `PA1-profile-rooms`, `PA2-room-video`, `PA3-room-included` |
 | Public — services & F&B profiles | `PS1-profile-services`, `PF1-profile-fnb` |
@@ -137,7 +147,7 @@ Copy this as the first message, adjusted for your app's repository:
 You are implementing new screens in our mobile app (Android + iOS). The complete design
 handoff is in design-handoff/ (README.md first). Follow it exactly:
 
-1. Read design-handoff/README.md and every file in design-handoff/docs/ (01–18) before writing code.
+1. Read design-handoff/README.md and every file in design-handoff/docs/ (01–19) before writing code.
 2. Map tokens.json into the app's theme (colours, type, radii, spacing). Do not add new values.
 3. Build the shared components from docs/03-components.md first (C1–C66), then the screens from
    docs/04-screens.md, in the order: host services → host rooms → host team (TM1 → TM3, see
@@ -147,7 +157,8 @@ handoff is in design-handoff/ (README.md first). Follow it exactly:
    table booking (TB1 → TB4, see docs/11-table-booking.md) → coupons & events →
    customer my activity (MA1 → MA6, see docs/15-my-activity.md) → public search
    (SR1 → SR6, see docs/16-search.md) → new post (NP1 → NP4, EP1 → EP2, see docs/17-new-post.md) → account
-   (AU1 → AU5, see docs/18-account.md).
+   (AU1 → AU5, see docs/18-account.md). The admin dashboard (AD1 → AD3, web, see
+   docs/19-admin.md) is a separate web app: build it after the mobile app, or in its own repository.
 4. Every screen must match screenshots/{small,medium,large}/<id>.png. Use the HTML in
    screens/ for exact sizes. Respect docs/07 for small/medium/large and safe areas.
 5. Wire navigation exactly as docs/05-flows.md (and screens.json "links_to"). Screens with a
@@ -156,7 +167,7 @@ handoff is in design-handoff/ (README.md first). Follow it exactly:
 7. When a screen is done, compare it to the screenshots at all three sizes and go through
    docs/09-acceptance-checklist.md (and docs/11 §12 for table booking, docs/12 §8 for team,
    docs/13 §13 for customers & rewards, docs/14 §13 for reservations, docs/15 §13 for my
-   activity, docs/16 §14 for search, docs/17 §12 for new post, docs/18 §11 for account). Report any deviation
+   activity, docs/16 §14 for search, docs/17 §12 for new post, docs/18 §11 for account, docs/19 §11 for the admin). Report any deviation
    instead of silently changing the design.
 ```
 
@@ -182,6 +193,7 @@ handoff is in design-handoff/ (README.md first). Follow it exactly:
    | 8 · Search | "Phase 8: build the public Search page exactly as docs/16-search.md: the Search tab of the bottom nav opens SR1 (search field, Recent searches with remove and Clear all, no Browse); typing shows SR3 with tabs All · Videos · Places · Deals (icon + label, no counts, unselected greyed 0.4, the query kept across tabs); All is one mixed feed in the order the backend ranks it (place rows, video rows of two, deal rows of two; no headings, no See all); SR4 videos (C7 with the place name), SR5 places (no icons: initial, name, verified, type · city, status), SR6 deals (2 per row, ending soonest first, All / Events / Coupons tiles); every list keeps loading with Loading more; SR2 no results. A place opens PS1 / PF1 / PA1, a video F2 / PA2, a deal F4C / F4E / TB2C / TB2E with the deal picked. Replace the existing Search screen. Data per docs/06 (Search). Done = docs/16 §14 at small, medium and large." |
    | 9 · New post | "Phase 9: build the New post page exactly as docs/17-new-post.md: the + in the bottom navigation opens NP1 (the video picker, one clip up to 100 MB, no Skip); NP2 / NP3 are the whole video with X, Change video, the poster, the frosted caption panel (title max 30 and description max 100 characters, fields that grow, counters n / 30 on the divider and n / 100 under the description, typing stops at the cap), the Tag tool on the side rail (dark without a tag, white with a green count badge with one) and Publish bottom right (greyed until there is a title); NP4 is the Tag a place sheet (search places, From your visits with a check, Done). A tag is a place, a service or a room; restaurants tag the place only. EP1 Edit post (from More on your own post: same editor, no Change video, Delete video bottom left, Save bottom right) and EP2 Delete video (sheet listing what is deleted, red Delete video). No hashtags, people tags, location or tag pill on the video. Data per docs/06 (Post). Done = docs/17 §12 at small, medium and large." |
    | 10 · Account | "Phase 10: build the Account page exactly as docs/18-account.md: no welcome wall, people browse without an account; signed out, the Profile tab shows AU1 (dashed avatar, Your profile, one line, Create account, Sign in, Privacy & data at the bottom, the bottom nav); both buttons open AU2 Continue with email; a new email goes to AU3 Create account (First name and Last name as two fields, username with Available, date of birth with the calendar Change pill, password with show / hide); the date opens AU4, a centred dialog with three ink wheels Day · Month · Year (months as names) and Cancel / Confirm; under the minimum age AU5 shows the red date and alert line and disables Create account. Email only, no terms line, no Skip. Replace the existing welcome screen. Data per docs/06 (Account). Done = docs/18 §11 at small, medium and large." |
+   | 11 · Admin dashboard (web) | "Phase 11: build the admin web app exactly as docs/19-admin.md, at 1440 × 900 and working from 1280 wide: the top bar with the three tabs Reviews · Analytics · Platform Users (badges for pending reviews and host applications); Reviews as one moderation queue (Pending Reviews, Approved Videos, Rejected Videos; oldest first; Reject R with a reason, Approve A, Next J, Undo); Analytics in four sections with a 24h / 7 days / 30 days switch; Platform Users with the grouped Super Admin menu keeping every page name, and Host Approval with the applications table and detail card. Enforce the roles on the server (Moderator: Reviews and Analytics; Super Admin: everything), two-factor sign-in, password again for risky actions, every decision in the read-only Audit Log. Data per docs/06 (Admin). Done = docs/19 §11." |
 
 5. **Verify every phase visually.** Run on an iPhone SE / 15 / 15 Pro Max simulator and 360 / ~393 / ~430-wide Android emulators, take screenshots, put them next to `screenshots/<size>/<id>.png` (overlay at 50 %), and go through `docs/09-acceptance-checklist.md`. Ask the agent to attach the screenshots and list any deviation in the PR description.
 6. **Keep open questions open.** If the agent hits anything in `docs/10-open-questions.md` (for example validation errors on TB3 or R3 offers), it adds a TODO and asks; it does not design it.
