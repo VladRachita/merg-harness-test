@@ -155,6 +155,21 @@ Ticket 15% OFF · Thanks for coming back → From Maestro Host · 30 days left (
 
 ---
 
+## Admin — web dashboard (desktop)
+
+Full spec: [`19-admin.md`](19-admin.md). A separate web app at 1440 × 900. Summary:
+
+### AD1-reviews · Reviews
+Top bar (Reviews 12 · Analytics · Platform Users 3, Logout) → queue: Video Reviews · Pending Reviews 12 / Approved Videos / Rejected Videos · oldest first (Fresh cut for a sunny weekend! @ana.ionescu · Maestro Host · Haircut, …) → the video in the middle → **Reject (R) · Approve (A) · Next (J)** → uploader, post and "If you reject" reasons on the right.
+
+### AD2-analytics · Analytics
+"Analytics" · 24h / 7 days / 30 days → Videos (Pending Videos (24h) 12, Approved Videos (24h) 128, Rejected Videos (24h) 9, Time to review 6 min) → People → Reservations → System Health; each card with a change line and a sparkline; "Open <page>" per section.
+
+### AD3-host-approval · Platform Users · Host Approval
+Super Admin menu (Approvals: Host Approval 3 · People: User Management, Host Management · Bookings & catalog: Reservations, Categories · Platform: General, Platform Settings, System Health · Audit Log: Overview, Feed, Search, Video Upload, Registration, Reservations, Playback Health) → Host Applications (Refresh; Pending 3 / Approved / Rejected; Bella Pizza, Studio Glow, Casa Verde) → Bella Pizza details, Documents, **Reject / Approve**.
+
+---
+
 ## Account — create or sign in
 
 Full spec, sizes and states: [`18-account.md`](18-account.md). No welcome wall: signed out, the Profile tab shows AU1. Summary:

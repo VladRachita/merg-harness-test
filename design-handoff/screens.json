@@ -12,6 +12,10 @@
     "large": {
       "width": 430,
       "height": 932
+    },
+    "desktop": {
+      "width": 1440,
+      "height": 900
     }
   },
   "screens": [
@@ -2404,6 +2408,54 @@
       "links_to": [
         "pf1-profile-fnb"
       ]
+    },
+    {
+      "id": "AD1-reviews",
+      "area": "admin",
+      "title": "Admin · Reviews",
+      "purpose": "Moderation queue: Pending Reviews / Approved Videos / Rejected Videos, the video in the middle with Reject (R) · Approve (A) · Next (J), uploader and post details on the right.",
+      "source": "AD-A-Reviews.dc.html",
+      "files": {
+        "desktop": {
+          "html": "screens/desktop/ad1-reviews.html",
+          "png": "screenshots/desktop/ad1-reviews.png",
+          "width": 1440,
+          "height": 900
+        }
+      },
+      "links_to": []
+    },
+    {
+      "id": "AD2-analytics",
+      "area": "admin",
+      "title": "Admin · Analytics",
+      "purpose": "Metrics grouped into Videos, People, Reservations and System Health, with a 24h / 7 days / 30 days switch and a link to each area.",
+      "source": "AD-A-Analytics.dc.html",
+      "files": {
+        "desktop": {
+          "html": "screens/desktop/ad2-analytics.html",
+          "png": "screenshots/desktop/ad2-analytics.png",
+          "width": 1440,
+          "height": 900
+        }
+      },
+      "links_to": []
+    },
+    {
+      "id": "AD3-host-approval",
+      "area": "admin",
+      "title": "Admin · Platform Users · Host Approval",
+      "purpose": "Super Admin menu in groups (every page name kept); Host Applications with Pending / Approved / Rejected, the table and the selected application with Approve / Reject.",
+      "source": "AD-A-Users.dc.html",
+      "files": {
+        "desktop": {
+          "html": "screens/desktop/ad3-host-approval.html",
+          "png": "screenshots/desktop/ad3-host-approval.png",
+          "width": 1440,
+          "height": 900
+        }
+      },
+      "links_to": []
     }
   ],
   "reference": {

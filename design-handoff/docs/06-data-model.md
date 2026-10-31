@@ -286,6 +286,31 @@ SignUpRequest {
 - The date picker opens on 2000-01-01 when empty; valid dates only (no 31 Feb); years back to 100 years ago.
 - Signed out, the Profile tab shows AU1; no other screen asks for an account.
 
+## Admin (dashboard)
+```ts
+AdminRole = "MODERATOR" | "SUPER_ADMIN"                     // checked on the server for every page and action
+ReviewItem {                                                 // AD1 queue: Post (see Post) + review fields
+  postId, title, author { userId, name, username, role, memberSince, approvedBefore, rejectedBefore },
+  tag?: { label: "Maestro Host · Haircut" }, uploadedAt, fileSizeMb, resolution: "1080 × 1920",
+  state: "PENDING" | "APPROVED" | "REJECTED", decidedBy?, decidedAt?, rejectReason?
+}
+ReviewDecision { postId, decision: "APPROVE" | "REJECT", reason?: "NOT_ALLOWED" | "LOW_QUALITY" | "WRONG_TAG" | "SPAM" }   // reason required for REJECT
+AnalyticsSummary {
+  period: "24H" | "7D" | "30D",
+  videos: { pending, approved, rejected, timeToReviewMin }, people: { newUsers, newHosts, hostApplicationsWaiting },
+  reservations: { requests, confirmed, declined, noShows }, health: { playbackErrors, uploadFailures, uptimePct },
+  previous: { /* same shape, the period before: for the change lines */ }, series: { /* per card: values over the period, for the sparklines */ }
+}
+HostApplication {
+  id, business { name, category, type, city, address }, owner { name, email, phone },
+  documents: { name, url /* short-lived */ }[], appliedAt, state: "PENDING" | "APPROVED" | "REJECTED", decidedBy?, reason?
+}
+HostDecision { applicationId, decision: "APPROVE" | "REJECT", reason? }
+```
+- Pending reviews are oldest first; counts feed the tab badges (Reviews, Platform Users / Host Approval).
+- Every `ReviewDecision` and `HostDecision` writes an Audit Log entry (who, what, when, reason); the Audit Log is read only.
+- Host application personal data and documents are returned only to roles that approve hosts; every document view is logged.
+
 ## Display rules
 | Rule | Output |
 |---|---|
