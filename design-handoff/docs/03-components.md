@@ -49,6 +49,11 @@ Build these once and reuse them. Values are for the **medium** phone (390 × 844
 | Date of birth | `cake` | Pick / change a date | `calendar` |
 | Password / show | `lock` / `eye` | Privacy & data | `shield` |
 | Too young (alert) | `circle-alert` | Signed-out avatar | `user` |
+| Value (coupon) | `percent` | Usage Limit | `ticket` |
+| Capacity (event) | `users` | Unlimited | `infinity` |
+| Booking channel · In-app | `smartphone` | Booking channel · Phone | `phone` |
+| Active Schedule | `calendar` | Change video promo | `refresh-cw` |
+| Checklist done / Check your coupon | `check` | Fewer / more (stepper) | `minus` / `plus` |
 
 Stroke 1.8 at 20–26 px, 2–2.4 at 12–16 px. Filled: play, phone, star, more dots.
 
@@ -419,3 +424,32 @@ Optional "Brand" tone: tile `#EEEAFD`, icon `#5B3FD6`. Default is Mono.
 ## 66. Date of birth dialog
 - Centred dialog (left / right 20, radius 24, padding `20 20 14`): title 19/600 · headers Day · Month · Year · three ink wheels (gap 10, 1 : 1.25 : 1.25, 5 rows of 44, picked row on a `rgba(255,255,255,.12)` band, 20/600 white; neighbours 17 at 0.5 and 15 at 0.25) · **Cancel** (text) / **Confirm** (ink 44, radius 14). Months as names.
 - Seen in: AU4. Full spec: `18-account.md` §5.
+
+## 67. Checklist on the video
+- Frosted card under the editor's top row (top 96, left / right 12, padding `10 12 6`, radius 16, `rgba(20,18,24,.6)` + blur 12): "To create the coupon" / "To create the event" 14/600 · "n of 6 done" 12.5 · progress 4 (`offer.coupon`) · two columns of items 36 tall: done = `offer.coupon` circle 20 + white check, label 13.5/500 white .62; to do = 2px `status.warning` ring, label 13.5/600 white. Each item opens its field or sheet.
+- All done: the green pill "Checklist: all 6 done" (36, radius 18) → the check sheet.
+- Seen in: OF2, OF6, OF8, OF12 (and behind every sheet). Full spec: `20-coupons-events.md` §3.
+
+## 68. Setting tool
+- Side-rail circle 44, icon 21, label 12/600 (up to 2 lines). Set: white with an ink icon, the value as the label ("20%", "∞ claims", "26–30 Oct"). Missing: `rgba(0,0,0,.4)` with an amber dot 12 (`status.warning`), the setting's name as the label.
+- Seen in: OF2–OF13. Full spec: `20-coupons-events.md` §4.
+
+## 69. Type switch
+- Dark segmented pill (`rgba(0,0,0,.45)`, padding 3, radius 20): **Coupon** (`percent`) · **Event** (group icon), segments 34 tall, 13.5/600; selected white with ink text. Switches in place and keeps the video, the title, the description and the schedule.
+- Seen in: OF2, OF6, OF8, OF12.
+
+## 70. Setting sheet
+- White bottom sheet (radius `24 24 0 0`, padding `0 16 28`) over `overlay.sheetDim`: handle · icon 20 + title 19/600 · X · one explaining line 13.5 `text.secondary` · content · **Done** (ink 52, radius 16) that opens the next setting.
+- Seen in: OF3, OF4, OF5, OF9, OF10, OF11, and as the check sheet in OF7, OF13. Full spec: `20-coupons-events.md` §5.
+
+## 71. Option card
+- Radio card min 64, radius 14: radio 22 · icon circle 36 (`bg.soft`) · title 15 + explanation 12.5 · optional stepper (buttons 32, value 16/600). Selected: `elevation.selectionRing`, title 600; the other at 0.4.
+- Seen in: OF4 (Unlimited / Set a number), OF9 (Capacity), OF10 (In-app / Phone).
+
+## 72. Schedule fields
+- Start Date / End Date tiles (64 tall, radius 14, `line.outline`, label 12 + `calendar` 16 + value 15/600, "Select" while empty) · Start Time / End Time row (60 tall, split by a divider, `chevron-down`) · the schedule in one sentence under them. Platform date and time pickers, 24-hour.
+- Seen in: OF5, OF11.
+
+## 73. Check rows
+- Rows min 56 with `line.rowSeparator`: `offer.coupon` circle 24 with a white check · label 12 secondary · value 15/600 (1 line, ellipsis) · optional explanation 12.5 · `chevron-right` 18 `text.tertiary`. Tap = change that item.
+- Seen in: OF7, OF13. Full spec: `20-coupons-events.md` §6.

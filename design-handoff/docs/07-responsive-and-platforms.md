@@ -49,6 +49,7 @@ Column width = (screen width − 2×16 − gaps) ÷ columns. Inside cards, keep 
 - Search: on small phones SR3–SR6 scroll under the tabs (the nav stays pinned); SR1 and SR2 fit. Place names and status lines ellipsize; tabs, field and tiles keep their size. SR3's reference board is drawn taller (1731 / 1831 / 1967) to show one page of the feed.
 - Admin dashboard (web): references at 1440 × 900; works from 1280 wide; side columns keep their width, the middle (video, tables, card grids) flexes. Not a phone layout.
 - Account: AU1–AU5 fit without scrolling at every size; the AU4 dialog keeps its three wheels and both buttons at 360; on AU1 Privacy & data sits right above the nav.
+- Coupons & events: OF2–OF13 are placed from the edges and fit without scrolling at every size; the checklist card ends above the side rail and the caption panel at 360 × 640. On small phones the check sheets (OF7, OF13) open at full height from under the status bar, rows min 48, every line kept; the settings sheets stay height = content.
 - New post: NP2 / NP3 are placed from the edges; the caption panel is screen width − 92 and grows upward with the text. At the caps (30 / 100) the title stays on one line and the description on three at 360, 390 and 430. The NP4 and EP2 sheets fit at every size; on EP1 Delete video and Save share the bottom row at 360.
 - Booking steps (TB1–TB3, F4 with offers) scroll under their pinned bottom bar at every size. On small phones the end of the content is under the fold in the references; that is expected.
 

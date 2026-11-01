@@ -2456,6 +2456,457 @@
         }
       },
       "links_to": []
+    },
+    {
+      "id": "OF1-pick-video",
+      "area": "coupons-events",
+      "title": "Coupons & events · Upload Video Promo",
+      "purpose": "Pick the video promo from the gallery (\"Short clips perform best (15-30s)\"); Next opens the editor on the video.",
+      "source": "OF-A-Pick.dc.html",
+      "files": {
+        "small": {
+          "html": "screens/small/of1-pick-video.html",
+          "png": "screenshots/small/of1-pick-video.png",
+          "width": 360,
+          "height": 640
+        },
+        "medium": {
+          "html": "screens/medium/of1-pick-video.html",
+          "png": "screenshots/medium/of1-pick-video.png",
+          "width": 390,
+          "height": 844
+        },
+        "large": {
+          "html": "screens/large/of1-pick-video.html",
+          "png": "screenshots/large/of1-pick-video.png",
+          "width": 430,
+          "height": 932
+        }
+      },
+      "links_to": [
+        "hp-profile",
+        "of2-coupon-empty"
+      ]
+    },
+    {
+      "id": "OF2-coupon-empty",
+      "area": "coupons-events",
+      "title": "Coupons & events · New coupon, empty",
+      "purpose": "On the video: Coupon | Event switch, the checklist \"To create the coupon · 2 of 6 done\", Title and Description empty, Value and Active Schedule marked on the rail; Create Coupon disabled.",
+      "source": "OF-A-Empty.dc.html",
+      "files": {
+        "small": {
+          "html": "screens/small/of2-coupon-empty.html",
+          "png": "screenshots/small/of2-coupon-empty.png",
+          "width": 360,
+          "height": 640
+        },
+        "medium": {
+          "html": "screens/medium/of2-coupon-empty.html",
+          "png": "screenshots/medium/of2-coupon-empty.png",
+          "width": 390,
+          "height": 844
+        },
+        "large": {
+          "html": "screens/large/of2-coupon-empty.html",
+          "png": "screenshots/large/of2-coupon-empty.png",
+          "width": 430,
+          "height": 932
+        }
+      },
+      "links_to": [
+        "of1-pick-video",
+        "of3-value",
+        "of4-usage-limit",
+        "of5-coupon-schedule",
+        "of8-event-empty"
+      ]
+    },
+    {
+      "id": "OF3-value",
+      "area": "coupons-events",
+      "title": "Coupons & events · Value",
+      "purpose": "Sheet: value 20 with % | RON, the \"20% OFF\" sticker preview; checklist behind at 4 of 6. Done → Usage Limit.",
+      "source": "OF-A-Value.dc.html",
+      "files": {
+        "small": {
+          "html": "screens/small/of3-value.html",
+          "png": "screenshots/small/of3-value.png",
+          "width": 360,
+          "height": 640
+        },
+        "medium": {
+          "html": "screens/medium/of3-value.html",
+          "png": "screenshots/medium/of3-value.png",
+          "width": 390,
+          "height": 844
+        },
+        "large": {
+          "html": "screens/large/of3-value.html",
+          "png": "screenshots/large/of3-value.png",
+          "width": 430,
+          "height": 932
+        }
+      },
+      "links_to": [
+        "of1-pick-video",
+        "of2-coupon-empty",
+        "of4-usage-limit",
+        "of5-coupon-schedule",
+        "of6-coupon-ready",
+        "of8-event-empty"
+      ]
+    },
+    {
+      "id": "OF4-usage-limit",
+      "area": "coupons-events",
+      "title": "Coupons & events · Usage Limit",
+      "purpose": "Sheet: Unlimited (default) or Set a number; checklist behind at 5 of 6. Done → Active Schedule.",
+      "source": "OF-A-Limit.dc.html",
+      "files": {
+        "small": {
+          "html": "screens/small/of4-usage-limit.html",
+          "png": "screenshots/small/of4-usage-limit.png",
+          "width": 360,
+          "height": 640
+        },
+        "medium": {
+          "html": "screens/medium/of4-usage-limit.html",
+          "png": "screenshots/medium/of4-usage-limit.png",
+          "width": 390,
+          "height": 844
+        },
+        "large": {
+          "html": "screens/large/of4-usage-limit.html",
+          "png": "screenshots/large/of4-usage-limit.png",
+          "width": 430,
+          "height": 932
+        }
+      },
+      "links_to": [
+        "of1-pick-video",
+        "of2-coupon-empty",
+        "of3-value",
+        "of5-coupon-schedule",
+        "of6-coupon-ready",
+        "of8-event-empty"
+      ]
+    },
+    {
+      "id": "OF5-coupon-schedule",
+      "area": "coupons-events",
+      "title": "Coupons & events · Active Schedule (coupon)",
+      "purpose": "Sheet: Start Date, End Date, Start Time, End Time and the schedule in one sentence. Done → all set.",
+      "source": "OF-A-Schedule.dc.html",
+      "files": {
+        "small": {
+          "html": "screens/small/of5-coupon-schedule.html",
+          "png": "screenshots/small/of5-coupon-schedule.png",
+          "width": 360,
+          "height": 640
+        },
+        "medium": {
+          "html": "screens/medium/of5-coupon-schedule.html",
+          "png": "screenshots/medium/of5-coupon-schedule.png",
+          "width": 390,
+          "height": 844
+        },
+        "large": {
+          "html": "screens/large/of5-coupon-schedule.html",
+          "png": "screenshots/large/of5-coupon-schedule.png",
+          "width": 430,
+          "height": 932
+        }
+      },
+      "links_to": [
+        "of1-pick-video",
+        "of2-coupon-empty",
+        "of3-value",
+        "of4-usage-limit",
+        "of6-coupon-ready",
+        "of8-event-empty"
+      ]
+    },
+    {
+      "id": "OF6-coupon-ready",
+      "area": "coupons-events",
+      "title": "Coupons & events · Coupon, all set",
+      "purpose": "Everything filled: green \"Checklist: all 6 done\" pill, the 20% OFF sticker, Create Coupon enabled.",
+      "source": "OF-A-Coupon.dc.html",
+      "files": {
+        "small": {
+          "html": "screens/small/of6-coupon-ready.html",
+          "png": "screenshots/small/of6-coupon-ready.png",
+          "width": 360,
+          "height": 640
+        },
+        "medium": {
+          "html": "screens/medium/of6-coupon-ready.html",
+          "png": "screenshots/medium/of6-coupon-ready.png",
+          "width": 390,
+          "height": 844
+        },
+        "large": {
+          "html": "screens/large/of6-coupon-ready.html",
+          "png": "screenshots/large/of6-coupon-ready.png",
+          "width": 430,
+          "height": 932
+        }
+      },
+      "links_to": [
+        "of1-pick-video",
+        "of3-value",
+        "of4-usage-limit",
+        "of5-coupon-schedule",
+        "of7-coupon-check",
+        "of12-event-ready"
+      ]
+    },
+    {
+      "id": "OF7-coupon-check",
+      "area": "coupons-events",
+      "title": "Coupons & events · Check your coupon",
+      "purpose": "Sheet: the six items with their values (tap a line to change it) and Create Coupon.",
+      "source": "OF-A-Check.dc.html",
+      "files": {
+        "small": {
+          "html": "screens/small/of7-coupon-check.html",
+          "png": "screenshots/small/of7-coupon-check.png",
+          "width": 360,
+          "height": 640
+        },
+        "medium": {
+          "html": "screens/medium/of7-coupon-check.html",
+          "png": "screenshots/medium/of7-coupon-check.png",
+          "width": 390,
+          "height": 844
+        },
+        "large": {
+          "html": "screens/large/of7-coupon-check.html",
+          "png": "screenshots/large/of7-coupon-check.png",
+          "width": 430,
+          "height": 932
+        }
+      },
+      "links_to": [
+        "ce1-coupons-events",
+        "of1-pick-video",
+        "of3-value",
+        "of4-usage-limit",
+        "of5-coupon-schedule",
+        "of6-coupon-ready",
+        "of12-event-ready"
+      ]
+    },
+    {
+      "id": "OF8-event-empty",
+      "area": "coupons-events",
+      "title": "Coupons & events · New event, empty",
+      "purpose": "Event selected: checklist \"To create the event · 2 of 6 done\" (Capacity is unlimited by default), Booking channel and Active Schedule marked; Create Event disabled.",
+      "source": "OF-A-Event-Empty.dc.html",
+      "files": {
+        "small": {
+          "html": "screens/small/of8-event-empty.html",
+          "png": "screenshots/small/of8-event-empty.png",
+          "width": 360,
+          "height": 640
+        },
+        "medium": {
+          "html": "screens/medium/of8-event-empty.html",
+          "png": "screenshots/medium/of8-event-empty.png",
+          "width": 390,
+          "height": 844
+        },
+        "large": {
+          "html": "screens/large/of8-event-empty.html",
+          "png": "screenshots/large/of8-event-empty.png",
+          "width": 430,
+          "height": 932
+        }
+      },
+      "links_to": [
+        "of1-pick-video",
+        "of2-coupon-empty",
+        "of9-capacity",
+        "of10-booking-channel",
+        "of11-event-schedule"
+      ]
+    },
+    {
+      "id": "OF9-capacity",
+      "area": "coupons-events",
+      "title": "Coupons & events · Capacity",
+      "purpose": "Sheet: Unlimited or Set a number (34). Done → Booking channel.",
+      "source": "OF-A-Capacity.dc.html",
+      "files": {
+        "small": {
+          "html": "screens/small/of9-capacity.html",
+          "png": "screenshots/small/of9-capacity.png",
+          "width": 360,
+          "height": 640
+        },
+        "medium": {
+          "html": "screens/medium/of9-capacity.html",
+          "png": "screenshots/medium/of9-capacity.png",
+          "width": 390,
+          "height": 844
+        },
+        "large": {
+          "html": "screens/large/of9-capacity.html",
+          "png": "screenshots/large/of9-capacity.png",
+          "width": 430,
+          "height": 932
+        }
+      },
+      "links_to": [
+        "of1-pick-video",
+        "of2-coupon-empty",
+        "of8-event-empty",
+        "of10-booking-channel",
+        "of11-event-schedule",
+        "of12-event-ready"
+      ]
+    },
+    {
+      "id": "OF10-booking-channel",
+      "area": "coupons-events",
+      "title": "Coupons & events · Booking channel",
+      "purpose": "Sheet: In-app or Phone, each explained. Done → Active Schedule.",
+      "source": "OF-A-Channel.dc.html",
+      "files": {
+        "small": {
+          "html": "screens/small/of10-booking-channel.html",
+          "png": "screenshots/small/of10-booking-channel.png",
+          "width": 360,
+          "height": 640
+        },
+        "medium": {
+          "html": "screens/medium/of10-booking-channel.html",
+          "png": "screenshots/medium/of10-booking-channel.png",
+          "width": 390,
+          "height": 844
+        },
+        "large": {
+          "html": "screens/large/of10-booking-channel.html",
+          "png": "screenshots/large/of10-booking-channel.png",
+          "width": 430,
+          "height": 932
+        }
+      },
+      "links_to": [
+        "of1-pick-video",
+        "of2-coupon-empty",
+        "of8-event-empty",
+        "of9-capacity",
+        "of11-event-schedule",
+        "of12-event-ready"
+      ]
+    },
+    {
+      "id": "OF11-event-schedule",
+      "area": "coupons-events",
+      "title": "Coupons & events · Active Schedule (event)",
+      "purpose": "Sheet: the event day and times, in one sentence. Done → all set.",
+      "source": "OF-A-Event-Schedule.dc.html",
+      "files": {
+        "small": {
+          "html": "screens/small/of11-event-schedule.html",
+          "png": "screenshots/small/of11-event-schedule.png",
+          "width": 360,
+          "height": 640
+        },
+        "medium": {
+          "html": "screens/medium/of11-event-schedule.html",
+          "png": "screenshots/medium/of11-event-schedule.png",
+          "width": 390,
+          "height": 844
+        },
+        "large": {
+          "html": "screens/large/of11-event-schedule.html",
+          "png": "screenshots/large/of11-event-schedule.png",
+          "width": 430,
+          "height": 932
+        }
+      },
+      "links_to": [
+        "of1-pick-video",
+        "of2-coupon-empty",
+        "of8-event-empty",
+        "of9-capacity",
+        "of10-booking-channel",
+        "of12-event-ready"
+      ]
+    },
+    {
+      "id": "OF12-event-ready",
+      "area": "coupons-events",
+      "title": "Coupons & events · Event, all set",
+      "purpose": "Everything filled: \"Checklist: all 6 done\" pill, Create Event enabled.",
+      "source": "OF-A-Event.dc.html",
+      "files": {
+        "small": {
+          "html": "screens/small/of12-event-ready.html",
+          "png": "screenshots/small/of12-event-ready.png",
+          "width": 360,
+          "height": 640
+        },
+        "medium": {
+          "html": "screens/medium/of12-event-ready.html",
+          "png": "screenshots/medium/of12-event-ready.png",
+          "width": 390,
+          "height": 844
+        },
+        "large": {
+          "html": "screens/large/of12-event-ready.html",
+          "png": "screenshots/large/of12-event-ready.png",
+          "width": 430,
+          "height": 932
+        }
+      },
+      "links_to": [
+        "of1-pick-video",
+        "of6-coupon-ready",
+        "of9-capacity",
+        "of10-booking-channel",
+        "of11-event-schedule",
+        "of13-event-check"
+      ]
+    },
+    {
+      "id": "OF13-event-check",
+      "area": "coupons-events",
+      "title": "Coupons & events · Check your event",
+      "purpose": "Sheet: the six items with their values and Create Event.",
+      "source": "OF-A-Event-Check.dc.html",
+      "files": {
+        "small": {
+          "html": "screens/small/of13-event-check.html",
+          "png": "screenshots/small/of13-event-check.png",
+          "width": 360,
+          "height": 640
+        },
+        "medium": {
+          "html": "screens/medium/of13-event-check.html",
+          "png": "screenshots/medium/of13-event-check.png",
+          "width": 390,
+          "height": 844
+        },
+        "large": {
+          "html": "screens/large/of13-event-check.html",
+          "png": "screenshots/large/of13-event-check.png",
+          "width": 430,
+          "height": 932
+        }
+      },
+      "links_to": [
+        "ce1-coupons-events",
+        "of1-pick-video",
+        "of6-coupon-ready",
+        "of9-capacity",
+        "of10-booking-channel",
+        "of11-event-schedule",
+        "of12-event-ready"
+      ]
     }
   ],
   "reference": {
