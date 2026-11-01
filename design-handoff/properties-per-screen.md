@@ -41,7 +41,7 @@ Types: `string`, `int`, `bool`, `money` = `{ amount: number, currency: "RON" }`,
 
 ---
 
-## Contents — 14 pages, 78 screens
+## Contents — 15 pages, 91 screens
 
 | Page | Screens |
 |---|---|
@@ -59,6 +59,7 @@ Types: `string`, `int`, `bool`, `money` = `{ amount: number, currency: "RON" }`,
 | Profile · New post | `NP1-pick-video`, `NP2-empty`, `NP3-written`, `NP4-tag-place`, `EP1-edit-post`, `EP2-delete-video` |
 | Account · Create or sign in | `AU1-profile-signed-out`, `AU2-email`, `AU3-create-account`, `AU4-date-of-birth`, `AU5-too-young` |
 | Admin · Dashboard (web) | `AD1-reviews`, `AD2-analytics`, `AD3-host-approval` |
+| Host · Coupons & events (create) | `OF1-pick-video` … `OF13-event-check` |
 
 Start with the **quick index** below (what each screen reads and sends). Then each page in detail, then: **§A** rules and jobs the backend runs · **§B** gaps to decide · **§C** entity and field index.
 
@@ -220,6 +221,17 @@ Full detail per screen is in the page sections below. ⚠ = a gap listed in §B.
 | `AD1-reviews` | `ReviewItem[]` PENDING oldest first (and APPROVED / REJECTED history) `{postId, title, author{name, username, role, memberSince, approvedBefore, rejectedBefore}, tag.label, uploadedAt, fileSizeMb, resolution}` · counts for the badges | `ReviewDecision{postId, decision, reason?}` · undo |
 | `AD2-analytics` | `AnalyticsSummary{period, videos, people, reservations, health, previous, series}` | — (period switch: `period` 24H / 7D / 30D) |
 | `AD3-host-approval` | `HostApplication[]` by state `{business, owner, documents, appliedAt}` · badge counts · System Health status | `HostDecision{applicationId, decision, reason?}` |
+
+**Host · Coupons & events (create)** — nothing is sent before Create; the sheets only change the draft.
+
+| Screen | Reads | Sends |
+|---|---|---|
+| `OF1-pick-video` | the device gallery (no backend) | — (the clip is uploaded with Create) |
+| `OF2-coupon-empty`, `OF8-event-empty` | the business (`BusinessProfile{currency}`) | — |
+| `OF3-value`, `OF4-usage-limit`, `OF9-capacity`, `OF10-booking-channel` | — | — (part of the draft) |
+| `OF5-coupon-schedule`, `OF11-event-schedule` | today (business time zone) | — |
+| `OF6-coupon-ready`, `OF12-event-ready` | — | — |
+| `OF7-coupon-check`, `OF13-event-check` | — | create `OfferCreateRequest{businessId, type, videoUploadId, title, description, discount? \| capacity? + bookingChannel?, usageLimit?, schedule{startDate, endDate, startTime, endTime}}` → `Offer` → CE1 |
 
 ---
 
@@ -1688,6 +1700,78 @@ The other menu pages (User Management, Host Management, Reservations, Categories
 
 ---
 
+## Page: Host · Coupons & events (create)
+
+A host creates a coupon or an event on its video promo, with a checklist of six items. Everything stays a draft in the app until **Create Coupon** / **Create Event** on the check sheet sends one `OfferCreateRequest` (see `docs/06-data-model.md` → *Create a coupon or an event (host)* and `docs/20-coupons-events.md`).
+
+### Screen 1 · Upload Video Promo (`OF1-pick-video`, board *1 · Upload Video Promo: pick one clip (15-30s works best)*)
+
+**Opens with:** the Coupons tile in the host profile's Quick Actions; the signed-in host and their business.
+
+**Elements displayed:** the device gallery (clips with their length from the device); no backend data.
+
+**Inputs:** one clip.
+
+**Actions:** **Next** → OF2 (Coupon); **X** → HP. The clip is uploaded with Create (`videoUploadId`).
+
+### Screens 2 and 8 · The editor, empty (`OF2-coupon-empty`, `OF8-event-empty`, boards *2 · On the video, empty…* and *8 · Event, empty…*)
+
+**Elements displayed**
+
+| Element | Field | Type | Notes |
+|---|---|---|---|
+| Checklist | derived from the draft | `int` 0–6 + six states | "n of 6 done"; rules in `docs/20` §3 |
+| Rail values | the draft's `discount`, `usageLimit`, `schedule` / `capacity`, `bookingChannel`, `schedule` | | Missing = amber dot and the name |
+| Sticker | `discount` (coupon) | | "20% OFF" / "10 RON OFF" once set; event: "Event" |
+
+**Inputs**
+
+| Input | Type | Rules |
+|---|---|---|
+| Type | `COUPON \| EVENT` | The switch; keeps video, title, description, schedule. |
+| Title | `string` | Required, 1–100 characters. |
+| Description | `string` | Required, 10–500 characters. |
+
+**Actions:** each rail button or checklist item → its sheet or field; **Create** disabled until the checklist is done.
+
+### Screens 3, 4, 9, 10 · Value, Usage Limit, Capacity, Booking channel (sheets) (`OF3-value`, `OF4-usage-limit`, `OF9-capacity`, `OF10-booking-channel`)
+
+**Inputs**
+
+| Input | Type | Rules |
+|---|---|---|
+| Value (coupon) | `number` + unit `PERCENT \| AMOUNT` | Above 0; PERCENT at most 100; AMOUNT in the business currency (RON in the designs). No default. |
+| Usage Limit (coupon) | `int \| null` | null = Unlimited (default); else 1 or more. Claims in total. |
+| Capacity (event) | `int \| null` | null = Unlimited (default); else 1 or more. People who can book. |
+| Booking channel (event) | `IN_APP \| PHONE` | Required, no default. PHONE shows `BusinessProfile.phone` on the event. |
+
+**Actions:** **Done** keeps the value in the draft and opens the next setting; X / outside keeps the previous value.
+
+### Screens 5 and 11 · Active Schedule (sheet) (`OF5-coupon-schedule`, `OF11-event-schedule`)
+
+**Inputs**
+
+| Input | Type | Rules |
+|---|---|---|
+| Start Date | `date` | Required; today or later (business time zone). |
+| End Date | `date` | Required; on or after Start Date. |
+| Start Time | `time` (24 h) | Required. |
+| End Time | `time` (24 h) | Required; after Start Time. |
+
+**Elements displayed:** the schedule sentence, built in the app from the four fields.
+
+### Screens 6 and 12 · All set (`OF6-coupon-ready`, `OF12-event-ready`)
+
+**Elements displayed:** the draft as above, with "Checklist: all 6 done". **Actions:** **Create Coupon** / **Create Event** → the check sheet.
+
+### Screens 7 and 13 · Check your coupon / event (`OF7-coupon-check`, `OF13-event-check`)
+
+**Elements displayed:** the six items of the draft with their values ("Your clip", the title, the description and its length, the value or capacity, the usage limit or booking channel, the schedule).
+
+**Actions:** tap a line → its field or sheet; **Create Coupon** / **Create Event** → `OfferCreateRequest` → the new `Offer` → CE1.
+
+---
+
 ## A. Rules and jobs the screens rely on (backend logic, not one screen)
 
 | # | Rule / job | What the screens expect | Screens |
@@ -1714,6 +1798,7 @@ The other menu pages (User Management, Host Management, Reservations, Categories
 | A20 | **Posts** | Create a post on the author's profile: store the clip (`url`, `thumbnailUrl`, up to 100 MB; its length is not measured), `title` 1–30 and `description` 0–100 characters (enforced on the server), and an optional **single** `tag { businessId, itemType?, itemId? }` that must point to an existing place / service / room (FOOD_BEVERAGE: the place only). **From your visits** = the author's DONE reservations, newest first, with `what` and the booked service / room. A tag whose item is deleted falls back to the place. **Update**: only the author; title, description and tag (`null` removes it); the video can't change. **Delete**: only the author; permanently removes the video file, title, description, tag and engagement (views and likes) for everyone. | NP1–NP4, EP1, EP2 |
 | A21 | **Accounts** | `EmailCheck` (exists or not); `UsernameCheck` (free or not, while typing); `SignUpRequest` creates the account and signs the person in. **Age**: years between `dateOfBirth` and today ≥ `MIN_AGE` (16), checked on the server too; `dateOfBirth` is private (never on the profile). Signed out, actions that need an account (+, Book, Like) open AU1 and return to where the person was after signing in. | AU1–AU5 |
 | A22 | **Admin** | `AdminRole` checked on every admin request (MODERATOR: Reviews, Analytics; SUPER_ADMIN: everything). `ReviewDecision` / `HostDecision` update the item, tell the author or owner, and append to the **read-only** Audit Log (who, what, when, reason). Undo within a few seconds. Two-factor sign-in for admins; password again before rejecting a host, Platform Settings changes and User Management actions. Host application personal data and documents only for host approvers, documents through short-lived links, every view logged. | AD1–AD3 |
+| A23 | **Create offers** | `OfferCreateRequest` creates an `Offer` for the host's business. **Checks:** title 1–100 and description 10–500 characters; a coupon needs a `discount` (above 0, PERCENT at most 100), an event a `bookingChannel`; `usageLimit` / `capacity` null (unlimited) or 1 or more; `startDate` today or later, `endDate ≥ startDate`, `endTime > startTime`. **Schedule:** coupons get one `windows[]` entry per day from `startDate` to `endDate` (`startTime`–`endTime`); events get one `sittings[]` entry per day with `seatsLeft = capacity`; `startsAt` / `endsAt` come from the first and last day. **Limits:** `quantityLeft` starts at the limit (null = ∞); the offer stops at the end or when the limit is reached. **Booking channel:** IN_APP bookings arrive in Reservations; PHONE shows the business phone. **Visibility:** listed in the business's Coupons & Events tab and in Search Deals (A19). | OF1–OF13, CE1, SR6 |
 
 ---
 
@@ -1769,7 +1854,8 @@ The other menu pages (User Management, Host Management, Reservations, Categories
 | **Service availability** | `DayAvailability { date, state OPEN\|CLOSED\|FULLY_BOOKED }`, `Slot { start, end, state FREE\|TAKEN }`, `nextFree(member, service)`, "Any time" range⚠ | R3, F3, F4* |
 | **RestaurantBookingSettings** | `capacity`, `bookingHorizonMonths`, `tableHoldMin`, `slotStepMin`, `services[] { name, from, to }` | TB1, TB2*, TB3* |
 | **Table availability** | `DayAvailability { date, state FREE\|FEW_LEFT\|FULL\|CLOSED }`, `TimeSlot { start, state }` per guest count | TB1, TB2* |
-| **Offer** (coupon / event) | `id`, `type`, `title`, `discount?`, `startsAt?`, `endsAt`, `quantityLeft`, `video?`, `appliesTo`, `windows[] { date, from, to }`, `sittings[] { id, date, from, to, seatsLeft }`, `minGuests?`, `maxGuests?` | CE1, TB1, TB2*, TB3*, F4*, RV2, RV3, MA1, MA4, SR3, SR6 |
+| **Offer** (coupon / event) | `id`, `type`, `title`, `description`, `discount?`, `bookingChannel?` (events), `startsAt?`, `endsAt`, `quantityLeft`, `video?`, `appliesTo`, `windows[] { date, from, to }`, `sittings[] { id, date, from, to, seatsLeft }`, `minGuests?`, `maxGuests?` | OF7, OF13, CE1, TB1, TB2*, TB3*, F4*, RV2, RV3, MA1, MA4, SR3, SR6 |
+| **OfferCreateRequest** (host) | `businessId`, `type`, `videoUploadId`, `title` (1–100), `description` (10–500), `discount?` (coupon), `usageLimit? \| null` (coupon), `capacity? \| null` (event), `bookingChannel?` IN_APP\|PHONE (event), `schedule { startDate, endDate, startTime, endTime }` | OF1–OF13 → creates Offer |
 | **TableBookingRequest** (table booking) | `businessId`, `date`, `from`, `to`, `guests`, `offerId?`, `sittingId?`, `firstName`, `lastName`, `phone { country, number }`, `email`, `specialRequests?` (max 1000), `rewardGrantId?⚠` | TB3* → creates Reservation |
 | **ServiceBookingRequest** (service booking) | `businessId`, `serviceId`, `teamMemberId \| ANY`, `date`, `from`, `to`, `offerId?`, `sittingId?`, customer details⚠, `rewardGrantId?⚠` | R3, F4* → creates Reservation |
 | **Reservation** | `id`, `businessId`, `customerId`, `kind SERVICE\|TABLE\|EVENT`, `what`, `people`, `date`, `from`, `to`, `durationMin?`, `price?`, `teamMemberId?` (+ name), `offer? { COUPON: discount, pays } \| { EVENT: title, sittingId }`, `specialRequests?`, `requestedAt`, `answerBy`, `state WAITING\|CONFIRMED\|DECLINED\|CANCELLED\|DONE\|NO_SHOW`, `declineReason? FULLY_BOOKED\|CLOSED_THAT_DAY\|NO_ANSWER`, `answeredAt?`, `cancelledAt?`, `cancelledBy? CUSTOMER\|BUSINESS`, `checkedAt?`, `myRating?`, `place { businessId, name, type, city, address, phone, avatarUrl?, avatarColor }` | RV1–RV6, MA1–MA5, TB4, HP badge, NP4 (visits) |

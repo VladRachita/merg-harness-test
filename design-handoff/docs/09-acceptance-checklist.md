@@ -78,3 +78,8 @@ Use this for every screen before calling it done.
 - [ ] **AD1–AD3** (admin, web): three tabs, every page name kept; Reviews queue with R / A / J and Undo; Analytics in four sections with the period switch; Host Approval with the grouped Super Admin menu, table and detail card.
 - [ ] Admin roles enforced on the server; every decision in the read-only Audit Log.
 - [ ] Everything in `19-admin.md` §11 (definition of done).
+- [ ] **OF1**: Quick Actions → Coupons opens Upload Video Promo; one clip, Next.
+- [ ] **OF2 / OF8**: the video with the Coupon | Event switch, the checklist (n of 6 done, done / to-do items), the rail with amber dots on missing settings, Title 0 / 100, Description with "Minimum 10 characters required" 0 / 500, Create (44 tall) disabled.
+- [ ] **OF3–OF5, OF9–OF11**: one sheet per setting with its explaining line; Done opens the next setting; Usage Limit and Capacity default to Unlimited.
+- [ ] **OF6 / OF12**: "Checklist: all 6 done" pill, Create enabled; **OF7 / OF13**: the check sheet with every line, Create opens CE1.
+- [ ] Everything in `20-coupons-events.md` §11 (definition of done).

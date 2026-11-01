@@ -271,6 +271,39 @@ VisitForTag {                                       // "From your visits" (NP4):
 - Only the author can edit or delete a post. Delete is permanent and removes everything linked to the post for everyone.
 - EP2 shows the title and the tag (place · item); "The video" and "Engagement · Views and likes" are labels with no length and no counts.
 
+## Create a coupon or an event (host)
+```ts
+OfferCreateRequest {
+  businessId, type: "COUPON" | "EVENT",
+  videoUploadId,                                             // the video promo picked on OF1
+  title: "Happy Hour Special",                               // 1–100 characters
+  description: "20% off every drink and starter, …",         // 10–500 characters
+  // coupons
+  discount?: { type: "PERCENT", value: 20 } | { type: "AMOUNT", value: 10, currency: "RON" },   // above 0; PERCENT at most 100
+  usageLimit?: number | null,                                // claims in total; null = Unlimited (the default)
+  // events
+  capacity?: number | null,                                  // people who can book; null = Unlimited (the default)
+  bookingChannel?: "IN_APP" | "PHONE",                       // no default: the host picks
+  // both
+  schedule: { startDate: "2026-10-26", endDate: "2026-10-30", startTime: "15:00", endTime: "17:00" }
+}
+```
+- **Schedule → Offer**:
+  - A coupon gets one `windows[]` entry per day from `startDate` to `endDate`, `from = startTime`, `to = endTime`.
+  - An event gets one `sittings[]` entry per day with `seatsLeft = capacity`.
+  - `startsAt` / `endsAt` come from the first and the last day.
+- **Limits**: `quantityLeft` starts at `usageLimit` or `capacity`; `null` means unlimited and shows as "∞". The coupon stops when the claims reach the limit; booking stops when the event is full.
+- **Booking channel**:
+  - `IN_APP`: bookings arrive as requests in Reservations (RV2).
+  - `PHONE`: people call to book. The event shows `BusinessProfile.phone`.
+- **Checks on the server, as in the app**:
+  - title 1–100 and description 10–500 characters;
+  - `startDate` is today or later and `endDate ≥ startDate`;
+  - `endTime > startTime`;
+  - `usageLimit` / `capacity` are whole numbers of 1 or more, or null;
+  - a coupon has a `discount`, an event a `bookingChannel`.
+- `Offer` gains `description` and, for events, `bookingChannel`. Create returns the new `Offer`, and the app opens CE1.
+
 ## Account (create or sign in)
 ```ts
 EmailCheck { email } → { exists: boolean }                   // AU2: false → AU3 (create), true → sign in with the password

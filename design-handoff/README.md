@@ -27,7 +27,8 @@ Read in this order, then build:
 16. [`docs/17-new-post.md`](docs/17-new-post.md) — the full spec of the **New post** page (the + button → pick a video → write the title and description on the video → tag a place, a service or a room → Publish; edit the post or delete the video later), with its own definition of done.
 17. [`docs/18-account.md`](docs/18-account.md) — the full spec of the **Account** page (the Profile tab when signed out → continue with email → create account with the date of birth and an age check), with its own definition of done.
 18. [`docs/19-admin.md`](docs/19-admin.md) — the full spec of the **Admin dashboard** (web, desktop): the three tabs Reviews · Analytics · Platform Users, every page name kept, the moderation queue, analytics by category, Host Approval, and the roles and security rules, with its own definition of done.
-19. [`docs/10-open-questions.md`](docs/10-open-questions.md) — what is **not** designed yet. Do not invent these; ask.
+19. [`docs/20-coupons-events.md`](docs/20-coupons-events.md) — the full spec of **Coupons & events** for hosts (upload a video promo → write the title and description on it → set value, usage limit and schedule, or capacity, booking channel and schedule → a checklist shows what is left → check → create), with its own definition of done.
+20. [`docs/10-open-questions.md`](docs/10-open-questions.md) — what is **not** designed yet. Do not invent these; ask.
 
 ## What is in this folder
 
@@ -45,6 +46,23 @@ Read in this order, then build:
 
 ## What's new in this update
 
+- **Coupons & events (host)** — a host creates a coupon or an event on its video promo, the way people post a video. Every element of the host's sketch is kept with its name. The page has 13 screens at small, medium and large:
+  - `OF1` **Upload Video Promo**: one clip ("Short clips perform best (15-30s)").
+  - `OF2` **on the video, empty**:
+    - the **Coupon | Event** switch;
+    - Title (n / 100) and Description ("Minimum 10 characters required", n / 500) written on the video;
+    - Value, Usage Limit and Schedule on the side rail;
+    - a **checklist** "To create the coupon · 2 of 6 done";
+    - a smaller **Create Coupon**, disabled until the checklist is done.
+  - `OF3` **Value** (% | RON, the sticker preview), `OF4` **Usage Limit** (Unlimited by default), `OF5` **Active Schedule** (Start / End Date, Start / End Time, said in one sentence): one sheet each, each explained in one line; Done opens the next.
+  - `OF6` **all set**: "Checklist: all 6 done", Create Coupon on.
+  - `OF7` **Check your coupon**: every item with its value, tap to change, Create Coupon → the Coupons & Events tab.
+  - `OF8`–`OF13` **the same for an event**: Capacity (Unlimited by default) and **Booking channel** (In-app or Phone, explained) instead of Value and Usage Limit.
+
+  Spec: [`docs/20-coupons-events.md`](docs/20-coupons-events.md). Components C67–C73; *Create a coupon or an event* data in `docs/06`; rule A23 in the backend contract. The **Coupons** tile in the host profile's Quick Actions now opens OF1.
+
+### Earlier updates
+
 - **Admin dashboard (web)** — the platform team's admin, restructured with **every page name kept**. Desktop screens at 1440 × 900:
   - `AD1` **Reviews**: one moderation queue (Pending Reviews · Approved Videos · Rejected Videos), the video in the middle, **Reject (R) · Approve (A) · Next (J)**, uploader and post details on the right.
   - `AD2` **Analytics**: grouped into Videos, People, Reservations and System Health, with a 24h / 7 days / 30 days switch.
@@ -52,8 +70,6 @@ Read in this order, then build:
   - Roles and security: the server checks every request; Moderator sees Reviews and Analytics, Super Admin everything; two-factor sign-in; every decision in a read-only Audit Log.
 
   Spec: [`docs/19-admin.md`](docs/19-admin.md). Components AC1–AC6; *Admin* data in `docs/06`.
-
-### Earlier updates
 
 - **Account (create or sign in)** — replaces the current welcome screen. No welcome wall: people watch and search without an account, and the Profile tab is where they sign up:
   - `AU1` **Profile tab, signed out**: Your profile, **Create account**, **Sign in**, **Privacy & data** at the bottom. No tagline, no feature rows, no terms line, no Skip.
@@ -108,7 +124,7 @@ Read in this order, then build:
 - Small / medium / large references for all of the above; new tokens `color.calendar.*`, `color.offer.*` and radii for calendar cells, day tile and offer cards.
 - Booking form: **First name and Last name are two fields** on one row (never "Full name").
 
-## Screen inventory (75 phone screens × 3 sizes + 3 desktop screens)
+## Screen inventory (88 phone screens × 3 sizes + 3 desktop screens)
 
 | Area | Screens |
 |---|---|
@@ -118,6 +134,7 @@ Read in this order, then build:
 | Host — team | `TM1-team-list`, `TM2-invite`, `TM3-team-member` |
 | Host — customers & rewards | `CR1-customers`, `CR2-new-reward`, `CR3-reward-sent`, `CR4-rewards-tab`, `CR5-auto-when`, `CR6-auto-who`, `CR7-auto-reward`, `CR8-auto-check`, `CR9-auto-edit`, `CR10-reward-details` |
 | Host — reservations | `RV1-reservations`, `RV2-requests`, `RV3-request`, `RV4-decline`, `RV5-confirmed`, `RV6-after-visit` |
+| Host — coupons & events (create) | `OF1-pick-video`, `OF2-coupon-empty`, `OF3-value`, `OF4-usage-limit`, `OF5-coupon-schedule`, `OF6-coupon-ready`, `OF7-coupon-check`, `OF8-event-empty`, `OF9-capacity`, `OF10-booking-channel`, `OF11-event-schedule`, `OF12-event-ready`, `OF13-event-check` |
 | Customer — my activity | `MA1-upcoming`, `MA2-rewards`, `MA3-history`, `MA4-reservation-waiting`, `MA5-reservation-confirmed`, `MA6-reward` |
 | Profile — new post | `NP1-pick-video`, `NP2-empty`, `NP3-written`, `NP4-tag-place`, `EP1-edit-post`, `EP2-delete-video` |
 | Account — create or sign in | `AU1-profile-signed-out`, `AU2-email`, `AU3-create-account`, `AU4-date-of-birth`, `AU5-too-young` |
@@ -147,14 +164,15 @@ Copy this as the first message, adjusted for your app's repository:
 You are implementing new screens in our mobile app (Android + iOS). The complete design
 handoff is in design-handoff/ (README.md first). Follow it exactly:
 
-1. Read design-handoff/README.md and every file in design-handoff/docs/ (01–19) before writing code.
+1. Read design-handoff/README.md and every file in design-handoff/docs/ (01–20) before writing code.
 2. Map tokens.json into the app's theme (colours, type, radii, spacing). Do not add new values.
-3. Build the shared components from docs/03-components.md first (C1–C66), then the screens from
+3. Build the shared components from docs/03-components.md first (C1–C73), then the screens from
    docs/04-screens.md, in the order: host services → host rooms → host team (TM1 → TM3, see
    docs/12-team.md) → host customers & rewards (CR1 → CR10, see docs/13-customers-rewards.md) →
    host reservations (RV1 → RV6, see docs/14-reservations.md) → public profiles →
    salon booking (regular, then first visit incl. the F4 offer states) →
-   table booking (TB1 → TB4, see docs/11-table-booking.md) → coupons & events →
+   table booking (TB1 → TB4, see docs/11-table-booking.md) → coupons & events (CE1, then the
+   host's create flow OF1 → OF13, see docs/20-coupons-events.md) →
    customer my activity (MA1 → MA6, see docs/15-my-activity.md) → public search
    (SR1 → SR6, see docs/16-search.md) → new post (NP1 → NP4, EP1 → EP2, see docs/17-new-post.md) → account
    (AU1 → AU5, see docs/18-account.md). The admin dashboard (AD1 → AD3, web, see
@@ -167,7 +185,7 @@ handoff is in design-handoff/ (README.md first). Follow it exactly:
 7. When a screen is done, compare it to the screenshots at all three sizes and go through
    docs/09-acceptance-checklist.md (and docs/11 §12 for table booking, docs/12 §8 for team,
    docs/13 §13 for customers & rewards, docs/14 §13 for reservations, docs/15 §13 for my
-   activity, docs/16 §14 for search, docs/17 §12 for new post, docs/18 §11 for account, docs/19 §11 for the admin). Report any deviation
+   activity, docs/16 §14 for search, docs/17 §12 for new post, docs/18 §11 for account, docs/19 §11 for the admin, docs/20 §11 for coupons & events). Report any deviation
    instead of silently changing the design.
 ```
 
@@ -175,12 +193,12 @@ handoff is in design-handoff/ (README.md first). Follow it exactly:
 
 1. **Put the handoff next to the code.** Copy `design-handoff/` into the root of the mobile app repository (or add this repository as a git submodule) so the agent can read the docs and open the screenshots.
 2. **Start Claude Code in the app repository** (`claude` in a terminal at the repo root, or a Claude Code session on claude.ai/code with the app repo attached).
-3. **Plan first.** Paste the prompt above and ask for a plan before code: theme mapping (tokens → theme), the component list C1–C66 with where each will live, and the screen order. Review the plan, then let it implement.
+3. **Plan first.** Paste the prompt above and ask for a plan before code: theme mapping (tokens → theme), the component list C1–C73 with where each will live, and the screen order. Review the plan, then let it implement.
 4. **One phase per session / pull request.** Use these follow-up prompts in order and review each PR against the screenshots before starting the next:
 
    | Phase | Prompt to paste |
    |---|---|
-   | 1 · Theme + components | "Phase 1: map tokens.json into the theme and build components C1–C66 from docs/03 with previews at 360, 390 and 430 width. No screens yet." |
+   | 1 · Theme + components | "Phase 1: map tokens.json into the theme and build components C1–C73 from docs/03 with previews at 360, 390 and 430 width. No screens yet." |
    | 2 · Host tools | "Phase 2: build HS1–HS4 and HR1–HR4 (docs/04, flow C in docs/05). Match screenshots/*/hs*.png and hr*.png." |
    | 2b · Team | "Phase 2b: build the Team page exactly as docs/12-team.md: TM1 team list grouped Active / Paused / Invites with one pinned Invite to team, TM2 invite-by-username sheet, TM3 team member (Active / Paused, services checklist = Who does it, Remove, Save changes). Replace the existing Team screen. Wire HP Team tile → TM1. Data per docs/06 (Team member, Team invite). Done = docs/12 §8 at small, medium and large." |
    | 2c · Customers & rewards | "Phase 2c: build the Customers & rewards page exactly as docs/13-customers-rewards.md: CR1 People tab (group tiles, pick people, Send reward), CR2 New reward (live ticket, 40-char message, duration chips), CR3 sent, CR4 Rewards tab (automatic rules with switches, sent rewards with Used by), CR5–CR8 the 4-step monthly rule (When on the F4 week strip, Who from visits in the month before the send, Reward, Check and turn on), CR9 edit, CR10 details. Replace the existing Customers and Send Loyalty Reward screens. Wire HP Customers tile → CR1. Data and the monthly send logic per docs/06 (Customer, Reward, Automatic reward rule). Done = docs/13 §13 at small, medium and large." |
@@ -194,6 +212,7 @@ handoff is in design-handoff/ (README.md first). Follow it exactly:
    | 9 · New post | "Phase 9: build the New post page exactly as docs/17-new-post.md: the + in the bottom navigation opens NP1 (the video picker, one clip up to 100 MB, no Skip); NP2 / NP3 are the whole video with X, Change video, the poster, the frosted caption panel (title max 30 and description max 100 characters, fields that grow, counters n / 30 on the divider and n / 100 under the description, typing stops at the cap), the Tag tool on the side rail (dark without a tag, white with a green count badge with one) and Publish bottom right (greyed until there is a title); NP4 is the Tag a place sheet (search places, From your visits with a check, Done). A tag is a place, a service or a room; restaurants tag the place only. EP1 Edit post (from More on your own post: same editor, no Change video, Delete video bottom left, Save bottom right) and EP2 Delete video (sheet listing what is deleted, red Delete video). No hashtags, people tags, location or tag pill on the video. Data per docs/06 (Post). Done = docs/17 §12 at small, medium and large." |
    | 10 · Account | "Phase 10: build the Account page exactly as docs/18-account.md: no welcome wall, people browse without an account; signed out, the Profile tab shows AU1 (dashed avatar, Your profile, one line, Create account, Sign in, Privacy & data at the bottom, the bottom nav); both buttons open AU2 Continue with email; a new email goes to AU3 Create account (First name and Last name as two fields, username with Available, date of birth with the calendar Change pill, password with show / hide); the date opens AU4, a centred dialog with three ink wheels Day · Month · Year (months as names) and Cancel / Confirm; under the minimum age AU5 shows the red date and alert line and disables Create account. Email only, no terms line, no Skip. Replace the existing welcome screen. Data per docs/06 (Account). Done = docs/18 §11 at small, medium and large." |
    | 11 · Admin dashboard (web) | "Phase 11: build the admin web app exactly as docs/19-admin.md, at 1440 × 900 and working from 1280 wide: the top bar with the three tabs Reviews · Analytics · Platform Users (badges for pending reviews and host applications); Reviews as one moderation queue (Pending Reviews, Approved Videos, Rejected Videos; oldest first; Reject R with a reason, Approve A, Next J, Undo); Analytics in four sections with a 24h / 7 days / 30 days switch; Platform Users with the grouped Super Admin menu keeping every page name, and Host Approval with the applications table and detail card. Enforce the roles on the server (Moderator: Reviews and Analytics; Super Admin: everything), two-factor sign-in, password again for risky actions, every decision in the read-only Audit Log. Data per docs/06 (Admin). Done = docs/19 §11." |
+   | 12 · Coupons & events (host) | "Phase 12: build the host's create flow exactly as docs/20-coupons-events.md. Quick Actions → Coupons opens OF1 Upload Video Promo (one clip). OF2 / OF8 are the video with the Coupon \| Event switch (keeps the video, title, description and schedule), the checklist card "To create the coupon / event · n of 6 done" (done items green, to-do items with an amber ring, each opens its field or sheet; when done it becomes the green "Checklist: all 6 done" pill), the side rail (Value, Usage Limit, Schedule or Capacity, Booking channel, Schedule: white with the value when set, dark with an amber dot when missing), Title 1–100 and Description 10–500 written on the video, and Create Coupon / Create Event 44 tall, disabled until the checklist is done. One sheet per setting with one explaining line; Done opens the next; Usage Limit and Capacity default to Unlimited; Value, Booking channel and Active Schedule have no default. Create opens the check sheet (OF7 / OF13); its Create sends OfferCreateRequest and opens CE1. Data per docs/06 (Create a coupon or an event) and A23. Done = docs/20 §11 at small, medium and large." |
 
 5. **Verify every phase visually.** Run on an iPhone SE / 15 / 15 Pro Max simulator and 360 / ~393 / ~430-wide Android emulators, take screenshots, put them next to `screenshots/<size>/<id>.png` (overlay at 50 %), and go through `docs/09-acceptance-checklist.md`. Ask the agent to attach the screenshots and list any deviation in the PR description.
 6. **Keep open questions open.** If the agent hits anything in `docs/10-open-questions.md` (for example validation errors on TB3 or R3 offers), it adds a TODO and asks; it does not design it.

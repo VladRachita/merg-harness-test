@@ -10,6 +10,7 @@ Each screen: id → files, then top-to-bottom content, actions and data. "C#" re
 Top bar (back, settings) → C18 profile block → **Quick Actions** 4-column grid (Calendar, Bookings, Hours, Services, Coupons, Customers, Team) → icon tabs (Videos, Reviews, Events) → C9 bottom nav (Profile active).
 - The third icon tab (calendar) is **Reservations** → RV1, with the C35 amber badge = waiting requests (see `14-reservations.md`).
 - Services tile → HS1 (services hosts) or HR1 (accommodation hosts, label "Rooms").
+- Coupons tile → OF1, create a coupon or an event (see `20-coupons-events.md`).
 - **+** (Create post) in the bottom nav → NP1 New post (see `17-new-post.md`).
 - Team tile → TM1 (not linked in the canvas prototype; implement it).
 - Customers tile → CR1 (not linked in the canvas prototype; implement it).
@@ -128,6 +129,51 @@ Green "Accepted. Elena got a confirmation." → C40 with the dark date tile and 
 
 ### RV6-after-visit · After the visit
 Summary (Today 23 Oct · 11:00 – 12:00 · Haircut) → Mihai Ionescu (4 visits · last 9 Oct) → C43 "Did Mihai come?" **No-show** / **Yes, done** (→ RV1) → "If you do not answer, it is marked as done the next day."
+
+---
+
+## Host — coupons & events (create)
+
+Full spec, sizes and states: [`20-coupons-events.md`](20-coupons-events.md). One editor on the video, as New post; an event uses the same screens with Capacity and Booking channel instead of Value and Usage Limit. Summary:
+
+### OF1-pick-video · Upload Video Promo
+"Upload Video Promo" · **Recents** · "Short clips perform best (15-30s)" · 3-column gallery, one clip picked (0:18) · "1 video · 0:18" · **Next** (→ OF2).
+
+### OF2-coupon-empty · New coupon, empty
+The video → back · **Coupon** | Event · Change video promo → checklist "To create the coupon · 2 of 6 done" (✓ Video promo, Title, Description, Value, ✓ Usage Limit, Active Schedule) → rail Value (amber dot) · ∞ claims · Schedule (amber dot) → Title "e.g., Happy Hour Special" 0 / 100 · Description "Describe the details of your offer..." "Minimum 10 characters required" 0 / 500 → "4 left on the checklist" · **Create Coupon** (disabled, 44 tall).
+
+### OF3-value · Value (sheet)
+"Value" · "How much customers save with this coupon." · 20 · **%** | RON · "On your video: 20% OFF" · note → **Done** (→ OF4). Behind: Happy Hour Special written, checklist 4 of 6.
+
+### OF4-usage-limit · Usage Limit (sheet)
+"How many times the coupon can be claimed in total." · **Unlimited** (selected) · Set a number (50) → **Done** (→ OF5). Checklist 5 of 6 behind.
+
+### OF5-coupon-schedule · Active Schedule (sheet)
+"When customers can use the coupon." · Start Date Mon, 26 Oct · End Date Fri, 30 Oct · Start Time 15:00 · End Time 17:00 · "Every day from Mon, 26 Oct to Fri, 30 Oct, between 15:00 and 17:00. It ends by itself after the end date." → **Done** (→ OF6).
+
+### OF6-coupon-ready · Coupon, all set
+Green pill "Checklist: all 6 done" · 20% OFF sticker · Happy Hour Special + description 66 / 500 · rail 20% · ∞ claims · 26–30 Oct · "All set. Check it before it goes live." · **Create Coupon** (→ OF7).
+
+### OF7-coupon-check · Check your coupon (sheet)
+"Tap a line to change it." · Video promo Your clip · Title · Description (66 characters) · Value 20% OFF · Usage Limit Unlimited · Active Schedule Mon, 26 Oct – Fri, 30 Oct, every day 15:00 – 17:00 · note → **Create Coupon** (→ CE1).
+
+### OF8-event-empty · New event, empty
+OF2 with **Event** selected: the purple "Event" sticker, checklist "To create the event · 2 of 6 done" (✓ Video promo, Title, Description, ✓ Capacity, Booking channel, Active Schedule), rail ∞ seats · Booking channel (amber dot) · Schedule (amber dot), **Create Event** disabled.
+
+### OF9-capacity · Capacity (sheet)
+"How many people can book this event." · Unlimited · **Set a number** 34 (selected) → **Done** (→ OF10).
+
+### OF10-booking-channel · Booking channel (sheet)
+"How people book this event." · **In-app** "People book in the app. You answer the requests in Reservations." · Phone "People call you to book. Your phone number shows on the event." → **Done** (→ OF11).
+
+### OF11-event-schedule · Active Schedule (sheet), event
+"When the event takes place." · Mon, 26 Oct · Mon, 26 Oct · 19:00 · 21:00 · "Mon, 26 Oct, between 19:00 and 21:00. It ends by itself after the end time." → **Done** (→ OF12).
+
+### OF12-event-ready · Event, all set
+"Checklist: all 6 done" · Wine tasting night · rail 34 seats · In-app · 26 Oct · **Create Event** (→ OF13).
+
+### OF13-event-check · Check your event (sheet)
+Video promo · Title · Description (69 characters) · Capacity 34 seats · Booking channel In-app · Active Schedule Mon, 26 Oct, 19:00 – 21:00 · note → **Create Event** (→ CE1).
 
 ---
 

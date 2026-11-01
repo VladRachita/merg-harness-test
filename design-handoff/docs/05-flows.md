@@ -212,3 +212,24 @@ Platform Users ── Super Admin menu → Host Approval · User Management · H
                   · Registration · Reservations · Playback Health)
 ```
 Rules (details in `19-admin.md`): the three tabs and every page name stay; a role only sees and can only call what it is allowed (Moderator: Reviews, Analytics; Super Admin: everything), checked on the server; every approve / reject (videos and hosts) goes to the read-only Audit Log.
+
+## O. Host — create a coupon or an event
+
+```mermaid
+flowchart LR
+  HP[HP Quick Actions · Coupons] --> OF1[OF1 Upload Video Promo]
+  OF1 -- Next --> OF2[OF2 Coupon, empty]
+  OF2 -- Event --> OF8[OF8 Event, empty]
+  OF8 -- Coupon --> OF2
+  OF2 --> OF3[OF3 Value] --> OF4[OF4 Usage Limit] --> OF5[OF5 Active Schedule] --> OF6[OF6 Coupon, all set]
+  OF8 --> OF9[OF9 Capacity] --> OF10[OF10 Booking channel] --> OF11[OF11 Active Schedule] --> OF12[OF12 Event, all set]
+  OF6 -- Create Coupon --> OF7[OF7 Check your coupon] -- Create Coupon --> CE1[CE1 Coupons & Events tab]
+  OF12 -- Create Event --> OF13[OF13 Check your event] -- Create Event --> CE1
+```
+Rules (details in `20-coupons-events.md` §1):
+- the title and the description are written on the video, and each setting has its own sheet on the side rail;
+- the checklist (6 items) shows what is left, and Create turns on only when it is done;
+- Usage Limit and Capacity default to Unlimited;
+- Done in a sheet opens the next setting;
+- the check sheet lists everything before Create, and Create opens the Coupons & Events tab with the new offer;
+- the offer ends by itself after its schedule.
