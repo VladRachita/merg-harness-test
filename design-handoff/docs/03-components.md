@@ -105,6 +105,12 @@ Horizontal row, padding `14 16 0`, gap 4. Item 68 wide: avatar 52 (Everyone = in
 - CE1: 3 tiles fill the row (flex 1), 72 tall.
 - **All** tile: ink background, `layout-grid` 18 top-left, label 12.5/600 + count 11 (white .8) at the bottom.
 - **Photo tile**: category image, bottom gradient 42–46 tall (`0 → rgba(0,0,0,.7)`), label + count bottom (left/right 9, bottom 7).
+- **CE1 Events and Coupons tiles** use the standard images in `assets/tiles/`, never a video thumbnail: `tile_events` and `tile_coupons`.
+  - Each image is 144 × 96 pt (3:2), opaque, with square corners and no text.
+  - Draw it center-cropped (`centerCrop` / `scaleAspectFill`) to fill the tile (97–121 × 72); the app clips the radius 13.
+  - The bottom gradient and the label and count go on top of the image.
+  - While it loads, the tile background is `#140E31` (Events) / `#06291A` (Coupons).
+  - Use the files as they are (Android `res/drawable-*` WebP, iOS image sets). Rules: `assets/tiles/README.md`; references: `screenshots/reference/tile-image*.png`.
 - Selected: ring. Empty category (count 0): 0.4 and disabled.
 - Search Deals (SR6): plain icon tiles (All `layout-grid` · Events group icon · Coupons `percent`), 60 tall, white with 1px `line.card` at 0.4 when not selected, **no counts**. Spec: `16-search.md` §8.
 

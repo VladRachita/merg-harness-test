@@ -2127,7 +2127,7 @@
       "id": "CE1-coupons-events",
       "area": "coupons",
       "title": "Public · Coupons & Events tab",
-      "purpose": "Ticket cards, 3 per row, photo-tile filter.",
+      "purpose": "Ticket cards, 3 per row; filter tiles All · Events · Coupons, with the standard Events and Coupons tile images (assets/tiles).",
       "source": "C-Idea-A.dc.html",
       "files": {
         "small": {
@@ -2915,6 +2915,34 @@
       "png": "screenshots/reference/icon-set.png",
       "width": 1340,
       "height": 360
+    },
+    "tile-image-events": {
+      "html": "screens/reference/tile-image-events.html",
+      "png": "screenshots/reference/tile-image-events.png",
+      "width": 480,
+      "height": 584,
+      "purpose": "Events tile image: 144 × 96 pt (3:2), shown at 3×, its colours and files."
+    },
+    "tile-image-coupons": {
+      "html": "screens/reference/tile-image-coupons.html",
+      "png": "screenshots/reference/tile-image-coupons.png",
+      "width": 480,
+      "height": 584,
+      "purpose": "Coupons tile image: 144 × 96 pt (3:2), shown at 3×, its colours and files."
+    },
+    "tile-images-in-tab": {
+      "html": "screens/reference/tile-images-in-tab.html",
+      "png": "screenshots/reference/tile-images-in-tab.png",
+      "width": 470,
+      "height": 492,
+      "purpose": "The CE1 tile row with the images at small, medium and large, each with a different tile selected."
+    },
+    "tile-images-files-and-crop": {
+      "html": "screens/reference/tile-images-files-and-crop.html",
+      "png": "screenshots/reference/tile-images-files-and-crop.png",
+      "width": 680,
+      "height": 858,
+      "purpose": "Files per platform (SVG, Android WebP per density, iOS PNG @2x / @3x), the crop on small and large phones, and the rules."
     }
   }
 }
