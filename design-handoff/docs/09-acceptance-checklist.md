@@ -83,3 +83,4 @@ Use this for every screen before calling it done.
 - [ ] **OF3–OF5, OF9–OF11**: one sheet per setting with its explaining line; Done opens the next setting; Usage Limit and Capacity default to Unlimited.
 - [ ] **OF6 / OF12**: "Checklist: all 6 done" pill, Create enabled; **OF7 / OF13**: the check sheet with every line, Create opens CE1.
 - [ ] Everything in `20-coupons-events.md` §11 (definition of done).
+- [ ] **CE1 tiles**: Events and Coupons use `tile_events` / `tile_coupons` from `assets/tiles/` at the device's density, center-cropped, with the app's gradient, label and count on top; they match `screenshots/reference/tile-images-in-tab.png` at small, medium and large. No video thumbnail, no redrawn or recoloured image.

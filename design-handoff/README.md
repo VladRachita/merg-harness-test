@@ -38,6 +38,8 @@ Read in this order, then build:
 | `screenshots/desktop/*.png`, `screens/desktop/*.html` | The admin dashboard (web) at 1440 × 900 (2× PNG), same format as the phone screens. |
 | `screens/{small,medium,large}/*.html` | The original design markup, standalone. Open in a browser to inspect exact values (every style is inline). Links between screens work, so it is also a clickable prototype. |
 | `screens/reference/icon-set.html` | The Quick Actions icon set and icon rules. |
+| `assets/tiles/` | The standard images for the **Events** and **Coupons** tiles of the Coupons & Events tab: SVG master, Android WebP for each density, iOS image sets. **Use these files as they are**; the rules are in `assets/tiles/README.md`. |
+| `screens/reference/tile-image*.html` | The two tile images, the tiles in the tab at small, medium and large, and the files, crop and rules. |
 | `screens.json` | Manifest: every screen id, title, purpose, files per size, and the screens it links to. |
 | `tokens.json` | Design tokens. |
 | `strings.json` | UI strings in EN, RO, DE, IT, ES, FR taken from the designs. |
@@ -45,6 +47,17 @@ Read in this order, then build:
 | `properties-per-screen.md` | For the backend: every screen's displayed data, inputs, actions and open parameters, with the gaps. |
 
 ## What's new in this update
+
+- **Coupons & Events tab · tile images** — the **Events** and **Coupons** filter tiles on CE1 now use two standard images instead of a video thumbnail:
+  - **Events** (`tile_events`): a ticket with the event (group) icon, spotlights and confetti, on event purple.
+  - **Coupons** (`tile_coupons`): a ticket with the percent icon, a soft glow and sparkles, on coupon green.
+  - **Size and use:** 144 × 96 pt (3:2), opaque, with no text. The app draws them center-cropped and puts the gradient, the label and the count on top. White label contrast is at least 7.5 : 1 at every size.
+  - **Files:** `assets/tiles/`, with an SVG master (about 3 KB), Android WebP quality 90 for mdpi → xxxhdpi (2–9 KB each) and iOS image sets with PNG @2x / @3x.
+  - **References:** CE1 is updated at small, medium and large and loads the files. `screenshots/reference/tile-image*.png` shows each image, the tiles in the tab, and the files, crop and rules.
+
+  Rules: `assets/tiles/README.md`, C6 in `docs/03`, *Images bundled in the app* in `docs/07`.
+
+### Earlier updates
 
 - **Coupons & events (host)** — a host creates a coupon or an event on its video promo, the way people post a video. Every element of the host's sketch is kept with its name. The page has 13 screens at small, medium and large:
   - `OF1` **Upload Video Promo**: one clip ("Short clips perform best (15-30s)").
@@ -60,8 +73,6 @@ Read in this order, then build:
   - `OF8`–`OF13` **the same for an event**: Capacity (Unlimited by default) and **Booking channel** (In-app or Phone, explained) instead of Value and Usage Limit.
 
   Spec: [`docs/20-coupons-events.md`](docs/20-coupons-events.md). Components C67–C73; *Create a coupon or an event* data in `docs/06`; rule A23 in the backend contract. The **Coupons** tile in the host profile's Quick Actions now opens OF1.
-
-### Earlier updates
 
 - **Admin dashboard (web)** — the platform team's admin, restructured with **every page name kept**. Desktop screens at 1440 × 900:
   - `AD1` **Reviews**: one moderation queue (Pending Reviews · Approved Videos · Rejected Videos), the video in the middle, **Reject (R) · Approve (A) · Next (J)**, uploader and post details on the right.
@@ -166,6 +177,8 @@ handoff is in design-handoff/ (README.md first). Follow it exactly:
 
 1. Read design-handoff/README.md and every file in design-handoff/docs/ (01–20) before writing code.
 2. Map tokens.json into the app's theme (colours, type, radii, spacing). Do not add new values.
+   Copy the images in design-handoff/assets/ into the app as they are (assets/tiles/README.md says
+   where each file goes). Do not redraw, recolour or replace them.
 3. Build the shared components from docs/03-components.md first (C1–C73), then the screens from
    docs/04-screens.md, in the order: host services → host rooms → host team (TM1 → TM3, see
    docs/12-team.md) → host customers & rewards (CR1 → CR10, see docs/13-customers-rewards.md) →
@@ -206,7 +219,7 @@ handoff is in design-handoff/ (README.md first). Follow it exactly:
    | 3 · Public profiles | "Phase 3: build HP, PA1–PA3, PS1, PF1 (CTA rules in docs/05 §E)." |
    | 4 · Salon booking | "Phase 4: build R1–R3, SV, F1–F4 with the F4 offer states F4C/F4E (docs/05 §B, docs/11 §8)." |
    | 5 · Table booking | "Phase 5: build the Table booking page exactly as docs/11-table-booking.md: TB1 month calendar, TB2 guests + Choose an offer + times (Any time / coupon / event states), TB3 details with the offer strip and First name / Last name fields, TB4 booked. Wire PF1 Book now → TB1. Data per docs/06 (Restaurant booking, Offer windows and sittings, Booking request). Done = docs/11 §12 at small, medium and large." |
-   | 6 · Coupons & Events | "Phase 6: build CE1 (docs/03 C16, docs/04)." |
+   | 6 · Coupons & Events | "Phase 6: build CE1 (docs/03 C6 and C16, docs/04). The Events and Coupons tiles use the bundled images from assets/tiles/ exactly as assets/tiles/README.md says: Android res/drawable-* WebP, iOS image sets, center-cropped to fill the tile, with the bottom gradient, label and count drawn on top; a dark fallback colour while loading; never a video thumbnail. Match screenshots/*/ce1-coupons-events.png and screenshots/reference/tile-images-in-tab.png." |
    | 7 · My activity | "Phase 7: build the customer's My activity page exactly as docs/15-my-activity.md: MA1–MA3 with the three tabs Upcoming · Rewards · History (counts in the labels, no Total / Completed / Upcoming counters), MA1 upcoming by day with Confirmed / Waiting, MA2 rewards ready to use (ending soonest first, faded used or ended), MA3 history by month with Rate / ★ N / Book again and the decline or cancel reason, MA4 / MA5 reservation waiting or confirmed (status banner, place card with Copy address and Call, Cancel; no Add to calendar, no Directions), MA6 reward with Book with <place>. Replace the existing My Activity screen. Data per docs/06 (Reservation customer fields, My activity). It reads the same reservations as phase 2d and the rewards from phase 2c. Done = docs/15 §13 at small, medium and large." |
    | 8 · Search | "Phase 8: build the public Search page exactly as docs/16-search.md: the Search tab of the bottom nav opens SR1 (search field, Recent searches with remove and Clear all, no Browse); typing shows SR3 with tabs All · Videos · Places · Deals (icon + label, no counts, unselected greyed 0.4, the query kept across tabs); All is one mixed feed in the order the backend ranks it (place rows, video rows of two, deal rows of two; no headings, no See all); SR4 videos (C7 with the place name), SR5 places (no icons: initial, name, verified, type · city, status), SR6 deals (2 per row, ending soonest first, All / Events / Coupons tiles); every list keeps loading with Loading more; SR2 no results. A place opens PS1 / PF1 / PA1, a video F2 / PA2, a deal F4C / F4E / TB2C / TB2E with the deal picked. Replace the existing Search screen. Data per docs/06 (Search). Done = docs/16 §14 at small, medium and large." |
    | 9 · New post | "Phase 9: build the New post page exactly as docs/17-new-post.md: the + in the bottom navigation opens NP1 (the video picker, one clip up to 100 MB, no Skip); NP2 / NP3 are the whole video with X, Change video, the poster, the frosted caption panel (title max 30 and description max 100 characters, fields that grow, counters n / 30 on the divider and n / 100 under the description, typing stops at the cap), the Tag tool on the side rail (dark without a tag, white with a green count badge with one) and Publish bottom right (greyed until there is a title); NP4 is the Tag a place sheet (search places, From your visits with a check, Done). A tag is a place, a service or a room; restaurants tag the place only. EP1 Edit post (from More on your own post: same editor, no Change video, Delete video bottom left, Save bottom right) and EP2 Delete video (sheet listing what is deleted, red Delete video). No hashtags, people tags, location or tag pill on the video. Data per docs/06 (Post). Done = docs/17 §12 at small, medium and large." |

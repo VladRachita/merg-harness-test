@@ -398,7 +398,7 @@ R3 layout (C14) plus **C20 Choose an offer** between When and the times. **Any t
 
 ### CE1-coupons-events · Coupons & Events
 - C4 tabs (Videos · **Coupons** · Reviews).
-- C6 tiles filling the row: **All 6** (selected), Events 3, Coupons 3.
+- C6 tiles filling the row: **All 6** (selected), Events 3, Coupons 3. **Events** and **Coupons** show the standard tile images (`assets/tiles/`, C6), not a thumbnail.
 - 3-column grid of C16 ticket cards:
 
 | Card | Type | Time left | Left | Discount sticker |

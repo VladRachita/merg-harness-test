@@ -724,7 +724,7 @@ The bottom bar shows the event title.
 
 | Element | Field | Type | Notes |
 |---|---|---|---|
-| Filter tiles | count of offers per type | `{ all, events, coupons }` | *All 6 · Events 3 · Coupons 3* |
+| Filter tiles | count of offers per type | `{ all, events, coupons }` | *All 6 · Events 3 · Coupons 3*. The Events and Coupons tile images are bundled in the app (`assets/tiles/`), not sent by the backend. |
 | Card media | `Offer.video.thumbnailUrl` | `url?` | Play button. **⚠ gap:** the card when an offer has no video. |
 | Discount sticker | `Offer.discount` | `{ type, value, currency? }` | Coupons only: "20% OFF", "10 RON OFF". |
 | Title | `Offer.title` | `string` | 1 line. |

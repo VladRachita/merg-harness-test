@@ -53,6 +53,13 @@ Column width = (screen width − 2×16 − gaps) ÷ columns. Inside cards, keep 
 - New post: NP2 / NP3 are placed from the edges; the caption panel is screen width − 92 and grows upward with the text. At the caps (30 / 100) the title stays on one line and the description on three at 360, 390 and 430. The NP4 and EP2 sheets fit at every size; on EP1 Delete video and Save share the bottom row at 360.
 - Booking steps (TB1–TB3, F4 with offers) scroll under their pinned bottom bar at every size. On small phones the end of the content is under the fold in the references; that is expected.
 
+## Images bundled in the app
+- **Tile images** (`assets/tiles/`, CE1 Events and Coupons):
+  - Android: `android/drawable-{mdpi,hdpi,xhdpi,xxhdpi,xxxhdpi}/tile_events.webp` and `tile_coupons.webp` go into `res/drawable-*` as they are (WebP quality 90, 144 × 96 → 576 × 384 px, 2–9 KB).
+  - iOS: `ios/TileEvents.imageset` and `ios/TileCoupons.imageset` go into `Assets.xcassets` (PNG @2x 288 × 192, @3x 432 × 288).
+  - The SVG master is the source for any new size. If the images are served from a backend instead, serve the xxhdpi WebP (432 × 288).
+- Draw them center-cropped to fill the tile at every width (small 97 × 72, medium 107 × 72, large 121 × 72). The art stays inside the crop and the label area stays dark: white label contrast is at least 7.5 : 1 at every size.
+
 ## Safe areas
 - Replace the fixed 24 px bottom padding of bottom bars with the real bottom safe-area inset (home indicator / Android gesture bar), minimum 16.
 - On video screens the X and mute buttons sit below the status bar (top inset + 0–8). The side rail and info bar keep their distance from the bottom inset.
