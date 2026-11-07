@@ -304,6 +304,54 @@ OfferCreateRequest {
   - a coupon has a `discount`, an event a `bookingChannel`.
 - `Offer` gains `description` and, for events, `bookingChannel`. Create returns the new `Offer`, and the app opens CE1.
 
+## Convert to Business (host application)
+```ts
+BusinessApplicationRequest {
+  // Step 1 · Legal Documents (BC2)
+  cui: "RO12345678",                                         // CUI (Tax ID): digits, optional "RO" prefix (format: open question #67)
+  certificateUploadId,                                       // the Company Certificate photo
+  // Step 2 · Business Information (BC3, BC4, BC5)
+  category: "FOOD_BEVERAGE" | "SERVICES" | "ACCOMMODATION",  // Food & Beverage | Entertainment | Accommodation
+  placeType: "CAFE" | "BAR" | … | "HOTEL" | … | "SALON" | …, // one of the category's list (21 §5); the label shows as BusinessProfile.subcategoryLabel
+  offers: ("VEGAN" | "PET_FRIENDLY" | "CHILD_FRIENDLY" | "TERRACE" | "OUTDOOR_DINING" | "FAMILY" | "ROMANTIC")[],  // 0–6, FOOD_BEVERAGE and ACCOMMODATION only
+  name: "Bella's Cafe",                                      // Business Name
+  phone?: { countryCode: "+40", number: "722123456" },       // Phone Number (optional in the sketch)
+  bookingChannel: "IN_APP" | "PHONE",                        // How do you take bookings?
+  priceLevel: 1 | 2 | 3 | 4,                                 // Price Range (labels: open question #66)
+  address: { line, city, lat, lng },                         // picked on the map
+  maxPartySize: 8,                                           // Max Capacity per Reservation, whole number ≥ 1
+  venueCapacity: 40,                                         // Venue capacity, whole number ≥ 1
+  servicesOffered: "…",                                      // 10–1000 characters
+  // Step 3 · Business Hours (BC6)
+  openingHours: WeeklyHours,                                 // 7 days: { open: boolean, from: "09:00", to: "17:00" }
+  // Overview (BC7)
+  notifyWhenProcessed: true,                                 // "We will notify you…"
+  termsAccepted: true, termsVersion: "2026-10"               // required to send
+}
+```
+- **Defaults:** no category, place type or booking channel; offers empty; every day open 09:00–17:00.
+- **Draft:** the app keeps the answers while the person moves between the overview and the steps. Saving the draft on the server is open (#72).
+- **Changing the category** clears `placeType` and `offers`.
+- **Send:** Create Business Account sends the request once the three steps are done and both agreements are ticked (`notifyWhenProcessed` is also needed to send, as designed).
+- **The application:** the server creates a `HostApplication` (see *Admin*) in state `PENDING`:
+  - `business { name, category, type = placeType, city, address }`;
+  - `owner` from the person's account (name, email) and `phone`;
+  - `documents` = the certificate.
+
+  It shows in Host Approval (AD3) and counts in `hostApplicationsWaiting`.
+- **Approved:** the person's account becomes a host with a `BusinessProfile`:
+  - `category`, `subcategoryLabel` = the place type label, `phone`, `address`, `openingHours`, `priceLevel`;
+  - the offers become profile tags (where they show on the public profile is not designed);
+  - `bookingChannel` sets the profile's booking default (#68).
+- **Rejected:** the person is told the reason (#63).
+- **Checks on the server, as in the app:**
+  - every * field is present;
+  - `servicesOffered` is 10–1000 characters;
+  - `maxPartySize` and `venueCapacity` are whole numbers of 1 or more;
+  - every open day has `to > from`;
+  - `termsAccepted`;
+  - one pending application per person.
+
 ## Account (create or sign in)
 ```ts
 EmailCheck { email } → { exists: boolean }                   // AU2: false → AU3 (create), true → sign in with the password

@@ -54,6 +54,10 @@ Build these once and reuse them. Values are for the **medium** phone (390 × 844
 | Booking channel · In-app | `smartphone` | Booking channel · Phone | `phone` |
 | Active Schedule | `calendar` | Change video promo | `refresh-cw` |
 | Checklist done / Check your coupon | `check` | Fewer / more (stepper) | `minus` / `plus` |
+| Legal Documents (convert to business) | `file-text` | Business Information | `building-2` |
+| Business Hours | `clock` | Upload a certificate photo | `camera` |
+| Rule before you upload | `circle-check` | Business Address / pick on the map | `map-pin` / `map` |
+| Booking · In-app / By phone | `smartphone` / `phone` | Step done (overview) | `check` on `status.success` |
 
 Stroke 1.8 at 20–26 px, 2–2.4 at 12–16 px. Filled: play, phone, star, more dots.
 
@@ -459,3 +463,45 @@ Optional "Brand" tone: tile `#EEEAFD`, icon `#5B3FD6`. Default is Mono.
 ## 73. Check rows
 - Rows min 56 with `line.rowSeparator`: `offer.coupon` circle 24 with a white check · label 12 secondary · value 15/600 (1 line, ellipsis) · optional explanation 12.5 · `chevron-right` 18 `text.tertiary`. Tap = change that item.
 - Seen in: OF7, OF13. Full spec: `20-coupons-events.md` §6.
+
+## 74. Step card
+- Overview of Convert to Business: white card min 84 (76 on small), radius 18, 1px `line.card`, padding 14 (12 on small), gap 14: icon tile 44 (radius 12) · "Step n of 3 • …" 12.5/500 `text.secondary` · the step 16/600 · its line 13.5 `text.body` · `chevron-right` 20 on the right.
+- States: next step = 2px ink border, ink tile with a white icon, ink chevron; upcoming = `bg.soft` tile, `text.tertiary` chevron; done = a green check circle 26 (`status.success`) instead of the chevron. The whole card opens its step.
+- Seen in: BC1, BC7. Full spec: `21-business-conversion.md` §2.
+
+## 75. Agreements card
+- White card radius 18, 1px `line.card`, padding 16, gap 12. Each row: round box 26 (empty: 2px `line.strong`; ticked: ink with a white `check` 15) + the text 14/1.45 `text.body`; the whole row is the target (min 44). Then "Read the Terms of Service": `file-text` 16 + 13.5/500 ink, underlined, 44 tall, lined up with the text (left 38).
+- Seen in: BC1, BC7. Full spec: `21-business-conversion.md` §2.
+
+## 76. Step title block
+- "<step name> · Step n of 3 • …" 13/18 500 `text.secondary`, the step name 600 `text.primary` · the question 28/34 700, letter spacing −0.02em (`font.size.stepTitle`; 24/30 on small) · an optional line 15/1.45 `text.body`, gap 6. A required question ends with a red " *" (`status.danger`).
+- Seen in: BC2–BC6.
+
+## 77. Place type tile
+- 3 per row, gap 8; 80 tall (72 on small), radius 16, white, 1px `line.card`, padding 6: emoji 26 (24 on small) above the name 13/16 500 (12 on small), centred.
+- Picked: 1px ink border + `elevation.selectionRing`, name 600. The others at 0.4, still tappable. Names wrap to two even lines (`text-wrap: balance`); a single long word breaks with a hyphen (`hyphens: auto` with the language set). Never overflow, never change the tile size.
+- Seen in: BC4, BC4F, BC4S. Full spec: `21-business-conversion.md` §5.
+
+## 78. Offer tile
+- 5 per row on every category (same width), gap 6; 68 tall (64 on small), radius 14, padding `6 2`: emoji 20 above the name 11/13 600, up to two even lines.
+- `bg.soft` with ink text; picked: ink fill, white text. Multi-select (up to 6), no greying.
+- Seen in: BC4, BC4F. Full spec: `21-business-conversion.md` §5.
+
+## 79. Field with a label
+- Label 14/20 600 (+ red " *" when required) · gap 8 · input 52, radius 14, `bg.soft`, no border, padding `0 16`, text 16, placeholder `text.placeholder` · optional helper 12.5/1.4 `text.secondary` under it.
+- Variants: phone (country button 52 `bg.soft` "🇷🇴 +40" + `chevron-down` 16, then the number), picker (value or placeholder + `chevron-down` 20), textarea (144, 120 on small; "n / 1000" counter on the right of the helper).
+- Seen in: BC2, BC5.
+
+## 80. Upload box
+- Dashed 1.5 `line.strong`, radius 16, white, 112 tall (96 on small): `camera` 22 in a 44 `bg.soft` circle above the label 15/500. Opens camera or photo library.
+- Above it, the rules card: white, radius 16, 1px `line.card`, padding `14 16`: "Before you upload" 14/600, then each rule with `circle-check` 18 `text.secondary` + 14/1.4 `text.body`, gap 8.
+- Seen in: BC2. Full spec: `21-business-conversion.md` §3.
+
+## 81. Address picker field
+- `bg.soft` card, radius 16, one tap target: map preview 100 tall (`bg.map`, white roads, `bg.mapRoadMinor` blocks, ink pin with a 12 % ink halo) + a row 52: `map-pin` 20 ink · "Tap map icon to select location" 16 in the placeholder colour (1 line, ellipsis) · `map` 20 ink. Opens the map picker (OpenStreetMap). Once picked, the row shows the address.
+- Seen in: BC5. Full spec: `21-business-conversion.md` §6.
+
+## 82. Opening hours card
+- White card radius 18, 1px `line.card`: seven rows min 56 (52 on small), separators `line.rowSeparator`, padding `0 4 0 14`. Each row: day 15/500 · two time buttons 44 tall, `bg.soft`, radius 12 (`radius.timeSlot`), 15/500 tabular figures, "to" 13 `text.secondary` between them · a C30 switch.
+- Closed (switch off): the day `text.tertiary`, the times at 0.4. Time buttons open the platform time picker, 24-hour.
+- Seen in: BC6. Full spec: `21-business-conversion.md` §7.
