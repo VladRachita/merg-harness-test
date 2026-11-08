@@ -459,4 +459,4 @@ Counter 1/3 → three step cards (C74): **Legal Documents** "Step 1 of 3 • Qui
 "**Business Hours** · Step 3 of 3 • Almost done!" · **When are you open for customers?** · "Select your operating hours" → hours card (C82): Monday–Sunday, 09:00 to 17:00, a switch each (Sunday closed in the sample) → **Continue** (→ BC7).
 
 ### BC7-ready · Overview, ready to submit
-BC1 with counter 3/3, the progress bar full, a green check on every step and both boxes ticked → **Create Business Account** on (sends the application; what follows is open question #63).
+BC1 with counter 3/3, the progress bar full, a green check on every step and both boxes ticked → **Create Business Account** on (sends the application to Host Approval).

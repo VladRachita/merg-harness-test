@@ -59,7 +59,7 @@ Read in this order, then build:
   - `BC6` **Operating hours**: seven days, 09:00 to 17:00 with a switch each.
   - `BC7` **Ready to submit**: every step checked, both boxes ticked, Create Business Account on. It sends the application that the admin approves in **Host Approval** (AD3).
 
-  The screens use the app's components and tokens (C1, C17, C30, C32, C71); the differences from the canvas are listed in `docs/21` §12. Spec: [`docs/21-business-conversion.md`](docs/21-business-conversion.md). New components C74–C82; new token `font.size.stepTitle` (28, 24 on small); *Convert to Business* data in `docs/06`; rule A24 in the backend contract; open questions #62–#72.
+  The screens use the app's components and tokens (C1, C17, C30, C32, C71); the differences from the canvas are listed in `docs/21` §12. Spec: [`docs/21-business-conversion.md`](docs/21-business-conversion.md). New components C74–C82; new token `font.size.stepTitle` (28, 24 on small); *Convert to Business* data in `docs/06`; rule A24 in the backend contract.
 
 ### Earlier updates
 

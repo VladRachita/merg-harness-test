@@ -308,7 +308,7 @@ OfferCreateRequest {
 ```ts
 BusinessApplicationRequest {
   // Step 1 · Legal Documents (BC2)
-  cui: "RO12345678",                                         // CUI (Tax ID): digits, optional "RO" prefix (format: open question #67)
+  cui: "RO12345678",                                         // CUI (Tax ID): digits, optional "RO" prefix
   certificateUploadId,                                       // the Company Certificate photo
   // Step 2 · Business Information (BC3, BC4, BC5)
   category: "FOOD_BEVERAGE" | "SERVICES" | "ACCOMMODATION",  // Food & Beverage | Entertainment | Accommodation
@@ -317,7 +317,7 @@ BusinessApplicationRequest {
   name: "Bella's Cafe",                                      // Business Name
   phone?: { countryCode: "+40", number: "722123456" },       // Phone Number (optional in the sketch)
   bookingChannel: "IN_APP" | "PHONE",                        // How do you take bookings?
-  priceLevel: 1 | 2 | 3 | 4,                                 // Price Range (labels: open question #66)
+  priceLevel: 1 | 2 | 3 | 4,                                 // Price Range
   address: { line, city, lat, lng },                         // picked on the map
   maxPartySize: 8,                                           // Max Capacity per Reservation, whole number ≥ 1
   venueCapacity: 40,                                         // Venue capacity, whole number ≥ 1
@@ -330,7 +330,7 @@ BusinessApplicationRequest {
 }
 ```
 - **Defaults:** no category, place type or booking channel; offers empty; every day open 09:00–17:00.
-- **Draft:** the app keeps the answers while the person moves between the overview and the steps. Saving the draft on the server is open (#72).
+- **Draft:** the app keeps the answers while the person moves between the overview and the steps.
 - **Changing the category** clears `placeType` and `offers`.
 - **Send:** Create Business Account sends the request once the three steps are done and both agreements are ticked (`notifyWhenProcessed` is also needed to send, as designed).
 - **The application:** the server creates a `HostApplication` (see *Admin*) in state `PENDING`:
@@ -342,8 +342,8 @@ BusinessApplicationRequest {
 - **Approved:** the person's account becomes a host with a `BusinessProfile`:
   - `category`, `subcategoryLabel` = the place type label, `phone`, `address`, `openingHours`, `priceLevel`;
   - the offers become profile tags (where they show on the public profile is not designed);
-  - `bookingChannel` sets the profile's booking default (#68).
-- **Rejected:** the person is told the reason (#63).
+  - `bookingChannel` sets the profile's booking default.
+- **Rejected:** the person is told the reason.
 - **Checks on the server, as in the app:**
   - every * field is present;
   - `servicesOffered` is 10–1000 characters;

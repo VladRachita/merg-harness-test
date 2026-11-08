@@ -1804,10 +1804,10 @@ A signed-in person who is not a host yet sends an application to become one. Ful
 
 | Input | Type | Rules |
 |---|---|---|
-| We will notify you… | `bool` | Required to send, as designed (#71 for the copy). |
+| We will notify you… | `bool` | Required to send, as designed. |
 | I agree to the business rules… | `bool` | Required to send. |
 
-**Actions:** **Create Business Account** (only when every step is done and both boxes are ticked) → `BusinessApplicationRequest` → `HostApplication{state: PENDING}` in Host Approval (AD3). What the person sees next: open question #63.
+**Actions:** **Create Business Account** (only when every step is done and both boxes are ticked) → `BusinessApplicationRequest` → `HostApplication{state: PENDING}` in Host Approval (AD3). What the person sees next is not designed.
 
 ### Screen 2 · Legal Documents (`BC2-legal`, board *1 · Legal Documents*)
 
@@ -1815,8 +1815,8 @@ A signed-in person who is not a host yet sends an application to become one. Ful
 
 | Input | Type | Rules |
 |---|---|---|
-| CUI (Tax ID) | `string` | Required. Digits with an optional "RO" prefix (format ⚠ #67). |
-| Company Certificate | photo upload → `certificateUploadId` | Required. Camera or library; file types and size ⚠ #67. |
+| CUI (Tax ID) | `string` | Required. Digits with an optional "RO" prefix (format ⚠ B31). |
+| Company Certificate | photo upload → `certificateUploadId` | Required. Camera or library; file types and size ⚠ B31. |
 
 **Actions:** **Continue to Business Info** → BC3.
 
@@ -1826,9 +1826,9 @@ A signed-in person who is not a host yet sends an application to become one. Ful
 
 | Input | Type | Rules |
 |---|---|---|
-| Business Category | `FOOD_BEVERAGE \| SERVICES \| ACCOMMODATION` | Required, one. Shown as Food & Beverage, Entertainment, Accommodation (#65). Changing it clears the place type and the offers. |
+| Business Category | `FOOD_BEVERAGE \| SERVICES \| ACCOMMODATION` | Required, one. Shown as Food & Beverage, Entertainment, Accommodation. Changing it clears the place type and the offers. |
 | What kind of place is it? | `placeType` (fixed list per category, `21` §5) | Required, one. |
-| What do you offer? | `offers[]` (fixed list per category) | Optional, 0–6. Food & Beverage and Accommodation only (#70). |
+| What do you offer? | `offers[]` (fixed list per category) | Optional, 0–6. Food & Beverage and Accommodation only. |
 
 **Actions:** **Continue** → BC4 → BC5.
 
@@ -1839,12 +1839,12 @@ A signed-in person who is not a host yet sends an application to become one. Ful
 | Input | Type | Rules |
 |---|---|---|
 | Business Name | `string` | Required. |
-| Phone Number | `{ countryCode, number }` | Optional in the sketch; +40 by default. Format ⚠ #67. |
-| How do you take bookings? | `IN_APP \| PHONE` | Required (#68 for accommodation). |
-| Price Range | `priceLevel` 1–4 | Required; options ⚠ #66. |
+| Phone Number | `{ countryCode, number }` | Optional in the sketch; +40 by default. Format ⚠ B31. |
+| How do you take bookings? | `IN_APP \| PHONE` | Required. |
+| Price Range | `priceLevel` 1–4 | Required; options ⚠ B31. |
 | Business Address | `{ line, city, lat, lng }` | Required; picked on the map. |
 | Max Capacity per Reservation | `int` ≥ 1 | Required. |
-| Venue capacity | `int` ≥ 1 | Required. Proposal: ≥ Max Capacity per Reservation (#67). |
+| Venue capacity | `int` ≥ 1 | Required. Proposal: ≥ Max Capacity per Reservation. |
 | Services Offered | `string` | Required, 10–1000 characters. |
 
 **Actions:** **Continue to Hours** → BC6.
@@ -1856,7 +1856,7 @@ A signed-in person who is not a host yet sends an application to become one. Ful
 | Input | Type | Rules |
 |---|---|---|
 | A day's switch | `bool` | Off = closed. Every day starts open. |
-| Opens / closes | `"HH:mm"` ×2 | 24-hour; `to > from` (one range per day, #69). Default 09:00–17:00. |
+| Opens / closes | `"HH:mm"` ×2 | 24-hour; `to > from` (one range per day). Default 09:00–17:00. |
 
 **Actions:** **Continue** → the overview (BC7 when every step is done).
 
@@ -1887,7 +1887,7 @@ A signed-in person who is not a host yet sends an application to become one. Ful
 | A21 | **Accounts** | `EmailCheck` (exists or not); `UsernameCheck` (free or not, while typing); `SignUpRequest` creates the account and signs the person in. **Age**: years between `dateOfBirth` and today ≥ `MIN_AGE` (16), checked on the server too; `dateOfBirth` is private (never on the profile). Signed out, actions that need an account (+, Book, Like) open AU1 and return to where the person was after signing in. | AU1–AU5 |
 | A22 | **Admin** | `AdminRole` checked on every admin request (MODERATOR: Reviews, Analytics; SUPER_ADMIN: everything). `ReviewDecision` / `HostDecision` update the item, tell the author or owner, and append to the **read-only** Audit Log (who, what, when, reason). Undo within a few seconds. Two-factor sign-in for admins; password again before rejecting a host, Platform Settings changes and User Management actions. Host application personal data and documents only for host approvers, documents through short-lived links, every view logged. | AD1–AD3 |
 | A23 | **Create offers** | `OfferCreateRequest` creates an `Offer` for the host's business. **Checks:** title 1–100 and description 10–500 characters; a coupon needs a `discount` (above 0, PERCENT at most 100), an event a `bookingChannel`; `usageLimit` / `capacity` null (unlimited) or 1 or more; `startDate` today or later, `endDate ≥ startDate`, `endTime > startTime`. **Schedule:** coupons get one `windows[]` entry per day from `startDate` to `endDate` (`startTime`–`endTime`); events get one `sittings[]` entry per day with `seatsLeft = capacity`; `startsAt` / `endsAt` come from the first and last day. **Limits:** `quantityLeft` starts at the limit (null = ∞); the offer stops at the end or when the limit is reached. **Booking channel:** IN_APP bookings arrive in Reservations; PHONE shows the business phone. **Visibility:** listed in the business's Coupons & Events tab and in Search Deals (A19). | OF1–OF13, CE1, SR6 |
-| A24 | **Host application** | `BusinessApplicationRequest` creates a `HostApplication` (`PENDING`) with `business { name, category, type = placeType, city, address }`, `owner` from the account + `phone`, `documents` = the certificate. **Checks:** every required field, `servicesOffered` 10–1000, capacities whole numbers ≥ 1, `to > from` on open days, `termsAccepted`, one pending application per person. Counts in `hostApplicationsWaiting`. **Approve** (AD3) makes the account a host with a `BusinessProfile` (category, `subcategoryLabel` = place type, phone, address, `openingHours`, `priceLevel`, booking default); **Reject** tells the person the reason (#63). | BC1–BC7, AD3 |
+| A24 | **Host application** | `BusinessApplicationRequest` creates a `HostApplication` (`PENDING`) with `business { name, category, type = placeType, city, address }`, `owner` from the account + `phone`, `documents` = the certificate. **Checks:** every required field, `servicesOffered` 10–1000, capacities whole numbers ≥ 1, `to > from` on open days, `termsAccepted`, one pending application per person. Counts in `hostApplicationsWaiting`. **Approve** (AD3) makes the account a host with a `BusinessProfile` (category, `subcategoryLabel` = place type, phone, address, `openingHours`, `priceLevel`, booking default); **Reject** tells the person the reason. | BC1–BC7, AD3 |
 
 ---
 
@@ -1925,7 +1925,7 @@ A signed-in person who is not a host yet sends an application to become one. Ful
 | B28 | Avatar fallback colour: stored or derived | all people / places | Derive in the app from the id. |
 | B29 | Search: when the request is sent, ranking, location / distance, page size and the end of a list, where recent searches are kept (and how many, signed-out people), one tab empty, matching (diacritics, typos), deals at accommodation places, query max length | SR1–SR6 | Open questions #50–#60; query max 100 (proposal). |
 | B30 | A deal opens F4C / F4E, which also need a **service**: an offer's `appliesTo.serviceIds` can list several | SR3, SR6 | Open question #61. Proposal: `DealResult.serviceIds`; with one service open on it, with several open the services list (F1) showing only those. |
-| B31 | Convert to Business: the draft (kept on the device or on the server, and for how long), the price levels, the CUI / certificate / phone checks, booking channel for accommodation, the after-send screen and the rejection message | BC1–BC7 | Open questions #63, #66–#68, #72. Proposal: keep the draft on the device until sent; price levels = `BusinessProfile.priceLevel`. |
+| B31 | Convert to Business: the draft (kept on the device or on the server, and for how long), the price levels, the CUI / certificate / phone checks, booking channel for accommodation, the after-send screen and the rejection message | BC1–BC7 | Proposal: keep the draft on the device until sent; price levels = `BusinessProfile.priceLevel`. |
 
 ---
 

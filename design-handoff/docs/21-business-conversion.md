@@ -51,6 +51,7 @@ Decisions, so they are not undone:
 - **The place types use one tile design for every category**: 3 per row, emoji above the name. Long names wrap inside the tile; they never change the layout.
 - **"What do you offer?" uses small tiles, 5 per row,** the same size in every category.
 - **Create Business Account turns on** only when the three steps are done and both boxes are ticked.
+- **The emoji of the owner's sketch are kept** on the categories, place types, offers and the country code: an exception to `01` §6 for these options only.
 
 ---
 
@@ -72,7 +73,7 @@ flowchart LR
 ```
 
 Rules:
-1. **Entry.** Convert to Business opens from the person's own profile. That entry is not in the canvas (open question #62); the prototype's back on BC1 goes to HP. Back on BC1 / BC7 leaves the flow; whether the answers are kept for later is #72.
+1. **Entry.** Convert to Business opens from the person's own profile. That entry is not in the canvas; the prototype's back on BC1 goes to HP. Back on BC1 / BC7 leaves the flow.
 2. **The overview (BC1 / BC7)** lists the three steps in order (C74). The step to do next has the ink border and the ink icon tile; a finished step shows the green check. Every card opens its step, also after it is done. The counter (n/3) and the progress bar (C32, three segments) show the step being worked on.
 3. **Step 1 · Legal Documents (BC2)** asks the CUI and a photo of the company certificate on one screen. **Continue to Business Info** goes straight to step 2 (BC3), as in the sketch. Back goes to the overview.
 4. **Step 2 · Business Information** is three screens:
@@ -81,8 +82,8 @@ Rules:
    - **BC5 Business details**: one form (§6). **Continue to Hours** opens step 3. Back goes to BC4.
 5. **Step 3 · Operating hours (BC6)**: the seven days, each with an opening and a closing time and a switch. **Continue** goes to the overview, which shows every step done (BC7). Back goes to the overview.
 6. **The answers are kept** while the person moves between the overview and the steps.
-7. **Create Business Account** is disabled (0.4) until the three steps are done and both boxes are ticked. Then it sends the application (§11). It shows up in the admin's Host Approval as **Pending**. What the person sees after sending is not designed (#63).
-8. **Continue** is always enabled in the designs. What happens when a required field (*) is missing is #72.
+7. **Create Business Account** is disabled (0.4) until the three steps are done and both boxes are ticked. Then it sends the application (§11). It shows up in the admin's Host Approval as **Pending**. What the person sees after sending is not designed.
+8. **Continue** is always enabled in the designs.
 
 ## 2. BC1 / BC7 · Overview (C74, C75)
 
@@ -103,7 +104,7 @@ Rules:
   - "Before you upload" card with the four rules: "Document must not be expired" · "Photo must be clear and in full colour" · "Business legal name must be visible" · "All required registration details must be readable";
   - the **upload box** (C80) "Tap to upload a photo of your certificate": opens the platform's choice of camera or photo library.
 - Bottom bar: **Continue to Business Info** (→ BC3).
-- After a photo is picked, the box shows the photo with a **Change** action. That state is not drawn; use the C65 Change pill on the photo (#67 for file types and size).
+- After a photo is picked, the box shows the photo with a **Change** action. That state is not drawn; use the C65 Change pill on the photo.
 
 ## 4. BC3 · Business Category (C71)
 
@@ -145,7 +146,7 @@ One form, gap 24 (20 on small), that scrolls under the pinned bottom bar. Its bo
    - a country button 52 (`bg.soft`, radius 14) "🇷🇴 +40" + `chevron-down` 16 that opens the country code list;
    - the number input beside it.
 4. **How do you take bookings?** * with "You can change this anytime from booking settings" (13 `text.secondary`), then two C71 option cards: **In-app** (`smartphone` icon) and **By phone** (`phone` icon), In-app picked in the sample, the other at 0.4.
-5. **Price Range** *: a picker field 52 "Select price range" (placeholder colour) + `chevron-down` 20. It opens a list of the price levels (#66).
+5. **Price Range** *: a picker field 52 "Select price range" (placeholder colour) + `chevron-down` 20. It opens a list of the price levels (`BusinessProfile.priceLevel`).
 6. **Business Address** * (C81): the map preview with the pin and the row "Tap map icon to select location" with `map-pin` and `map`. The whole card opens the map picker (OpenStreetMap, as `07`). Under it: "Tap the map icon to select your business location".
 7. **Max Capacity per Reservation** * (C79, numeric), placeholder "e.g., 8".
 8. **Venue capacity** * (C79, numeric), placeholder "e.g., 40", helper "How many people fit in your place at once."
@@ -198,7 +199,7 @@ Reused:
 | BC5 | "Business Name" · "e.g., Bella's Cafe" · "Phone Number" · "+40" · "How do you take bookings?" · "You can change this anytime from booking settings" · "In-app" · "By phone" · "Price Range" · "Select price range" · "Business Address" · "Tap map icon to select location" · "Tap the map icon to select your business location" · "Max Capacity per Reservation" · "e.g., 8" · "Venue capacity" · "e.g., 40" · "How many people fit in your place at once." · "Services Offered" · "Describe the services you offer" · "Minimum 10 characters required • What can customers expect from your business?" · "n / 1000" · **Continue to Hours** |
 | BC6 | "When are you open for customers?" · "Select your operating hours" · the weekday names · "09:00" · "to" · "17:00" |
 
-- The owner's texts are kept word for word. "once your application will be processed" is kept as written (#71).
+- The owner's texts are kept word for word. "once your application will be processed" is kept as written.
 - Weekday names and times (24-hour) go through the localisation system.
 - The place types and offers are a fixed list: translate the names, keep the emoji.
 - Use "people" or "customers" (no gendered pronouns).
