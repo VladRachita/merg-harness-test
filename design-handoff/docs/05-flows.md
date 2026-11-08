@@ -233,3 +233,22 @@ Rules (details in `20-coupons-events.md` §1):
 - Done in a sheet opens the next setting;
 - the check sheet lists everything before Create, and Create opens the Coupons & Events tab with the new offer;
 - the offer ends by itself after its schedule.
+
+## P. Account — convert to business
+
+```mermaid
+flowchart LR
+  PROF[Own profile · Convert to Business] --> BC1[BC1 Overview]
+  BC1 --> BC2[BC2 Legal Documents] -- Continue to Business Info --> BC3[BC3 Business Category]
+  BC1 --> BC3
+  BC3 --> BC4[BC4 Kind of place] --> BC5[BC5 Business details] -- Continue to Hours --> BC6[BC6 Operating hours]
+  BC1 --> BC6
+  BC6 -- Continue --> BC7[BC7 Overview, ready]
+  BC7 -- Create Business Account --> AD3((Host Approval · Pending))
+```
+Rules (details in `21-business-conversion.md` §1):
+- the overview is home: each step card opens its step at any time, a done step shows the green check;
+- one question per screen; the category picked on BC3 decides BC4's place types and offers (changing it clears them);
+- single choices grey the other options at 0.4 and keep them tappable;
+- Create Business Account is on only when the three steps are done and both boxes are ticked;
+- the application goes to the admin's Host Approval as Pending (AD3).

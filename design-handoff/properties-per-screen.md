@@ -41,7 +41,7 @@ Types: `string`, `int`, `bool`, `money` = `{ amount: number, currency: "RON" }`,
 
 ---
 
-## Contents — 15 pages, 91 screens
+## Contents — 16 pages, 102 screens
 
 | Page | Screens |
 |---|---|
@@ -60,6 +60,7 @@ Types: `string`, `int`, `bool`, `money` = `{ amount: number, currency: "RON" }`,
 | Account · Create or sign in | `AU1-profile-signed-out`, `AU2-email`, `AU3-create-account`, `AU4-date-of-birth`, `AU5-too-young` |
 | Admin · Dashboard (web) | `AD1-reviews`, `AD2-analytics`, `AD3-host-approval` |
 | Host · Coupons & events (create) | `OF1-pick-video` … `OF13-event-check` |
+| Account · Convert to Business | `BC1-overview`, `BC2-legal`, `BC3*-category`, `BC4*-place-type`, `BC5-details`, `BC6-hours`, `BC7-ready` |
 
 Start with the **quick index** below (what each screen reads and sends). Then each page in detail, then: **§A** rules and jobs the backend runs · **§B** gaps to decide · **§C** entity and field index.
 
@@ -232,6 +233,17 @@ Full detail per screen is in the page sections below. ⚠ = a gap listed in §B.
 | `OF5-coupon-schedule`, `OF11-event-schedule` | today (business time zone) | — |
 | `OF6-coupon-ready`, `OF12-event-ready` | — | — |
 | `OF7-coupon-check`, `OF13-event-check` | — | create `OfferCreateRequest{businessId, type, videoUploadId, title, description, discount? \| capacity? + bookingChannel?, usageLimit?, schedule{startDate, endDate, startTime, endTime}}` → `Offer` → CE1 |
+
+**Account · Convert to Business** — nothing is sent before Create Business Account; the steps only change the draft (except the certificate upload).
+
+| Screen | Reads | Sends |
+|---|---|---|
+| `BC1-overview`, `BC7-ready` | the draft (which steps are done); the current Terms of Service version | create `BusinessApplicationRequest{cui, certificateUploadId, category, placeType, offers, name, phone?, bookingChannel, priceLevel, address, maxPartySize, venueCapacity, servicesOffered, openingHours, notifyWhenProcessed, termsAccepted, termsVersion}` → `HostApplication{state: PENDING}` (BC7 only) |
+| `BC2-legal` | — | upload the certificate photo → `certificateUploadId` |
+| `BC3*-category` | the three categories (fixed) | — (draft) |
+| `BC4*-place-type` | the category's place types and offers (fixed lists) | — (draft) |
+| `BC5-details` | country codes; the price levels ⚠; the map (OpenStreetMap) and address search | — (draft) |
+| `BC6-hours` | — | — (draft) |
 
 ---
 
@@ -1772,6 +1784,82 @@ A host creates a coupon or an event on its video promo, with a checklist of six 
 
 ---
 
+## Page: Account · Convert to Business
+
+A signed-in person who is not a host yet sends an application to become one. Full spec: `docs/21-business-conversion.md`. The answers stay in a draft until **Create Business Account**.
+
+### Screens 1 and 11 · Overview (`BC1-overview`, `BC7-ready`, boards *Overview — start* and *Overview — ready to submit*)
+
+**Opens with:** the person's account; the draft, if there is one (⚠ B31).
+
+**Elements displayed**
+
+| Element | Field | Type | Notes |
+|---|---|---|---|
+| Step cards | done / next / upcoming per step | derived | A step is done when its required fields are filled. |
+| Counter, progress bar | the step being worked on | derived | 1/3 … 3/3. |
+| Terms of Service | `termsVersion`, link to the Terms page | `string` | The text is fixed copy. |
+
+**Inputs**
+
+| Input | Type | Rules |
+|---|---|---|
+| We will notify you… | `bool` | Required to send, as designed. |
+| I agree to the business rules… | `bool` | Required to send. |
+
+**Actions:** **Create Business Account** (only when every step is done and both boxes are ticked) → `BusinessApplicationRequest` → `HostApplication{state: PENDING}` in Host Approval (AD3). What the person sees next is not designed.
+
+### Screen 2 · Legal Documents (`BC2-legal`, board *1 · Legal Documents*)
+
+**Inputs**
+
+| Input | Type | Rules |
+|---|---|---|
+| CUI (Tax ID) | `string` | Required. Digits with an optional "RO" prefix (format ⚠ B31). |
+| Company Certificate | photo upload → `certificateUploadId` | Required. Camera or library; file types and size ⚠ B31. |
+
+**Actions:** **Continue to Business Info** → BC3.
+
+### Screens 3–8 · Business Category and Kind of place (`BC3*-category`, `BC4*-place-type`)
+
+**Inputs**
+
+| Input | Type | Rules |
+|---|---|---|
+| Business Category | `FOOD_BEVERAGE \| SERVICES \| ACCOMMODATION` | Required, one. Shown as Food & Beverage, Entertainment, Accommodation. Changing it clears the place type and the offers. |
+| What kind of place is it? | `placeType` (fixed list per category, `21` §5) | Required, one. |
+| What do you offer? | `offers[]` (fixed list per category) | Optional, 0–6. Food & Beverage and Accommodation only. |
+
+**Actions:** **Continue** → BC4 → BC5.
+
+### Screen 9 · Business details (`BC5-details`, board *2.3 · Business details (full scroll)*)
+
+**Inputs**
+
+| Input | Type | Rules |
+|---|---|---|
+| Business Name | `string` | Required. |
+| Phone Number | `{ countryCode, number }` | Optional in the sketch; +40 by default. Format ⚠ B31. |
+| How do you take bookings? | `IN_APP \| PHONE` | Required. |
+| Price Range | `priceLevel` 1–4 | Required; options ⚠ B31. |
+| Business Address | `{ line, city, lat, lng }` | Required; picked on the map. |
+| Max Capacity per Reservation | `int` ≥ 1 | Required. |
+| Venue capacity | `int` ≥ 1 | Required. Proposal: ≥ Max Capacity per Reservation. |
+| Services Offered | `string` | Required, 10–1000 characters. |
+
+**Actions:** **Continue to Hours** → BC6.
+
+### Screen 10 · Operating hours (`BC6-hours`, board *3 · Operating hours*)
+
+**Inputs**
+
+| Input | Type | Rules |
+|---|---|---|
+| A day's switch | `bool` | Off = closed. Every day starts open. |
+| Opens / closes | `"HH:mm"` ×2 | 24-hour; `to > from` (one range per day). Default 09:00–17:00. |
+
+**Actions:** **Continue** → the overview (BC7 when every step is done).
+
 ## A. Rules and jobs the screens rely on (backend logic, not one screen)
 
 | # | Rule / job | What the screens expect | Screens |
@@ -1799,6 +1887,7 @@ A host creates a coupon or an event on its video promo, with a checklist of six 
 | A21 | **Accounts** | `EmailCheck` (exists or not); `UsernameCheck` (free or not, while typing); `SignUpRequest` creates the account and signs the person in. **Age**: years between `dateOfBirth` and today ≥ `MIN_AGE` (16), checked on the server too; `dateOfBirth` is private (never on the profile). Signed out, actions that need an account (+, Book, Like) open AU1 and return to where the person was after signing in. | AU1–AU5 |
 | A22 | **Admin** | `AdminRole` checked on every admin request (MODERATOR: Reviews, Analytics; SUPER_ADMIN: everything). `ReviewDecision` / `HostDecision` update the item, tell the author or owner, and append to the **read-only** Audit Log (who, what, when, reason). Undo within a few seconds. Two-factor sign-in for admins; password again before rejecting a host, Platform Settings changes and User Management actions. Host application personal data and documents only for host approvers, documents through short-lived links, every view logged. | AD1–AD3 |
 | A23 | **Create offers** | `OfferCreateRequest` creates an `Offer` for the host's business. **Checks:** title 1–100 and description 10–500 characters; a coupon needs a `discount` (above 0, PERCENT at most 100), an event a `bookingChannel`; `usageLimit` / `capacity` null (unlimited) or 1 or more; `startDate` today or later, `endDate ≥ startDate`, `endTime > startTime`. **Schedule:** coupons get one `windows[]` entry per day from `startDate` to `endDate` (`startTime`–`endTime`); events get one `sittings[]` entry per day with `seatsLeft = capacity`; `startsAt` / `endsAt` come from the first and last day. **Limits:** `quantityLeft` starts at the limit (null = ∞); the offer stops at the end or when the limit is reached. **Booking channel:** IN_APP bookings arrive in Reservations; PHONE shows the business phone. **Visibility:** listed in the business's Coupons & Events tab and in Search Deals (A19). | OF1–OF13, CE1, SR6 |
+| A24 | **Host application** | `BusinessApplicationRequest` creates a `HostApplication` (`PENDING`) with `business { name, category, type = placeType, city, address }`, `owner` from the account + `phone`, `documents` = the certificate. **Checks:** every required field, `servicesOffered` 10–1000, capacities whole numbers ≥ 1, `to > from` on open days, `termsAccepted`, one pending application per person. Counts in `hostApplicationsWaiting`. **Approve** (AD3) makes the account a host with a `BusinessProfile` (category, `subcategoryLabel` = place type, phone, address, `openingHours`, `priceLevel`, booking default); **Reject** tells the person the reason. | BC1–BC7, AD3 |
 
 ---
 
@@ -1836,6 +1925,7 @@ A host creates a coupon or an event on its video promo, with a checklist of six 
 | B28 | Avatar fallback colour: stored or derived | all people / places | Derive in the app from the id. |
 | B29 | Search: when the request is sent, ranking, location / distance, page size and the end of a list, where recent searches are kept (and how many, signed-out people), one tab empty, matching (diacritics, typos), deals at accommodation places, query max length | SR1–SR6 | Open questions #50–#60; query max 100 (proposal). |
 | B30 | A deal opens F4C / F4E, which also need a **service**: an offer's `appliesTo.serviceIds` can list several | SR3, SR6 | Open question #61. Proposal: `DealResult.serviceIds`; with one service open on it, with several open the services list (F1) showing only those. |
+| B31 | Convert to Business: the draft (kept on the device or on the server, and for how long), the price levels, the CUI / certificate / phone checks, booking channel for accommodation, the after-send screen and the rejection message | BC1–BC7 | Proposal: keep the draft on the device until sent; price levels = `BusinessProfile.priceLevel`. |
 
 ---
 
@@ -1867,6 +1957,8 @@ A host creates a coupon or an event on its video promo, with a checklist of six 
 | **RecentSearch** | `query`, `searchedAt` (this person's, newest first; storage⚠) | SR1 |
 | **Post** | `id`, `authorUserId`, `publishedAt`, `video { url, thumbnailUrl }`, `title` (1–30), `description?` (0–100), `tag? { businessId, itemType? SERVICE\|ROOM, itemId? }` (one per post); create: `CreatePostRequest { videoUploadId, title, description?, tag? }`; update: `UpdatePostRequest { title, description?, tag? \| null }`; delete: `DeletePost { postId }` | NP1–NP4, EP1, EP2 |
 | **Account** | `EmailCheck { email } → { exists }`; `UsernameCheck { username } → { available }`; `SignUpRequest { email, firstName, lastName, username, dateOfBirth, password }`; `MIN_AGE` (16) | AU2–AU5 |
+| **BusinessApplicationRequest** | `cui`, `certificateUploadId`, `category`, `placeType`, `offers[]` (0–6), `name`, `phone? { countryCode, number }`, `bookingChannel` IN_APP\|PHONE, `priceLevel` 1–4, `address { line, city, lat, lng }`, `maxPartySize`, `venueCapacity`, `servicesOffered` (10–1000), `openingHours` (7 days `{ open, from, to }`), `notifyWhenProcessed`, `termsAccepted`, `termsVersion` | BC1–BC7 |
+| **HostApplication** (from a person) | `business { name, category, type, city, address }`, `owner { name, email, phone }`, `documents`, `appliedAt`, `state` (see Admin) | BC7 → AD3 |
 | **Admin** | `AdminRole`; `ReviewItem` (+ `ReviewDecision`); `AnalyticsSummary { period, videos, people, reservations, health, previous, series }`; `HostApplication` (+ `HostDecision`) | AD1–AD3 |
 | **VisitForTag** | `businessId`, `name`, `verified`, `avatarUrl?`, `category`, `what`, `itemType?`, `itemId?`, `date` (DONE reservations, newest first) | NP4 |
 

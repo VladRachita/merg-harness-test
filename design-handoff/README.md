@@ -1,8 +1,9 @@
-# Design handoff — Video-first profiles, booking, table booking, team, customer rewards, reservations, my activity, search, new post, account, host tools and the admin dashboard
+# Design handoff — Video-first profiles, booking, table booking, team, customer rewards, reservations, my activity, search, new post, account, host tools, the admin dashboard and Convert to Business
 
 Everything an implementing agent needs to build the screens designed in the **Profile Quick Actions** design canvas, for **Android and iOS**, on **small, medium and large phones**, so the result looks exactly like the designs.
 
 > Design canvas (private, owner access): https://claude.ai/artifact/5317zoDgLoVqdsUCq6HUpd
+> Convert to Business comes from the Business conversion canvas (private, owner access): https://claude.ai/artifact/Vwih7Qv5GPRzwhYsL6zS6x
 > This folder is the exported, self-contained copy. It is the source of truth for implementation.
 
 ## Start here (for the implementing agent)
@@ -28,7 +29,8 @@ Read in this order, then build:
 17. [`docs/18-account.md`](docs/18-account.md) — the full spec of the **Account** page (the Profile tab when signed out → continue with email → create account with the date of birth and an age check), with its own definition of done.
 18. [`docs/19-admin.md`](docs/19-admin.md) — the full spec of the **Admin dashboard** (web, desktop): the three tabs Reviews · Analytics · Platform Users, every page name kept, the moderation queue, analytics by category, Host Approval, and the roles and security rules, with its own definition of done.
 19. [`docs/20-coupons-events.md`](docs/20-coupons-events.md) — the full spec of **Coupons & events** for hosts (upload a video promo → write the title and description on it → set value, usage limit and schedule, or capacity, booking channel and schedule → a checklist shows what is left → check → create), with its own definition of done.
-20. [`docs/10-open-questions.md`](docs/10-open-questions.md) — what is **not** designed yet. Do not invent these; ask.
+20. [`docs/21-business-conversion.md`](docs/21-business-conversion.md) — the full spec of **Convert to Business** (a person becomes a host: an overview with three steps → Legal Documents → Business Category, Kind of place, Business details → Operating hours → Create Business Account), with its own definition of done.
+21. [`docs/10-open-questions.md`](docs/10-open-questions.md) — what is **not** designed yet. Do not invent these; ask.
 
 ## What is in this folder
 
@@ -48,6 +50,19 @@ Read in this order, then build:
 
 ## What's new in this update
 
+- **Convert to Business** — a signed-in person turns their account into a business (a host). Every text, input and option of the owner's sketch is kept, and only **Continue** is added. The page has 7 screens plus the category states (11 references at small, medium and large):
+  - `BC1` **Overview**: home of the flow, with three step cards (Legal Documents · Business Information · Business Hours), the two agreements and **Create Business Account**, disabled until every step is done.
+  - `BC2` **Legal Documents**: CUI (Tax ID) and the Company Certificate photo with "Before you upload".
+  - `BC3` **Business Category**: Food & Beverage, Entertainment or Accommodation (C71 cards, the others greyed at 0.4). `BC3F` / `BC3S` are the other two picked.
+  - `BC4` **Kind of place**: the category's place types, 3 per row, and "What do you offer?", 5 small tiles per row. `BC4F` (16 types, drawn taller) and `BC4S` (12 types, no offers) are the other categories.
+  - `BC5` **Business details**: one form with Business Name, Phone Number, **How do you take bookings?** (In-app · By phone, now for every category), Price Range, Business Address on the map, both capacities and Services Offered. Drawn taller.
+  - `BC6` **Operating hours**: seven days, 09:00 to 17:00 with a switch each.
+  - `BC7` **Ready to submit**: every step checked, both boxes ticked, Create Business Account on. It sends the application that the admin approves in **Host Approval** (AD3).
+
+  The screens use the app's components and tokens (C1, C17, C30, C32, C71); the differences from the canvas are listed in `docs/21` §12. Spec: [`docs/21-business-conversion.md`](docs/21-business-conversion.md). New components C74–C82; new token `font.size.stepTitle` (28, 24 on small); *Convert to Business* data in `docs/06`; rule A24 in the backend contract.
+
+### Earlier updates
+
 - **Coupons & Events tab · tile images** — the **Events** and **Coupons** filter tiles on CE1 now use two standard images instead of a video thumbnail:
   - **Events** (`tile_events`): a ticket with the event (group) icon, spotlights and confetti, on event purple.
   - **Coupons** (`tile_coupons`): a ticket with the percent icon, a soft glow and sparkles, on coupon green.
@@ -56,8 +71,6 @@ Read in this order, then build:
   - **References:** CE1 is updated at small, medium and large and loads the files. `screenshots/reference/tile-image*.png` shows each image, the tiles in the tab, and the files, crop and rules.
 
   Rules: `assets/tiles/README.md`, C6 in `docs/03`, *Images bundled in the app* in `docs/07`.
-
-### Earlier updates
 
 - **Coupons & events (host)** — a host creates a coupon or an event on its video promo, the way people post a video. Every element of the host's sketch is kept with its name. The page has 13 screens at small, medium and large:
   - `OF1` **Upload Video Promo**: one clip ("Short clips perform best (15-30s)").
@@ -135,7 +148,7 @@ Read in this order, then build:
 - Small / medium / large references for all of the above; new tokens `color.calendar.*`, `color.offer.*` and radii for calendar cells, day tile and offer cards.
 - Booking form: **First name and Last name are two fields** on one row (never "Full name").
 
-## Screen inventory (88 phone screens × 3 sizes + 3 desktop screens)
+## Screen inventory (99 phone screens × 3 sizes + 3 desktop screens)
 
 | Area | Screens |
 |---|---|
@@ -157,8 +170,9 @@ Read in this order, then build:
 | Salon booking — first visit | `F1-services-everyone`, `F2-video`, `F3-choose-stylist`, `F4-pick-time` (+ offer states `F4C-pick-time-coupon`, `F4E-pick-time-event`) |
 | Coupons & Events tab | `CE1-coupons-events` |
 | Table booking — Food & Beverage | `TB1-pick-date`, `TB2-guests-time-any` (+ `TB2C-guests-time-coupon`, `TB2E-guests-time-event`), `TB3-details-any` (+ `TB3C-details-coupon`, `TB3E-details-event`), `TB4-booked` |
+| Account — convert to business | `BC1-overview`, `BC2-legal`, `BC3-category` (+ `BC3F-category-fnb`, `BC3S-category-entertainment`), `BC4-place-type` (+ `BC4F-place-type-fnb`, `BC4S-place-type-entertainment`), `BC5-details`, `BC6-hours`, `BC7-ready` |
 
-Ids with a `C` or `E` suffix are **states** of the screen before them (coupon or event chosen), not separate screens.
+Ids with a `C` or `E` suffix are **states** of the screen before them (coupon or event chosen), not separate screens. In Convert to Business, `BC3` / `BC4` ids with an `F` or `S` suffix are the Food & Beverage or Entertainment (`SERVICES`) states.
 
 ## How to use the references
 
@@ -175,7 +189,7 @@ Copy this as the first message, adjusted for your app's repository:
 You are implementing new screens in our mobile app (Android + iOS). The complete design
 handoff is in design-handoff/ (README.md first). Follow it exactly:
 
-1. Read design-handoff/README.md and every file in design-handoff/docs/ (01–20) before writing code.
+1. Read design-handoff/README.md and every file in design-handoff/docs/ (01–21) before writing code.
 2. Map tokens.json into the app's theme (colours, type, radii, spacing). Do not add new values.
    Copy the images in design-handoff/assets/ into the app as they are (assets/tiles/README.md says
    where each file goes). Do not redraw, recolour or replace them.
@@ -188,7 +202,8 @@ handoff is in design-handoff/ (README.md first). Follow it exactly:
    host's create flow OF1 → OF13, see docs/20-coupons-events.md) →
    customer my activity (MA1 → MA6, see docs/15-my-activity.md) → public search
    (SR1 → SR6, see docs/16-search.md) → new post (NP1 → NP4, EP1 → EP2, see docs/17-new-post.md) → account
-   (AU1 → AU5, see docs/18-account.md). The admin dashboard (AD1 → AD3, web, see
+   (AU1 → AU5, see docs/18-account.md) → convert to business (BC1 → BC7 with the BC3 / BC4 category
+   states, see docs/21-business-conversion.md). The admin dashboard (AD1 → AD3, web, see
    docs/19-admin.md) is a separate web app: build it after the mobile app, or in its own repository.
 4. Every screen must match screenshots/{small,medium,large}/<id>.png. Use the HTML in
    screens/ for exact sizes. Respect docs/07 for small/medium/large and safe areas.
@@ -198,7 +213,7 @@ handoff is in design-handoff/ (README.md first). Follow it exactly:
 7. When a screen is done, compare it to the screenshots at all three sizes and go through
    docs/09-acceptance-checklist.md (and docs/11 §12 for table booking, docs/12 §8 for team,
    docs/13 §13 for customers & rewards, docs/14 §13 for reservations, docs/15 §13 for my
-   activity, docs/16 §14 for search, docs/17 §12 for new post, docs/18 §11 for account, docs/19 §11 for the admin, docs/20 §11 for coupons & events). Report any deviation
+   activity, docs/16 §14 for search, docs/17 §12 for new post, docs/18 §11 for account, docs/19 §11 for the admin, docs/20 §11 for coupons & events, docs/21 §13 for convert to business). Report any deviation
    instead of silently changing the design.
 ```
 
@@ -226,6 +241,7 @@ handoff is in design-handoff/ (README.md first). Follow it exactly:
    | 10 · Account | "Phase 10: build the Account page exactly as docs/18-account.md: no welcome wall, people browse without an account; signed out, the Profile tab shows AU1 (dashed avatar, Your profile, one line, Create account, Sign in, Privacy & data at the bottom, the bottom nav); both buttons open AU2 Continue with email; a new email goes to AU3 Create account (First name and Last name as two fields, username with Available, date of birth with the calendar Change pill, password with show / hide); the date opens AU4, a centred dialog with three ink wheels Day · Month · Year (months as names) and Cancel / Confirm; under the minimum age AU5 shows the red date and alert line and disables Create account. Email only, no terms line, no Skip. Replace the existing welcome screen. Data per docs/06 (Account). Done = docs/18 §11 at small, medium and large." |
    | 11 · Admin dashboard (web) | "Phase 11: build the admin web app exactly as docs/19-admin.md, at 1440 × 900 and working from 1280 wide: the top bar with the three tabs Reviews · Analytics · Platform Users (badges for pending reviews and host applications); Reviews as one moderation queue (Pending Reviews, Approved Videos, Rejected Videos; oldest first; Reject R with a reason, Approve A, Next J, Undo); Analytics in four sections with a 24h / 7 days / 30 days switch; Platform Users with the grouped Super Admin menu keeping every page name, and Host Approval with the applications table and detail card. Enforce the roles on the server (Moderator: Reviews and Analytics; Super Admin: everything), two-factor sign-in, password again for risky actions, every decision in the read-only Audit Log. Data per docs/06 (Admin). Done = docs/19 §11." |
    | 12 · Coupons & events (host) | "Phase 12: build the host's create flow exactly as docs/20-coupons-events.md. Quick Actions → Coupons opens OF1 Upload Video Promo (one clip). OF2 / OF8 are the video with the Coupon \| Event switch (keeps the video, title, description and schedule), the checklist card "To create the coupon / event · n of 6 done" (done items green, to-do items with an amber ring, each opens its field or sheet; when done it becomes the green "Checklist: all 6 done" pill), the side rail (Value, Usage Limit, Schedule or Capacity, Booking channel, Schedule: white with the value when set, dark with an amber dot when missing), Title 1–100 and Description 10–500 written on the video, and Create Coupon / Create Event 44 tall, disabled until the checklist is done. One sheet per setting with one explaining line; Done opens the next; Usage Limit and Capacity default to Unlimited; Value, Booking channel and Active Schedule have no default. Create opens the check sheet (OF7 / OF13); its Create sends OfferCreateRequest and opens CE1. Data per docs/06 (Create a coupon or an event) and A23. Done = docs/20 §11 at small, medium and large." |
+   | 13 · Convert to Business | "Phase 13: build the Convert to Business page exactly as docs/21-business-conversion.md. The person's own profile opens BC1, the overview: three C74 step cards (the next step with the ink border and tile, a done step with the green check), the C75 agreements card and Create Business Account, disabled at 0.4 until the three steps are done and both boxes are ticked. Every step has the C1 top bar 'Convert to Business' with the n/3 counter, the C32 progress bar with three segments and a pinned C17 button. BC2 Legal Documents: CUI (numeric, RO allowed) and the certificate photo (C80) under 'Before you upload'; Continue to Business Info opens BC3. BC3 Business Category with C71 cards (the others at 0.4). BC4 Kind of place: the category's place types as C77 tiles, 3 per row, and for Food & Beverage and Accommodation 'What do you offer?' as C78 tiles, 5 per row, up to 6. Changing the category clears both. BC5 Business details is one form in the order of docs/21 §6, with How do you take bookings? (C71 In-app / By phone), the C81 map picker and the n / 1000 counter. BC6 has seven C82 rows with 24-hour pickers and a C30 switch. Create Business Account sends BusinessApplicationRequest, which shows as a Pending HostApplication in Host Approval. Keep every owner's text exactly. Place type names must never overflow: 'Mediterranean' fits at 360. Data per docs/06 (Convert to Business) and A24. Done = docs/21 §13 at small, medium and large." |
 
 5. **Verify every phase visually.** Run on an iPhone SE / 15 / 15 Pro Max simulator and 360 / ~393 / ~430-wide Android emulators, take screenshots, put them next to `screenshots/<size>/<id>.png` (overlay at 50 %), and go through `docs/09-acceptance-checklist.md`. Ask the agent to attach the screenshots and list any deviation in the PR description.
 6. **Keep open questions open.** If the agent hits anything in `docs/10-open-questions.md` (for example validation errors on TB3 or R3 offers), it adds a TODO and asks; it does not design it.

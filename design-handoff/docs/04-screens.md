@@ -435,3 +435,28 @@ C23 summary (day tile Mon 26 Oct · time · 2 guests · 1 h 30 min · Change), p
 
 ### TB4-booked · Booked
 Success check, title (copy to confirm), "Maestro Bistro is expecting you.", summary rows (date · time, guests, address with copy, Call the restaurant), **Add to calendar** + **Done** (→ PF1). X → PF1.
+
+## Account — convert to business (a person becomes a host)
+
+Full spec, sizes and states: [`21-business-conversion.md`](21-business-conversion.md). An overview is the home; each step opens as one question per screen, the business details are one form. Every screen: C1 top bar "Convert to Business" with the counter n/3, the C32 progress bar (three segments) and a pinned C17 button. Summary:
+
+### BC1-overview · Overview (start)
+Counter 1/3 → three step cards (C74): **Legal Documents** "Step 1 of 3 • Quick check first", "Verify your business is registered" (next step: ink border and tile) · **Business Information** "Step 2 of 3 • Quick & Easy", "Tell us about your business" · **Business Hours** "Step 3 of 3 • Almost done!", "When are you open for customers?" → agreements card (C75): "We will notify you once your application will be processed" · the Terms of Service text · **Read the Terms of Service** → **Create Business Account** (disabled, 0.4).
+
+### BC2-legal · Legal Documents
+"Step 1 of 3 • Quick check first" · **Legal Documents** · "Verify your business is registered" → **CUI (Tax ID)** * "e.g., 12345678 or RO12345678" → **Company Certificate** *: "Before you upload" (4 rules) · upload box "Tap to upload a photo of your certificate" → **Continue to Business Info** (→ BC3).
+
+### BC3-category / BC3F-category-fnb / BC3S-category-entertainment · Business Category
+"**Business Information** · Step 2 of 3 • Quick & Easy" · **Business Category** * · "What type of business?" → C71 cards 🍴 Food & Beverage · 💆 Entertainment · 🏨 Accommodation (one picked, the others at 0.4) → **Continue** (→ BC4 for that category).
+
+### BC4-place-type / BC4F-place-type-fnb / BC4S-place-type-entertainment · Kind of place
+"<emoji> **<category>** · Step 2 of 3 • Quick & Easy" · **What kind of place is it?** * · "Pick one — this also sets your booking defaults" → place type tiles (C77, 3 per row: 9 Accommodation, 16 Food & Beverage, 12 Entertainment; the first picked, the others at 0.4) → Food & Beverage and Accommodation only: **What do you offer?** "Optional · pick up to 6" with offer tiles (C78, 5 per row) → **Continue** (→ BC5). BC4F is drawn taller.
+
+### BC5-details · Business details (long form, drawn taller)
+"**Business Information** · Step 2 of 3 • Quick & Easy" · **Tell us about your business** → Business Name * · Phone Number (🇷🇴 +40) · **How do you take bookings?** * "You can change this anytime from booking settings" (C71 In-app · By phone) · Price Range * "Select price range" · Business Address * (C81 map, "Tap map icon to select location", "Tap the map icon to select your business location") · Max Capacity per Reservation * "e.g., 8" · Venue capacity * "e.g., 40" "How many people fit in your place at once." · Services Offered * (0 / 1000) → **Continue to Hours** (→ BC6).
+
+### BC6-hours · Operating hours
+"**Business Hours** · Step 3 of 3 • Almost done!" · **When are you open for customers?** · "Select your operating hours" → hours card (C82): Monday–Sunday, 09:00 to 17:00, a switch each (Sunday closed in the sample) → **Continue** (→ BC7).
+
+### BC7-ready · Overview, ready to submit
+BC1 with counter 3/3, the progress bar full, a green check on every step and both boxes ticked → **Create Business Account** on (sends the application to Host Approval).

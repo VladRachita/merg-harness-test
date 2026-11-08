@@ -2907,6 +2907,371 @@
         "of11-event-schedule",
         "of12-event-ready"
       ]
+    },
+    {
+      "id": "BC1-overview",
+      "area": "convert-to-business",
+      "title": "Convert to Business · Overview",
+      "purpose": "Home of the flow: the three steps (Legal Documents next), the two agreements, Create Business Account disabled.",
+      "canvas": "https://claude.ai/artifact/Vwih7Qv5GPRzwhYsL6zS6x",
+      "source": "BC3-Hub.dc.html",
+      "files": {
+        "small": {
+          "html": "screens/small/bc1-overview.html",
+          "png": "screenshots/small/bc1-overview.png",
+          "width": 360,
+          "height": 640
+        },
+        "medium": {
+          "html": "screens/medium/bc1-overview.html",
+          "png": "screenshots/medium/bc1-overview.png",
+          "width": 390,
+          "height": 844
+        },
+        "large": {
+          "html": "screens/large/bc1-overview.html",
+          "png": "screenshots/large/bc1-overview.png",
+          "width": 430,
+          "height": 932
+        }
+      },
+      "links_to": [
+        "bc2-legal",
+        "bc3-category",
+        "bc6-hours",
+        "hp-profile"
+      ]
+    },
+    {
+      "id": "BC2-legal",
+      "area": "convert-to-business",
+      "title": "Convert to Business · Legal Documents",
+      "purpose": "Step 1: CUI (Tax ID) and the Company Certificate photo under \"Before you upload\".",
+      "canvas": "https://claude.ai/artifact/Vwih7Qv5GPRzwhYsL6zS6x",
+      "source": "BC2-Legal.dc.html",
+      "files": {
+        "small": {
+          "html": "screens/small/bc2-legal.html",
+          "png": "screenshots/small/bc2-legal.png",
+          "width": 360,
+          "height": 640
+        },
+        "medium": {
+          "html": "screens/medium/bc2-legal.html",
+          "png": "screenshots/medium/bc2-legal.png",
+          "width": 390,
+          "height": 844
+        },
+        "large": {
+          "html": "screens/large/bc2-legal.html",
+          "png": "screenshots/large/bc2-legal.png",
+          "width": 430,
+          "height": 932
+        }
+      },
+      "links_to": [
+        "bc1-overview",
+        "bc3-category"
+      ]
+    },
+    {
+      "id": "BC3-category",
+      "area": "convert-to-business",
+      "title": "Convert to Business · Business Category",
+      "purpose": "Step 2: pick the category (C71 cards); Accommodation picked, the others at 0.4.",
+      "canvas": "https://claude.ai/artifact/Vwih7Qv5GPRzwhYsL6zS6x",
+      "source": "BC2-Category.dc.html",
+      "files": {
+        "small": {
+          "html": "screens/small/bc3-category.html",
+          "png": "screenshots/small/bc3-category.png",
+          "width": 360,
+          "height": 640
+        },
+        "medium": {
+          "html": "screens/medium/bc3-category.html",
+          "png": "screenshots/medium/bc3-category.png",
+          "width": 390,
+          "height": 844
+        },
+        "large": {
+          "html": "screens/large/bc3-category.html",
+          "png": "screenshots/large/bc3-category.png",
+          "width": 430,
+          "height": 932
+        }
+      },
+      "links_to": [
+        "bc1-overview",
+        "bc3-category",
+        "bc3f-category-fnb",
+        "bc3s-category-entertainment",
+        "bc4-place-type"
+      ]
+    },
+    {
+      "id": "BC3F-category-fnb",
+      "area": "convert-to-business",
+      "title": "Convert to Business · Business Category · Food & Beverage",
+      "purpose": "State of BC3 with Food & Beverage picked.",
+      "canvas": "https://claude.ai/artifact/Vwih7Qv5GPRzwhYsL6zS6x",
+      "source": "BC2-Category-FB.dc.html",
+      "files": {
+        "small": {
+          "html": "screens/small/bc3f-category-fnb.html",
+          "png": "screenshots/small/bc3f-category-fnb.png",
+          "width": 360,
+          "height": 640
+        },
+        "medium": {
+          "html": "screens/medium/bc3f-category-fnb.html",
+          "png": "screenshots/medium/bc3f-category-fnb.png",
+          "width": 390,
+          "height": 844
+        },
+        "large": {
+          "html": "screens/large/bc3f-category-fnb.html",
+          "png": "screenshots/large/bc3f-category-fnb.png",
+          "width": 430,
+          "height": 932
+        }
+      },
+      "links_to": [
+        "bc1-overview",
+        "bc3-category",
+        "bc3f-category-fnb",
+        "bc3s-category-entertainment",
+        "bc4f-place-type-fnb"
+      ]
+    },
+    {
+      "id": "BC3S-category-entertainment",
+      "area": "convert-to-business",
+      "title": "Convert to Business · Business Category · Entertainment",
+      "purpose": "State of BC3 with Entertainment (SERVICES) picked.",
+      "canvas": "https://claude.ai/artifact/Vwih7Qv5GPRzwhYsL6zS6x",
+      "source": "BC2-Category-Ent.dc.html",
+      "files": {
+        "small": {
+          "html": "screens/small/bc3s-category-entertainment.html",
+          "png": "screenshots/small/bc3s-category-entertainment.png",
+          "width": 360,
+          "height": 640
+        },
+        "medium": {
+          "html": "screens/medium/bc3s-category-entertainment.html",
+          "png": "screenshots/medium/bc3s-category-entertainment.png",
+          "width": 390,
+          "height": 844
+        },
+        "large": {
+          "html": "screens/large/bc3s-category-entertainment.html",
+          "png": "screenshots/large/bc3s-category-entertainment.png",
+          "width": 430,
+          "height": 932
+        }
+      },
+      "links_to": [
+        "bc1-overview",
+        "bc3-category",
+        "bc3f-category-fnb",
+        "bc3s-category-entertainment",
+        "bc4s-place-type-entertainment"
+      ]
+    },
+    {
+      "id": "BC4-place-type",
+      "area": "convert-to-business",
+      "title": "Convert to Business · Kind of place",
+      "purpose": "Step 2: the 9 accommodation place types (3 per row) and What do you offer? (5 per row).",
+      "canvas": "https://claude.ai/artifact/Vwih7Qv5GPRzwhYsL6zS6x",
+      "source": "BC2-PlaceType.dc.html",
+      "files": {
+        "small": {
+          "html": "screens/small/bc4-place-type.html",
+          "png": "screenshots/small/bc4-place-type.png",
+          "width": 360,
+          "height": 640
+        },
+        "medium": {
+          "html": "screens/medium/bc4-place-type.html",
+          "png": "screenshots/medium/bc4-place-type.png",
+          "width": 390,
+          "height": 844
+        },
+        "large": {
+          "html": "screens/large/bc4-place-type.html",
+          "png": "screenshots/large/bc4-place-type.png",
+          "width": 430,
+          "height": 932
+        }
+      },
+      "links_to": [
+        "bc3-category",
+        "bc5-details"
+      ]
+    },
+    {
+      "id": "BC4F-place-type-fnb",
+      "area": "convert-to-business",
+      "title": "Convert to Business · Kind of place · Food & Beverage",
+      "purpose": "State of BC4 for Food & Beverage: 16 place types and 5 offers; drawn taller.",
+      "canvas": "https://claude.ai/artifact/Vwih7Qv5GPRzwhYsL6zS6x",
+      "source": "BC2-PlaceType-FB.dc.html",
+      "files": {
+        "small": {
+          "html": "screens/small/bc4f-place-type-fnb.html",
+          "png": "screenshots/small/bc4f-place-type-fnb.png",
+          "width": 360,
+          "height": 921
+        },
+        "medium": {
+          "html": "screens/medium/bc4f-place-type-fnb.html",
+          "png": "screenshots/medium/bc4f-place-type-fnb.png",
+          "width": 390,
+          "height": 967
+        },
+        "large": {
+          "html": "screens/large/bc4f-place-type-fnb.html",
+          "png": "screenshots/large/bc4f-place-type-fnb.png",
+          "width": 430,
+          "height": 967
+        }
+      },
+      "links_to": [
+        "bc3f-category-fnb",
+        "bc5-details"
+      ]
+    },
+    {
+      "id": "BC4S-place-type-entertainment",
+      "area": "convert-to-business",
+      "title": "Convert to Business · Kind of place · Entertainment",
+      "purpose": "State of BC4 for Entertainment: 12 place types, no offers.",
+      "canvas": "https://claude.ai/artifact/Vwih7Qv5GPRzwhYsL6zS6x",
+      "source": "BC2-PlaceType-Ent.dc.html",
+      "files": {
+        "small": {
+          "html": "screens/small/bc4s-place-type-entertainment.html",
+          "png": "screenshots/small/bc4s-place-type-entertainment.png",
+          "width": 360,
+          "height": 640
+        },
+        "medium": {
+          "html": "screens/medium/bc4s-place-type-entertainment.html",
+          "png": "screenshots/medium/bc4s-place-type-entertainment.png",
+          "width": 390,
+          "height": 844
+        },
+        "large": {
+          "html": "screens/large/bc4s-place-type-entertainment.html",
+          "png": "screenshots/large/bc4s-place-type-entertainment.png",
+          "width": 430,
+          "height": 932
+        }
+      },
+      "links_to": [
+        "bc3s-category-entertainment",
+        "bc5-details"
+      ]
+    },
+    {
+      "id": "BC5-details",
+      "area": "convert-to-business",
+      "title": "Convert to Business · Business details",
+      "purpose": "Step 2: one form (name, phone, how you take bookings, price range, address on the map, capacities, services offered); drawn taller.",
+      "canvas": "https://claude.ai/artifact/Vwih7Qv5GPRzwhYsL6zS6x",
+      "source": "BC2-Details.dc.html",
+      "files": {
+        "small": {
+          "html": "screens/small/bc5-details.html",
+          "png": "screenshots/small/bc5-details.png",
+          "width": 360,
+          "height": 1421
+        },
+        "medium": {
+          "html": "screens/medium/bc5-details.html",
+          "png": "screenshots/medium/bc5-details.png",
+          "width": 390,
+          "height": 1485
+        },
+        "large": {
+          "html": "screens/large/bc5-details.html",
+          "png": "screenshots/large/bc5-details.png",
+          "width": 430,
+          "height": 1485
+        }
+      },
+      "links_to": [
+        "bc4-place-type",
+        "bc6-hours"
+      ]
+    },
+    {
+      "id": "BC6-hours",
+      "area": "convert-to-business",
+      "title": "Convert to Business · Operating hours",
+      "purpose": "Step 3: seven days with opening and closing times and a switch; Sunday closed in the sample.",
+      "canvas": "https://claude.ai/artifact/Vwih7Qv5GPRzwhYsL6zS6x",
+      "source": "BC2-Hours.dc.html",
+      "files": {
+        "small": {
+          "html": "screens/small/bc6-hours.html",
+          "png": "screenshots/small/bc6-hours.png",
+          "width": 360,
+          "height": 640
+        },
+        "medium": {
+          "html": "screens/medium/bc6-hours.html",
+          "png": "screenshots/medium/bc6-hours.png",
+          "width": 390,
+          "height": 844
+        },
+        "large": {
+          "html": "screens/large/bc6-hours.html",
+          "png": "screenshots/large/bc6-hours.png",
+          "width": 430,
+          "height": 932
+        }
+      },
+      "links_to": [
+        "bc1-overview",
+        "bc7-ready"
+      ]
+    },
+    {
+      "id": "BC7-ready",
+      "area": "convert-to-business",
+      "title": "Convert to Business · Overview, ready to submit",
+      "purpose": "Every step done, both boxes ticked, Create Business Account on.",
+      "canvas": "https://claude.ai/artifact/Vwih7Qv5GPRzwhYsL6zS6x",
+      "source": "BC3-HubReady.dc.html",
+      "files": {
+        "small": {
+          "html": "screens/small/bc7-ready.html",
+          "png": "screenshots/small/bc7-ready.png",
+          "width": 360,
+          "height": 640
+        },
+        "medium": {
+          "html": "screens/medium/bc7-ready.html",
+          "png": "screenshots/medium/bc7-ready.png",
+          "width": 390,
+          "height": 844
+        },
+        "large": {
+          "html": "screens/large/bc7-ready.html",
+          "png": "screenshots/large/bc7-ready.png",
+          "width": 430,
+          "height": 932
+        }
+      },
+      "links_to": [
+        "bc2-legal",
+        "bc3-category",
+        "bc6-hours",
+        "hp-profile"
+      ]
     }
   ],
   "reference": {

@@ -84,3 +84,8 @@ Use this for every screen before calling it done.
 - [ ] **OF6 / OF12**: "Checklist: all 6 done" pill, Create enabled; **OF7 / OF13**: the check sheet with every line, Create opens CE1.
 - [ ] Everything in `20-coupons-events.md` §11 (definition of done).
 - [ ] **CE1 tiles**: Events and Coupons use `tile_events` / `tile_coupons` from `assets/tiles/` at the device's density, center-cropped, with the app's gradient, label and count on top; they match `screenshots/reference/tile-images-in-tab.png` at small, medium and large. No video thumbnail, no redrawn or recoloured image.
+- [ ] **BC1 / BC7**: overview with the three step cards (next step ink, done with the green check), the agreements card, Create Business Account disabled until every step is done and both boxes are ticked.
+- [ ] **BC2**: CUI (numeric, "RO" allowed) and the certificate photo under "Before you upload"; Continue to Business Info opens BC3.
+- [ ] **BC3 / BC4**: one category (C71), its place types 3 per row with the others at 0.4, "What do you offer?" 5 per row for Food & Beverage and Accommodation; names never overflow their tile.
+- [ ] **BC5**: the details form in order, How do you take bookings? (In-app · By phone), the map picker, "n / 1000"; **BC6**: seven days with 24-hour pickers and a switch.
+- [ ] Everything in `21-business-conversion.md` §13 (definition of done).
