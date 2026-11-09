@@ -1,4 +1,4 @@
-# Design handoff — Video-first profiles, booking, table booking, team, customer rewards, reservations, my activity, search, new post, account, host tools, the admin dashboard and Convert to Business
+# Design handoff — Video-first profiles, booking, table booking, team, customer rewards, reservations, my activity, search, new post, account, host tools, the admin dashboard, Convert to Business and the website landing page
 
 Everything an implementing agent needs to build the screens designed in the **Profile Quick Actions** design canvas, for **Android and iOS**, on **small, medium and large phones**, so the result looks exactly like the designs.
 
@@ -30,18 +30,20 @@ Read in this order, then build:
 18. [`docs/19-admin.md`](docs/19-admin.md) — the full spec of the **Admin dashboard** (web, desktop): the three tabs Reviews · Analytics · Platform Users, every page name kept, the moderation queue, analytics by category, Host Approval, and the roles and security rules, with its own definition of done.
 19. [`docs/20-coupons-events.md`](docs/20-coupons-events.md) — the full spec of **Coupons & events** for hosts (upload a video promo → write the title and description on it → set value, usage limit and schedule, or capacity, booking channel and schedule → a checklist shows what is left → check → create), with its own definition of done.
 20. [`docs/21-business-conversion.md`](docs/21-business-conversion.md) — the full spec of **Convert to Business** (a person becomes a host: an overview with three steps → Legal Documents → Business Category, Kind of place, Business details → Operating hours → Create Business Account), with its own definition of done.
-21. [`docs/10-open-questions.md`](docs/10-open-questions.md) — what is **not** designed yet. Do not invent these; ask.
+21. [`docs/22-landing-page.md`](docs/22-landing-page.md) — the full spec of the **website** for the MVP: one static page (computer and phone) that shows what Merg is and sends people to the App Store or Google Play, with its pictures, copy in RO and EN, links and its own definition of done.
+22. [`docs/10-open-questions.md`](docs/10-open-questions.md) — what is **not** designed yet. Do not invent these; ask.
 
 ## What is in this folder
 
 | Path | What it is |
 |---|---|
 | `screenshots/{small,medium,large}/*.png` | Pixel reference for every screen at 2× (360×640, 390×844, 430×932 points). **What "done" looks like.** |
-| `screenshots/desktop/*.png`, `screens/desktop/*.html` | The admin dashboard (web) at 1440 × 900 (2× PNG), same format as the phone screens. |
+| `screenshots/desktop/*.png`, `screens/desktop/*.html` | The admin dashboard (web) and the website landing page (LP1) at 1440 × 900 (2× PNG), same format as the phone screens. The landing page on phones (LP2) is in the small, medium and large folders. |
 | `screens/{small,medium,large}/*.html` | The original design markup, standalone. Open in a browser to inspect exact values (every style is inline). Links between screens work, so it is also a clickable prototype. |
 | `screens/reference/icon-set.html` | The Quick Actions icon set and icon rules. |
 | `assets/tiles/` | The standard images for the **Events** and **Coupons** tiles of the Coupons & Events tab: SVG master, Android WebP for each density, iOS image sets. **Use these files as they are**; the rules are in `assets/tiles/README.md`. |
 | `screens/reference/tile-image*.html` | The two tile images, the tiles in the tab at small, medium and large, and the files, crop and rules. |
+| `assets/landing/` | The website pictures: the phone picture for computers and for phones (WebP, 1× to 3×, transparent) and the link preview image. **Use these files as they are**; the rules are in `assets/landing/README.md`. Source: `screens/reference/landing-hero.html`. |
 | `screens.json` | Manifest: every screen id, title, purpose, files per size, and the screens it links to. |
 | `tokens.json` | Design tokens. |
 | `strings.json` | UI strings in EN, RO, DE, IT, ES, FR taken from the designs. |
@@ -49,6 +51,17 @@ Read in this order, then build:
 | `properties-per-screen.md` | For the backend: every screen's displayed data, inputs, actions and open parameters, with the gaps. |
 
 ## What's new in this update
+
+- **Website · Landing page (MVP)** — the MVP has no web version of the app, so the website is one static page that shows what Merg is and sends people to the stores. Two references:
+  - `LP1` **on a computer** (1440 × 900, one screen):
+    - the label "New · Now in Brașov", the headline "Deals and events near you, in short videos.", one lead line;
+    - the App Store and Google Play buttons and a QR code to scan with the phone;
+    - on the right, the app's feed on a phone, with the offer card and a reward ticket popping out.
+  - `LP2` **on a phone** (360, 390 and 430 wide, full scroll): the same text with the two store buttons side by side in the first screen, the phone picture under them, and "Own a place? Merg for businesses" in the footer. No QR.
+
+  The page calls no API: it is static, served from a CDN, and the store choice happens in a server redirect (`/get`, rule A25). The pictures are files in `assets/landing/` (WebP, about 100 KB on a phone), plus `og-image.jpg` for link previews. Copy in Romanian and English. Spec: [`docs/22-landing-page.md`](docs/22-landing-page.md). New components C83–C86; new tokens `font.size.landingTitle*` and `landingLead*`. The other boards on the canvas's Web version page (the map ideas) are work in progress and not in this handoff.
+
+### Earlier updates
 
 - **Convert to Business** — a signed-in person turns their account into a business (a host). Every text, input and option of the owner's sketch is kept, and only **Continue** is added. The page has 7 screens plus the category states (11 references at small, medium and large):
   - `BC1` **Overview**: home of the flow, with three step cards (Legal Documents · Business Information · Business Hours), the two agreements and **Create Business Account**, disabled until every step is done.
@@ -60,8 +73,6 @@ Read in this order, then build:
   - `BC7` **Ready to submit**: every step checked, both boxes ticked, Create Business Account on. It sends the application that the admin approves in **Host Approval** (AD3).
 
   The screens use the app's components and tokens (C1, C17, C30, C32, C71); the differences from the canvas are listed in `docs/21` §12. Spec: [`docs/21-business-conversion.md`](docs/21-business-conversion.md). New components C74–C82; new token `font.size.stepTitle` (28, 24 on small); *Convert to Business* data in `docs/06`; rule A24 in the backend contract.
-
-### Earlier updates
 
 - **Coupons & Events tab · tile images** — the **Events** and **Coupons** filter tiles on CE1 now use two standard images instead of a video thumbnail:
   - **Events** (`tile_events`): a ticket with the event (group) icon, spotlights and confetti, on event purple.

@@ -45,7 +45,7 @@ Machine-readable values: [`../tokens.json`](../tokens.json). Map them once into 
 
 ## Typography
 - Family: **Roboto** on Android, **system (SF Pro)** on iOS. Weights 400 / 500 / 600 / 700 / 800.
-- Sizes (pt/dp): profile name 21/700 · host profile name 22/400 · screen title 18/500 · sheet title 19/600 · form name 19/500 · video title 19/700 (F2 legacy) · public card title 16/600 · host card title 14.5/600 · coupon title 12.5/600 · body 14–15 · button 16/500 · pills 13/600–700 (12 on small phones) · secondary 13 · tabs 12 · micro 11 (10.5 on small phones) · nav labels 10.5 · step question 28/700 (24 on small phones; Convert to Business, C76).
+- Sizes (pt/dp): profile name 21/700 · host profile name 22/400 · screen title 18/500 · sheet title 19/600 · form name 19/500 · video title 19/700 (F2 legacy) · public card title 16/600 · host card title 14.5/600 · coupon title 12.5/600 · body 14–15 · button 16/500 · pills 13/600–700 (12 on small phones) · secondary 13 · tabs 12 · micro 11 (10.5 on small phones) · nav labels 10.5 · step question 28/700 (24 on small phones; Convert to Business, C76) · website (LP1 / LP2): headline 60/66 700 on a computer, 38/44 on phones, 34/40 on small; lead 19/30 on a computer, 17/26 on phones (`landingTitle*`, `landingLead*`).
 - Line heights: titles 1.25, body 1.45, captions 1.4.
 - Support Dynamic Type / font scale: let text wrap or clamp, never overlap. Pills keep `nowrap`.
 

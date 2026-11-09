@@ -460,3 +460,13 @@ Counter 1/3 → three step cards (C74): **Legal Documents** "Step 1 of 3 • Qui
 
 ### BC7-ready · Overview, ready to submit
 BC1 with counter 3/3, the progress bar full, a green check on every step and both boxes ticked → **Create Business Account** on (sends the application to Host Approval).
+
+## Website — landing page (MVP)
+
+Full spec, sizes and behaviour: [`22-landing-page.md`](22-landing-page.md). The MVP has no web app: one static page sends people to the stores. White page, the app's tokens, Roboto.
+
+### LP1-landing-desktop · Landing page on a computer (1440 × 900, one screen)
+Top bar: `merg` · For businesses · **Get the app** → left column: label (C83) "New · Now in Brașov" · H1 "Deals and events near you, in short videos." · "Watch what cafés, salons and venues around you post. Grab a deal or a spot in one tap, and get rewarded when you come back." · store buttons (C84) App Store · Google Play · QR card (C85) "Scan to get the app" / "Free on iPhone and Android" → right: the phone picture (C86) → footer © 2026 Merg · Terms · Privacy · Contact.
+
+### LP2-landing-phone · Landing page on a phone (full scroll)
+Top bar: `merg` · **Get the app** → label · H1 · lead · App Store | Google Play side by side · "Free on iPhone and Android" (all in the first screen) → the phone picture full width → footer: **Own a place? Merg for businesses →** · © 2026 Merg · Terms · Privacy · Contact. No QR.

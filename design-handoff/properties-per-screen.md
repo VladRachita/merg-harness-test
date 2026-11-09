@@ -41,7 +41,7 @@ Types: `string`, `int`, `bool`, `money` = `{ amount: number, currency: "RON" }`,
 
 ---
 
-## Contents — 16 pages, 102 screens
+## Contents — 17 pages, 104 screens
 
 | Page | Screens |
 |---|---|
@@ -61,6 +61,7 @@ Types: `string`, `int`, `bool`, `money` = `{ amount: number, currency: "RON" }`,
 | Admin · Dashboard (web) | `AD1-reviews`, `AD2-analytics`, `AD3-host-approval` |
 | Host · Coupons & events (create) | `OF1-pick-video` … `OF13-event-check` |
 | Account · Convert to Business | `BC1-overview`, `BC2-legal`, `BC3*-category`, `BC4*-place-type`, `BC5-details`, `BC6-hours`, `BC7-ready` |
+| Website · Landing page | `LP1-landing-desktop`, `LP2-landing-phone` |
 
 Start with the **quick index** below (what each screen reads and sends). Then each page in detail, then: **§A** rules and jobs the backend runs · **§B** gaps to decide · **§C** entity and field index.
 
@@ -244,6 +245,13 @@ Full detail per screen is in the page sections below. ⚠ = a gap listed in §B.
 | `BC4*-place-type` | the category's place types and offers (fixed lists) | — (draft) |
 | `BC5-details` | country codes; the price levels ⚠; the map (OpenStreetMap) and address search | — (draft) |
 | `BC6-hours` | — | — (draft) |
+
+**Website · Landing page** — static, no API.
+
+| Screen | Reads | Sends |
+|---|---|---|
+| `LP1-landing-desktop` | nothing (build settings only: store URLs, download link) | — (store clicks are counted by the `/get` redirect, A25) |
+| `LP2-landing-phone` | nothing | — |
 
 ---
 
@@ -1860,6 +1868,27 @@ A signed-in person who is not a host yet sends an application to become one. Ful
 
 **Actions:** **Continue** → the overview (BC7 when every step is done).
 
+## Page: Website · Landing page
+
+The MVP website: one static page (1440 × 900 on a computer, full scroll on a phone) that sends people to the stores. **It reads no data and sends nothing to the app's API.** See `docs/22-landing-page.md`.
+
+### Screens 1–2 · Landing page (`LP1-landing-desktop`, board *Landing · Desktop*; `LP2-landing-phone`, board *Landing · Phone*)
+
+**Elements displayed:** fixed copy (RO / EN), the store badges, the QR (LP1) and the phone picture. Nothing comes from the backend.
+
+**Settings (build time)**
+
+| Setting | Type | Notes |
+|---|---|---|
+| `appStoreUrl`, `playStoreUrl` | `url` | The badges link here. |
+| `iosAppId` | `string` | Smart App Banner on iPhone Safari. |
+| `downloadLink` | `url` | `https://<site>/get`; encoded in the QR, used by **Get the app** on phones (A25). |
+| `supportEmail`, `termsUrl`, `privacyUrl` | `string` / `url` | Footer links; the same Terms and Privacy as the app. |
+
+**Actions:** App Store / Google Play → the store page · **Get the app** → the download block (computer) or `/get` (phone) · **For businesses** → the same, with `?for=business`.
+
+---
+
 ## A. Rules and jobs the screens rely on (backend logic, not one screen)
 
 | # | Rule / job | What the screens expect | Screens |
@@ -1888,6 +1917,7 @@ A signed-in person who is not a host yet sends an application to become one. Ful
 | A22 | **Admin** | `AdminRole` checked on every admin request (MODERATOR: Reviews, Analytics; SUPER_ADMIN: everything). `ReviewDecision` / `HostDecision` update the item, tell the author or owner, and append to the **read-only** Audit Log (who, what, when, reason). Undo within a few seconds. Two-factor sign-in for admins; password again before rejecting a host, Platform Settings changes and User Management actions. Host application personal data and documents only for host approvers, documents through short-lived links, every view logged. | AD1–AD3 |
 | A23 | **Create offers** | `OfferCreateRequest` creates an `Offer` for the host's business. **Checks:** title 1–100 and description 10–500 characters; a coupon needs a `discount` (above 0, PERCENT at most 100), an event a `bookingChannel`; `usageLimit` / `capacity` null (unlimited) or 1 or more; `startDate` today or later, `endDate ≥ startDate`, `endTime > startTime`. **Schedule:** coupons get one `windows[]` entry per day from `startDate` to `endDate` (`startTime`–`endTime`); events get one `sittings[]` entry per day with `seatsLeft = capacity`; `startsAt` / `endsAt` come from the first and last day. **Limits:** `quantityLeft` starts at the limit (null = ∞); the offer stops at the end or when the limit is reached. **Booking channel:** IN_APP bookings arrive in Reservations; PHONE shows the business phone. **Visibility:** listed in the business's Coupons & Events tab and in Search Deals (A19). | OF1–OF13, CE1, SR6 |
 | A24 | **Host application** | `BusinessApplicationRequest` creates a `HostApplication` (`PENDING`) with `business { name, category, type = placeType, city, address }`, `owner` from the account + `phone`, `documents` = the certificate. **Checks:** every required field, `servicesOffered` 10–1000, capacities whole numbers ≥ 1, `to > from` on open days, `termsAccepted`, one pending application per person. Counts in `hostApplicationsWaiting`. **Approve** (AD3) makes the account a host with a `BusinessProfile` (category, `subcategoryLabel` = place type, phone, address, `openingHours`, `priceLevel`, booking default); **Reject** tells the person the reason. | BC1–BC7, AD3 |
+| A25 | **Download link** | `GET /get` is a server redirect (no page, no cookies): iPhone / iPad user agents → `appStoreUrl`, Android → `playStoreUrl`, anything else → the landing page at `#download`. Keeps the query (`?for=business`, campaign values) and counts each redirect by target store and source (QR, button, business link) for the store-click numbers. Cacheable per user-agent class at the CDN edge. | LP1, LP2 |
 
 ---
 
