@@ -89,3 +89,7 @@ Use this for every screen before calling it done.
 - [ ] **BC3 / BC4**: one category (C71), its place types 3 per row with the others at 0.4, "What do you offer?" 5 per row for Food & Beverage and Accommodation; names never overflow their tile.
 - [ ] **BC5**: the details form in order, How do you take bookings? (In-app · By phone), the map picker, "n / 1000"; **BC6**: seven days with 24-hour pickers and a switch.
 - [ ] Everything in `21-business-conversion.md` §13 (definition of done).
+- [ ] **LP1** (website, computer): one screen at 1440 × 900: label, headline, lead, official store badges, the QR card; the phone picture from `assets/landing/` on the right; footer.
+- [ ] **LP2** (website, phone): headline and both store buttons in the first screen at 360, 390 and 430; the phone picture full width under them; no QR.
+- [ ] The website makes no API calls; `/get` sends iPhones to the App Store and Android phones to Google Play; the QR opens it.
+- [ ] Everything in `22-landing-page.md` §12 (definition of done).

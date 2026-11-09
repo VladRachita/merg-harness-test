@@ -3272,6 +3272,52 @@
         "bc6-hours",
         "hp-profile"
       ]
+    },
+    {
+      "id": "LP1-landing-desktop",
+      "area": "website",
+      "title": "Website · Landing page (computer)",
+      "purpose": "MVP website, one screen: label, headline, lead, App Store and Google Play buttons, the QR card, the phone picture on the right, footer. Static, no API.",
+      "canvas": "https://claude.ai/artifact/Vwih7Qv5GPRzwhYsL6zS6x",
+      "source": "WEB-L1-OneScreen.dc.html",
+      "files": {
+        "desktop": {
+          "html": "screens/desktop/lp1-landing-desktop.html",
+          "png": "screenshots/desktop/lp1-landing-desktop.png",
+          "width": 1440,
+          "height": 900
+        }
+      },
+      "links_to": []
+    },
+    {
+      "id": "LP2-landing-phone",
+      "area": "website",
+      "title": "Website · Landing page (phone)",
+      "purpose": "The same page on a phone, full scroll: headline and both store buttons in the first screen, the phone picture full width, 'Own a place? Merg for businesses' in the footer. No QR.",
+      "canvas": "https://claude.ai/artifact/Vwih7Qv5GPRzwhYsL6zS6x",
+      "source": "WEB-L1-OneScreen-Phone.dc.html",
+      "files": {
+        "small": {
+          "html": "screens/small/lp2-landing-phone.html",
+          "png": "screenshots/small/lp2-landing-phone.png",
+          "width": 360,
+          "height": 1221
+        },
+        "medium": {
+          "html": "screens/medium/lp2-landing-phone.html",
+          "png": "screenshots/medium/lp2-landing-phone.png",
+          "width": 390,
+          "height": 1291
+        },
+        "large": {
+          "html": "screens/large/lp2-landing-phone.html",
+          "png": "screenshots/large/lp2-landing-phone.png",
+          "width": 430,
+          "height": 1289
+        }
+      },
+      "links_to": []
     }
   ],
   "reference": {
@@ -3308,6 +3354,13 @@
       "width": 680,
       "height": 858,
       "purpose": "Files per platform (SVG, Android WebP per density, iOS PNG @2x / @3x), the crop on small and large phones, and the rules."
+    },
+    "landing-hero": {
+      "html": "screens/reference/landing-hero.html",
+      "png": "screenshots/reference/landing-hero.png",
+      "width": 1280,
+      "height": 2664,
+      "purpose": "Source of the website pictures in assets/landing/: hero-desktop (750 × 800), hero-phone (393 × 660) and og-image (1200 × 630)."
     }
   }
 }

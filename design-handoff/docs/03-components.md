@@ -505,3 +505,22 @@ Optional "Brand" tone: tile `#EEEAFD`, icon `#5B3FD6`. Default is Mono.
 - White card radius 18, 1px `line.card`: seven rows min 56 (52 on small), separators `line.rowSeparator`, padding `0 4 0 14`. Each row: day 15/500 · two time buttons 44 tall, `bg.soft`, radius 12 (`radius.timeSlot`), 15/500 tabular figures, "to" 13 `text.secondary` between them · a C30 switch.
 - Closed (switch off): the day `text.tertiary`, the times at 0.4. Time buttons open the platform time picker, 24-hour.
 - Seen in: BC6. Full spec: `21-business-conversion.md` §7.
+
+## 83. Label pill (website)
+- 32 tall, radius 16, padding `0 14 0 12`, `brand.tintBg`, text `brand.tintIcon` 14/18 500; a dot 8 `brand.accent` before the text, gap 8. Not a button.
+- Seen in: LP1, LP2 ("New · Now in Brașov"). Full spec: `22-landing-page.md` §2.
+
+## 84. Store button (website)
+- In production: the **official** App Store and Google Play badges in the page language, at the button height. The references draw a stand-in: `action.primary`, radius 14, padding `0 20` (`0 16` on phones), two lines: "Download on the" / "Get it on" 11/14 at 78 % white, then "App Store" / "Google Play" 18/22 500 (17 on phones).
+- Height 52. Computer: at least 156 wide, gap 12. Phone: two in a row, half the width each, gap 10.
+- Seen in: LP1, LP2. Links and the `/get` redirect: `22-landing-page.md` §3.
+
+## 85. QR card (website, computer only)
+- White, inset 1px `line.card`, radius 18, padding `10 20 10 10`, gap 16: the QR (80, with the `m` mark in the middle) · "Scan to get the app" 15/20 700 over "Free on iPhone and Android" 13/18 `text.secondary`.
+- The QR encodes the download link (`/get`), generated at build time as inline SVG (error correction H). The reference shows a placeholder pattern.
+- Seen in: LP1.
+
+## 86. Phone picture (website)
+- An image, not markup: `assets/landing/hero-desktop*.webp` (750 × 800 on LP1) and `hero-phone*.webp` (393 × 660, full width on LP2), transparent. It shows the app's feed with the deal post, the white offer card popping out and a reward ticket.
+- `<img>` with `srcset`, `width` and `height`, `fetchpriority="high"`, the alt text from `22-landing-page.md` §4.
+- Seen in: LP1, LP2. Rules: `assets/landing/README.md`.

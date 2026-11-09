@@ -392,6 +392,19 @@ HostDecision { applicationId, decision: "APPROVE" | "REJECT", reason? }
 - Every `ReviewDecision` and `HostDecision` writes an Audit Log entry (who, what, when, reason); the Audit Log is read only.
 - Host application personal data and documents are returned only to roles that approve hosts; every document view is logged.
 
+## Website (landing page)
+The page reads **no data** and calls no API. It is built from settings:
+```ts
+SiteConfig {
+  appStoreUrl, playStoreUrl,        // the two store pages (official badges link here)
+  iosAppId,                         // Smart App Banner: <meta name="apple-itunes-app" content="app-id=…">
+  downloadLink: "https://<site>/get", // QR and "Get the app" on phones; redirected on the server (A25)
+  supportEmail,                     // Contact
+  termsUrl, privacyUrl,             // the same documents the app links to
+  languages: ["ro", "en"]           // /ro and /en, hreflang
+}
+```
+
 ## Display rules
 | Rule | Output |
 |---|---|

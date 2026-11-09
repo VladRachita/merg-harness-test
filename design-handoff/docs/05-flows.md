@@ -252,3 +252,22 @@ Rules (details in `21-business-conversion.md` §1):
 - single choices grey the other options at 0.4 and keep them tappable;
 - Create Business Account is on only when the three steps are done and both boxes are ticked;
 - the application goes to the admin's Host Approval as Pending (AD3).
+
+## Q. Website — landing page
+
+```mermaid
+flowchart LR
+  LP[LP1 / LP2 Landing page] -- App Store badge --> AS((App Store))
+  LP -- Google Play badge --> GP((Google Play))
+  LP -- Get the app · computer --> DL[the download block on the page]
+  LP -- Get the app · phone --> GET["/get redirect"]
+  QR[QR code on LP1] --> GET
+  GET -- iPhone / iPad --> AS
+  GET -- Android --> GP
+  GET -- anything else --> DL
+  LP -- For businesses --> DL
+```
+Rules (details in `22-landing-page.md` §3):
+- the page has no sign-in and no app content; every action leads to a store;
+- `/get` is a server redirect by the phone's system and keeps `?for=business` for counting;
+- a person becomes a business in the app (Profile → Convert to Business, BC1), not on the website.
