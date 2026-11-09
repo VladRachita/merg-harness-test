@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="sentinel-token" content="__SENTINEL_TOKEN__">
+<title>appsec-sentinel</title>
+<link rel="stylesheet" href="/app.css">
+</head>
+<body>
+<header class="top">
+  <div class="brand"><span class="logo" aria-hidden="true"></span>appsec-sentinel</div>
+  <span id="pill" class="pill idle">Idle</span>
+</header>
+
+<main>
+  <aside class="panel" aria-label="Run setup">
+    <h2>Target</h2>
+
+    <label class="field">What to test
+      <select id="mode">
+        <option value="http">Your backend, over HTTP</option>
+        <option value="reference-secure">Self-test — built-in secure app</option>
+        <option value="reference-vulnerable">Negative control — built-in broken app</option>
+      </select>
+    </label>
+
+    <div id="httpFields">
+      <label class="field">Config file
+        <select id="config"></select>
+      </label>
+      <div class="pair">
+        <label class="field grow">Host
+          <input id="host" type="text" autocomplete="off" spellcheck="false" placeholder="my-backend">
+        </label>
+        <label class="field port">Port
+          <input id="port" type="number" min="1" max="65535" inputmode="numeric" placeholder="8080">
+        </label>
+      </div>
+      <div class="pair">
+        <label class="field scheme">Scheme
+          <select id="scheme"><option>http</option><option>https</option></select>
+        </label>
+        <label class="field grow">Base path
+          <input id="base_path" type="text" autocomplete="off" spellcheck="false" placeholder="/api/v1">
+        </label>
+      </div>
+      <p class="hint">Will test <code id="urlPreview"></code></p>
+    </div>
+    <p id="refHint" class="hint" hidden>Runs entirely in-process — no backend needed. Use it to
+      confirm the harness itself works (secure app: everything blocked; broken app: everything leaks).</p>
+
+    <fieldset>
+      <legend>Suites <button type="button" id="toggleSuites" class="link">all / none</button></legend>
+      <div id="suites"></div>
+    </fieldset>
+
+    <div class="buttons">
+      <button type="button" id="check">Check connection</button>
+      <button type="button" id="start" class="primary">Start run</button>
+      <button type="button" id="stop" class="danger" hidden>Stop</button>
+    </div>
+    <ul id="preflight" class="preflight" aria-live="polite"></ul>
+    <p id="formError" class="formerror" role="alert"></p>
+    <p class="hint foot">Only internal targets (localhost, private IPs, Docker service names) are
+      accepted unless a host is allow-listed in the config. Runs change data — use a disposable
+      instance.</p>
+  </aside>
+
+  <section class="live" aria-label="Run results">
+    <div class="scorecard panel">
+      <div class="scorebox">
+        <div class="score"><span id="score">–</span><small>/100</small></div>
+        <div id="verdict" class="verdict none">No run yet</div>
+        <div id="meta" class="meta"></div>
+      </div>
+      <div class="tiles">
+        <div class="tile blocked"><b id="nBLOCKED">0</b><span>Blocked</span></div>
+        <div class="tile leak"><b id="nLEAK">0</b><span>Leaks</span></div>
+        <div class="tile inconclusive"><b id="nINCONCLUSIVE">0</b><span>Inconclusive</span></div>
+        <div class="tile skipped"><b id="nSKIPPED">0</b><span>Skipped</span></div>
+        <div class="tile error"><b id="nERROR">0</b><span>Errors</span></div>
+      </div>
+    </div>
+
+    <div class="panel progresswrap">
+      <div class="progress" role="progressbar" aria-valuemin="0" aria-valuemax="100" id="progress">
+        <div id="bar"></div>
+      </div>
+      <p id="progressText" class="hint">Set the backend's host and port, then start a run.</p>
+      <ul id="notes" class="notes"></ul>
+    </div>
+
+    <div class="panel">
+      <div class="toolbar">
+        <div id="filters" class="chips" role="tablist" aria-label="Filter results"></div>
+        <a id="download" class="link" href="#" hidden>Download JSON report</a>
+      </div>
+      <div class="tablewrap">
+        <table id="results">
+          <thead><tr><th>Result</th><th>Check</th><th>What it proves</th></tr></thead>
+          <tbody></tbody>
+        </table>
+        <p id="empty" class="hint emptystate">Results appear here as each check finishes.</p>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h2>Recent runs</h2>
+      <ul id="history" class="history"><li class="hint">None yet.</li></ul>
+      <p class="hint">Score = share of the checks that ran which were <em>proven</em> blocked.
+        Leaks, errors and inconclusive checks all count against it; skipped checks lower coverage instead.</p>
+    </div>
+  </section>
+</main>
+<script src="/app.js"></script>
+</body>
+</html>

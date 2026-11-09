@@ -15,7 +15,10 @@ from .base import Target, Resp, Capability
 from .reference.secure_app import SecureApp, RSA_PUB
 from .reference.vulnerable_app import VulnerableApp
 
-_PROBE = re.compile(rb"SQLiPROBE_[A-Za-z0-9]+::[^\x00\"']*")
+# the metadata value a pipeline would read out of the file (title/comment/EXIF)
+_PROBE = re.compile(rb"SQLiPROBE_[A-Za-z0-9]+::[\x20-\x7e]*")
+# what a stacked INSERT smuggled in that value would write
+_INSERTED = re.compile(r"INSERT INTO audit\(note\) VALUES \('([^']*)'\)")
 
 
 def _magic(data: bytes):
@@ -67,13 +70,17 @@ class MediaBackend:
             # metadata stored as bound data; never concatenated into a query
             return Resp(201, {"Content-Disposition": "attachment",
                               "X-Content-Type-Options": "nosniff"}, {"stored": filename})
-        # vulnerable: metadata concatenated -> a stacked INSERT fires
-        if "INSERT INTO audit" in meta:
-            self.audit.append(meta)
-        return Resp(201, {}, {"stored": filename})
+        # VULN: metadata concatenated into the INSERT -> a stacked statement
+        # fires and writes its own row...
+        self.audit += _INSERTED.findall(meta)
+        # VULN: ...a DROP makes the query fail and the driver error escapes...
+        if "DROP TABLE" in meta:
+            return Resp(500, {}, {"error": f"SQLSTATE[42601] near: {meta}"})
+        # VULN: ...and the raw metadata is echoed straight back.
+        return Resp(201, {}, {"stored": filename, "title": meta})
 
     def injected_row_exists(self, marker: str) -> bool:
-        return any(marker in a for a in self.audit)
+        return marker in self.audit
 
 
 class _BaseReferenceTarget(Target):
@@ -85,17 +92,17 @@ class _BaseReferenceTarget(Target):
         self.media = MediaBackend(secure=self.secure)
 
     def capabilities(self):
-        return {Capability.TWO_ACCOUNTS, Capability.USER_ADMIN, Capability.SIGNING_KEY,
-                Capability.OTHER_AUD_TOKEN, Capability.RESET_INTROSPECT, Capability.DB_PROBE,
-                Capability.OAUTH, Capability.MEDIA_UPLOAD}
+        return set(Capability)          # the reference apps model every feature and hook
 
     @staticmethod
     def _wrap(r) -> Resp:
         return Resp(r.status, dict(r.headers), dict(r.body))
 
     # --- auth ---
-    def login(self, username, password, source_ip="203.0.113.9", xff=None, otp_ok=True, prev_session=None):
-        return self._wrap(self.app.login(username, password, source_ip, xff, otp_ok, prev_session))
+    def login(self, username, password, source_ip="203.0.113.9", xff=None, otp_ok=True,
+              prev_session=None, evasion=None):
+        return self._wrap(self.app.login(username, password, source_ip, xff, otp_ok,
+                                         prev_session, evasion))
     def logout(self, token): return self._wrap(self.app.logout(token))
     def refresh_token(self, rtok): return self._wrap(self.app.refresh_token(rtok))
     def register(self, username, password, requested_role=None, extra=None):
@@ -104,7 +111,7 @@ class _BaseReferenceTarget(Target):
     # --- resources ---
     def get_resource(self, token, owner_id): return self._wrap(self.app.get_resource(token, owner_id))
     def get_object(self, token, kind, obj_id): return self._wrap(self.app.get_object(token, kind, obj_id))
-    def admin_users(self, token): return self._wrap(self.app.admin_users(token))
+    def admin_users(self, token, spoof=None): return self._wrap(self.app.admin_users(token, spoof))
     def admin_delete_user(self, token, target, method="DELETE"):
         return self._wrap(self.app.admin_delete_user(token, target, method))
 
@@ -136,11 +143,13 @@ class _BaseReferenceTarget(Target):
 
     # --- misc ---
     def buggy_endpoint(self, payload): return self._wrap(self.app.buggy_endpoint(payload))
+    def stress_input(self, kind): return self._wrap(self.app.stress_input(kind))
 
     # --- gray-box hooks ---
-    def issue_access_token(self, username, aud="api"):
+    def issue_access_token(self, username, aud="api", ttl=None):
         u = self.app.users[username]
-        return self.app._issue_access(username, u["role"], u["id"], u["mfa"], aud=aud)
+        kw = {} if ttl is None else {"ttl": ttl}
+        return self.app._issue_access(username, u["role"], u["id"], u["mfa"], aud=aud, **kw)
     def set_enabled(self, username, enabled): self.app.users[username]["enabled"] = enabled
     def user_field(self, username, field): return self.app.users.get(username, {}).get(field)
     def public_key(self): return RSA_PUB

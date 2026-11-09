@@ -10,7 +10,6 @@ Requires: ffmpeg on PATH, Pillow.  Call generate(out_dir) -> manifest(list).
 from __future__ import annotations
 
 import json
-import os
 import subprocess
 import sys
 from pathlib import Path
@@ -32,6 +31,13 @@ def _tag(pid, payload):
     return f"SQLiPROBE_{pid}::{payload}"
 
 
+def _injected(pid, payload):
+    """The value a smuggled `INSERT INTO audit` would write if the metadata were
+    concatenated into SQL — this, not the whole marker, is what a db_probe hook
+    must be asked about. None for probes that carry no INSERT."""
+    return f"SQLiPROBE_{pid}" if "INSERT INTO audit" in payload else None
+
+
 def _run(cmd):
     subprocess.run(cmd, capture_output=True, text=True)
 
@@ -40,6 +46,24 @@ def generate(out_dir) -> list:
     out = Path(out_dir)
     out.mkdir(parents=True, exist_ok=True)
     manifest = []
+
+    # 0) clean files with no hostile content — the positive CONTROL: if these
+    #    aren't accepted, a refusal of the hostile ones proves nothing
+    ctl = out / "control.mp4"
+    _run(["ffmpeg", "-y", "-f", "lavfi", "-i", "color=c=gray:s=320x240:d=1",
+          "-pix_fmt", "yuv420p", str(ctl)])
+    if ctl.exists():
+        manifest.append({"file": ctl.name, "type": "mp4", "probe_id": "CTL", "marker": None,
+                         "injected_value": None, "content_type": "video/mp4",
+                         "expect": "control"})
+    try:
+        from PIL import Image
+        Image.new("RGB", (64, 64), (90, 90, 90)).save(out / "control.png")
+        manifest.append({"file": "control.png", "type": "png", "probe_id": "CTL", "marker": None,
+                         "injected_value": None, "content_type": "image/png",
+                         "expect": "control"})
+    except ImportError:
+        pass
 
     # 1) MP4 — probe in container metadata atoms
     for pid, payload in PROBES:
@@ -51,7 +75,8 @@ def generate(out_dir) -> list:
               "-pix_fmt", "yuv420p", str(path)])
         if path.exists():
             manifest.append({"file": path.name, "type": "mp4", "probe_id": pid,
-                             "marker": marker, "content_type": "video/mp4", "expect": "accept"})
+                             "marker": marker, "injected_value": _injected(pid, payload),
+                             "content_type": "video/mp4", "expect": "accept"})
 
     # 2) PNG + 3) JPEG — probe in text chunks / EXIF + pixels
     try:
@@ -65,7 +90,8 @@ def generate(out_dir) -> list:
             meta.add_text("Comment", marker); meta.add_itxt("Title", marker)
             img.save(p, pnginfo=meta)
             manifest.append({"file": p.name, "type": "png", "probe_id": pid,
-                             "marker": marker, "content_type": "image/png", "expect": "accept"})
+                             "marker": marker, "injected_value": _injected(pid, payload),
+                             "content_type": "image/png", "expect": "accept"})
 
             j = out / f"photo_{pid}.jpg"
             img2 = Image.new("RGB", (480, 120), (50, 20, 30))
@@ -73,7 +99,8 @@ def generate(out_dir) -> list:
             exif = img2.getexif(); exif[0x010e] = marker; exif[0x9286] = marker
             img2.save(j, exif=exif)
             manifest.append({"file": j.name, "type": "jpg", "probe_id": pid,
-                             "marker": marker, "content_type": "image/jpeg", "expect": "accept"})
+                             "marker": marker, "injected_value": _injected(pid, payload),
+                             "content_type": "image/jpeg", "expect": "accept"})
     except ImportError:
         sys.stderr.write("[warn] Pillow missing; PNG/JPEG samples skipped\n")
 

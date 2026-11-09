@@ -13,11 +13,17 @@ def _b64(b: bytes) -> str:
     return base64.urlsafe_b64encode(b).rstrip(b"=").decode()
 
 
+_DIGEST = {"HS256": hashlib.sha256, "HS384": hashlib.sha384, "HS512": hashlib.sha512}
+
+
 def forge(header: dict, claims: dict, secret: bytes | None = None) -> str:
+    """An unsigned token (alg none / no secret) or an HMAC-signed one. `secret`
+    may be b"" — signing with a zero-length key is itself an attack."""
     seg = _b64(json.dumps(header).encode()) + "." + _b64(json.dumps(claims).encode())
-    if header.get("alg") == "none" or secret is None:
+    if str(header.get("alg", "")).lower() == "none" or secret is None:
         return seg + "."
-    sig = hmac.new(secret, seg.encode(), hashlib.sha256).digest()
+    digest = _DIGEST.get(header.get("alg"), hashlib.sha256)
+    sig = hmac.new(secret, seg.encode(), digest).digest()
     return seg + "." + _b64(sig)
 
 

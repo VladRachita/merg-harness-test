@@ -34,6 +34,7 @@ import requests
 
 from sentinel import config as cfgmod
 from sentinel.config import dotget
+from sentinel.safety import ScopeError, check_scope
 
 
 def _probe(session, method, url, timeout):
@@ -50,7 +51,15 @@ def main(argv=None):
     ap.add_argument("--config", help="path to YAML config (else $SENTINEL_CONFIG / defaults)")
     args = ap.parse_args(argv)
 
-    cfg = cfgmod.load(args.config)
+    try:
+        cfg = cfgmod.load(args.config)
+        for note in check_scope(cfg):
+            print(f"note: {note}")
+    except (cfgmod.ConfigError, ScopeError) as e:
+        print(e, file=sys.stderr)
+        return 2
+    for w in cfg.warnings:
+        print(f"warning: {w}")
     s = requests.Session()
     s.verify = cfg.verify_tls
     base = cfg.base_url
@@ -83,7 +92,7 @@ def main(argv=None):
         probe_path = path
         while "{" in probe_path and "}" in probe_path:
             probe_path = probe_path[:probe_path.index("{")] + "1" + probe_path[probe_path.index("}") + 1:]
-        st, note = _probe(s, "OPTIONS", base + probe_path, cfg.timeout_s)
+        st, note = _probe(s, "OPTIONS", cfg.url_for(probe_path), cfg.timeout_s)
         if st == 0:
             verdict = f"conn-error ({note})"
             missing.append(name)
@@ -101,9 +110,9 @@ def main(argv=None):
     try:
         method, path = cfg.endpoints["login"].split(" ", 1)
         payload = {f["username"]: u.get("username"), f["password"]: u.get("password")}
-        if "otp" in f:
+        if f.get("otp"):
             payload[f["otp"]] = "000000"
-        r = s.request(method, base + path, json=payload, timeout=cfg.timeout_s,
+        r = s.request(method, cfg.url_for(path), json=payload, timeout=cfg.timeout_s,
                       allow_redirects=False)
         body = {}
         try:
@@ -114,6 +123,20 @@ def main(argv=None):
         if token:
             print(f"[ok]   login returned a token at '{cfg.token_json_path}' "
                   f"(HTTP {r.status_code}) — authenticated tests will be real")
+            # 4) ...and does that token actually open a protected route? Nearly
+            #    every check uses "the user reads their own resource" as its control.
+            name, _, tmpl = cfg.auth_header.partition(": ")
+            rm, rp = cfg.spec("resource")
+            own = s.request(rm, cfg.url_for(rp.format(owner_id=u.get("id"))),
+                            headers={name: tmpl.format(token=token)}, timeout=cfg.timeout_s,
+                            allow_redirects=False)
+            if 200 <= own.status_code < 300:
+                print(f"[ok]   the token reads the user's own resource (HTTP {own.status_code})")
+            else:
+                print(f"[FAIL] the token could NOT read the user's own resource (HTTP "
+                      f"{own.status_code}). Check endpoints.resource, users.user.id and "
+                      f"auth_header — most checks will report INCONCLUSIVE until this works.")
+                hard_fail = True
         else:
             print(f"[FAIL] login did NOT yield a token (HTTP {r.status_code}). "
                   f"Check the login route, field names, test creds, and "

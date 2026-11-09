@@ -1,0 +1,52 @@
+# The web UI: type the backend's host + port, press Start, watch the run live.
+#
+#   docker compose -f docker-compose.ui.yml up --build
+#   open http://localhost:8090
+#
+# How the UI container reaches your backend — pick one:
+#
+#   A) The backend publishes a port on this machine (e.g. `-p 8080:8080`):
+#      leave Host as  host.docker.internal  and type the port.
+#
+#   B) The backend runs in another compose project: put this container on that
+#      project's network (uncomment the two `networks:` blocks below, set the
+#      name from `docker network ls`) and use the backend's SERVICE or container
+#      name as Host with its INTERNAL port. Nothing needs to be published.
+#
+#   C) Just trying it out: `--profile demo` also starts the bundled demo backend;
+#      choose config/target.demo.yaml in the UI (host demo-target, port 8080).
+#        docker compose -f docker-compose.ui.yml --profile demo up --build
+#      Set DEMO_MODE=vulnerable to watch the score drop to 0.
+#
+# The UI can start attacks, so it is published on 127.0.0.1 ONLY. Do not change
+# that to 0.0.0.0 / expose it on a network other people can reach.
+
+services:
+  sentinel-ui:
+    build: .
+    entrypoint: ["python", "-m", "sentinel.ui", "--listen", "0.0.0.0", "--port", "8090"]
+    command: []
+    ports:
+      - "127.0.0.1:8090:8090"
+    environment:
+      SENTINEL_UI_DEFAULT_HOST: host.docker.internal
+    extra_hosts:
+      - "host.docker.internal:host-gateway"     # makes (A) work on Linux too
+    volumes:
+      - ./config:/app/config:ro                 # edit configs without rebuilding
+    # networks:
+    #   - default
+    #   - backend_net
+
+  demo-target:
+    profiles: ["demo"]
+    build: .
+    entrypoint: ["python", "demo_target/server.py"]
+    environment:
+      DEMO_MODE: ${DEMO_MODE:-secure}
+      PORT: "8080"
+
+# networks:
+#   backend_net:
+#     external: true
+#     name: videosanity_default      # <-- the other project's network

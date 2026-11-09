@@ -20,13 +20,21 @@ users:
   user2: { username: bob,   password: bob-pw,   id: 2, email: bob@x.com }
   admin: { username: admin, password: admin-pw, id: 3, email: admin@x.com }
 
-features: [oauth, media_upload]
+# What the backend has. Checks for a feature that isn't listed are SKIPPED.
+#   mfa  = the seed accounts have a second factor
+#   csrf = auth rides on a cookie (the demo models CSRF although it uses bearer tokens)
+features: [oauth, media_upload, mfa, csrf]
+
+# An object owned by `owner` that `users.user` must NOT be able to read (BOLA),
+# and a media file that legitimately exists (control for the traversal check).
+bola_object: { kind: video, id: 102, owner: user2 }
+media_sample: intro.mp4
 
 # Test-profile hooks (a real backend exposes these only in a test build)
 hooks:
   reset: "POST /test/reset"                     # clean state before each attack
   user_admin: "POST /test/users/{username}"     # set/read a user (AZ5, AZ6)
-  other_aud_token: "GET /test/token?aud={aud}&username={username}"  # SES7
+  other_aud_token: "GET /test/token?aud={aud}&username={username}&ttl={ttl}"  # SES7, C5
   db_probe: "GET /test/injected?marker={marker}"                    # MED3
   reset_introspect: true                        # reset endpoint echoes the link
 
