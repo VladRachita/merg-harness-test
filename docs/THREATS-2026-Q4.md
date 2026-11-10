@@ -89,6 +89,42 @@ plus progressive delays over a hard per-account lock.
 | RES1–3 | Size / depth / width limits before parsing | ASP.NET Core CVE-2026-70181 (13 Oct) | Record |
 | RES9 | A burst is absorbed or shed, never 5xx | — (general resilience) | — |
 
+### surface (front end, CORS, exposed files) and the remaining additions
+
+These are not tied to a single October/November incident; they are the standing
+classes every scanner and intruder tries first.
+
+| Check | Control asserted | Class |
+|---|---|---|
+| SUR1, FE1 | No dotfiles, repositories, dumps or management endpoints served (23 paths, confirmed by content) | Footprinting / exposed configuration. Related in the window: Atlassian Data Center CVE-2026-21589 (file read in the web root, KEV 15 Oct) — a different mechanism, same asset |
+| SUR2 | CORS grants no credentialed access to arbitrary origins | CORS misconfiguration |
+| FE2–FE4 | Front end sends CSP, anti-framing and nosniff headers | Browser-side hardening |
+| FE5 | No server-side secrets in the page or its scripts | Secrets shipped to the browser |
+| C6 | A token cannot name its own verification key (`jwk`, `jku`, `x5u`, `kid` injection) | JWT key injection |
+| REG1 | Sign-up refuses the most common passwords | Credential-stuffing resistance |
+| UP1 | Uploads require authentication | Unauthenticated upload (cf. the unrestricted-upload KEV entries under OCT6) |
+
+## Coverage against the OWASP API Security Top 10 (2023)
+
+A plain statement of how far the harness goes, so "covered" is not over-read.
+
+| Risk | Coverage | Checks | What is missing |
+|---|---|---|---|
+| API1 Broken object-level authorization | Partial | AZ2, AZ3, OCT8 | Only *reading* another user's resource/object. Changing or deleting someone else's object is not modelled |
+| API2 Broken authentication | Good | BF1–6, C1–6, SES1–7, NOV1–8, OA1–5, AT1–4, BOT1–4, REG1 | Flows the contract has no operation for (magic links, SSO callbacks, device flow) |
+| API3 Broken object-property-level authorization | Partial | AZ5, AZ7, OCT9, NOV9 | Excess data is only looked for in login/refresh responses, not in every API response |
+| API4 Unrestricted resource consumption | Good, bounded | RES1–9, UP2, UP3, BOT5, BOT6 | Not a capacity, soak or protocol-level (HTTP/2–3) test |
+| API5 Broken function-level authorization | Partial | AZ1, AZ4, OCT4, OCT7, NOV10 | One admin route (the one you configure), not every privileged route |
+| API6 Unrestricted access to sensitive business flows | Partial | BOT5 (sign-up), BF/BOT (login), UP3 | Your own business flows — bookings, coupons, rewards, likes, purchases — are not modelled |
+| API7 Server-side request forgery | Good for one field | INJ6, OCT5 | Only the one "import by URL" field you configure |
+| API8 Security misconfiguration | Partial | OUT1, OUT3, ID1, SUR1, SUR2, FE1–5, SES5 | TLS/HSTS configuration, default credentials, cloud/storage permissions |
+| API9 Improper inventory management | Not covered | — | Old API versions and undocumented endpoints are not discovered |
+| API10 Unsafe consumption of APIs | Not covered | — | How your backend trusts third-party APIs |
+
+Outside that list and also not covered: stored/DOM XSS without the optional
+browser suite, vulnerable dependencies (use a dependency scanner), and anything
+that needs knowledge of your business rules.
+
 ## Seen in the window, NOT covered by this harness
 
 Be aware of these; a green run says nothing about them.

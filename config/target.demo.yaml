@@ -9,6 +9,12 @@ target:
   verify_tls: false
   timeout_s: 10
 
+# The web front end. In this demo the same container serves it on the same port;
+# a real project usually has it on its own port (3000, 5173, 80 …).
+frontend:
+  host: demo-target
+  port: 8080
+
 # JWKS endpoint enables the RS256->HS256 confusion test (C2)
 jwks_url: "http://demo-target:8080/jwks.json"
 jwt_iss: "https://auth.example"

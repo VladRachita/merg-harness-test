@@ -19,6 +19,7 @@
   }
 }
 * { box-sizing: border-box; }
+[hidden] { display: none !important; }   /* beats any display: rule below */
 html, body { margin: 0; }
 body {
   background: var(--bg); color: var(--ink);
@@ -149,3 +150,39 @@ td.id small { display: block; font: 400 11px system-ui, sans-serif; color: var(-
   .tiles { grid-template-columns: repeat(3, minmax(0, 1fr)); flex-basis: 100%; }
   .score { font-size: 44px; }
 }
+
+/* ---- target form: backend / front end / flow settings ---- */
+h3 { font-size: 13px; margin: 14px 0 8px; color: var(--ink); }
+h3 small { font-weight: 400; color: var(--muted); margin-left: 4px; }
+.pair .idf { flex: 0 0 64px; }
+.pair.save { align-items: flex-end; margin-top: 6px; }
+.pair.save button { margin-bottom: 10px; white-space: nowrap; }
+.check { display: flex; gap: 8px; align-items: flex-start; font-size: 13px; margin: 2px 0 10px; }
+.check input { margin-top: 3px; }
+.check input:disabled + span { color: var(--muted); }
+details.more { border: 1px solid var(--line); border-radius: 8px; padding: 0 12px; margin-top: 12px; }
+details.more > summary { cursor: pointer; font-size: 13px; font-weight: 600; padding: 9px 0; }
+details.more[open] { padding-bottom: 10px; }
+.preflight li.skip { color: var(--muted); }
+.preflight .skip::before { content: "–"; color: var(--muted); }
+.preflight b { font-weight: 600; }
+
+/* ---- results by flow ---- */
+.byflow { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 10px; }
+.fcard { display: grid; grid-template-columns: 1fr auto; gap: 4px 8px; text-align: left;
+         padding: 10px 12px; border-radius: 8px; border: 1px solid var(--line);
+         background: var(--panel); color: var(--ink); font-weight: 400; }
+.fcard[aria-pressed="true"] { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
+.fname { font-weight: 600; font-size: 13.5px; }
+.fscore { font-weight: 700; font-variant-numeric: tabular-nums; font-size: 13.5px; }
+.fcard.LEAK .fscore { color: var(--leak); }
+.fcard.INCONCLUSIVE .fscore { color: var(--inconclusive); }
+.fcard.BLOCKED .fscore { color: var(--blocked); }
+.fbar { grid-column: 1 / -1; display: flex; height: 6px; border-radius: 999px; overflow: hidden;
+        background: var(--skipped-bg); }
+.seg.BLOCKED { background: var(--blocked); }
+.seg.LEAK { background: var(--leak); }
+.seg.INCONCLUSIVE { background: var(--inconclusive); }
+.seg.ERROR { background: var(--error); }
+.seg.SKIPPED { background: color-mix(in srgb, var(--skipped) 45%, transparent); }
+.fdetail { grid-column: 1 / -1; font-size: 12px; color: var(--muted); }

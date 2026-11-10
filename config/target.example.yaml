@@ -14,6 +14,17 @@ target:
   verify_tls: true
   timeout_s: 10
 
+# The web front end, if it runs on its own port. With a port set, the `surface`
+# suite also checks what the front end serves (exposed files, security headers,
+# secrets in its JavaScript). Leave port empty if there is no separate front end.
+frontend:
+  scheme: https
+  host: your-frontend      # defaults to target.host
+  port: 3000
+  api_path: /api           # prefix under which the front end proxies the API, if it does;
+                           # lets you run the API attacks THROUGH the front-end port
+                           # (--via-frontend, or the checkbox in the UI)
+
 # Safety. Internal targets (localhost, private IPs, single-label docker names,
 # *.test / *.internal / *.local …) need nothing here. Any other host is REFUSED
 # unless you list it — only list systems you own and are authorised to test.
@@ -119,6 +130,7 @@ hooks:
 limits: { lockout_attempts: 6, spray_attempts: 13, burst: 15 }
 load:   { burst_requests: 60, concurrency: 12, p95_ms: 2000 }
 
-suites: [access_control, media_injection]   # default set; `--suite all` runs everything
+suites: [access_control, media_injection]   # default set; `--suite all` runs everything;
+                                            # `--flow login registration upload` picks by flow
 fail_on_leak: true                # exit 1 if an attack gets through
 fail_on_inconclusive: true        # exit 2 if a check could not be proven either way

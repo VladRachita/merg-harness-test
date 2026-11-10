@@ -107,7 +107,7 @@ class VulnerableApp(SecureApp):
             "refresh_token": rtok})
 
     # VULN: honours attacker-supplied role + privilege fields (mass assignment);
-    # unlimited sign-ups.
+    # unlimited sign-ups; any password is accepted ("123456" included).
     def register(self, username, password, requested_role=None, extra=None):
         key = self._norm(username)
         if key in self.users:
@@ -200,6 +200,41 @@ class VulnerableApp(SecureApp):
         finally:
             with self._flight_lock:
                 self._in_flight -= 1
+
+    # VULN: the web root is the project directory — dotfiles, the git repo and
+    # the framework's management endpoints are all served to anyone.
+    EXPOSED = {
+        "/.env": "APP_ENV=production\nDB_PASSWORD=hunter2-example\nJWT_SECRET=example-not-a-real-secret\n",
+        "/.git/config": "[core]\n\trepositoryformatversion = 0\n[remote \"origin\"]\n\turl = git@example:app.git\n",
+        "/.git/HEAD": "ref: refs/heads/main\n",
+        "/actuator/env": '{"activeProfiles": ["prod"], "propertySources": [{"name": "systemEnvironment"}]}',
+        "/backup.sql": "-- dump\nCREATE TABLE users (id int, password_hash text);\n",
+    }
+
+    def fetch_path(self, where, path):
+        if path in self.EXPOSED:
+            return Resp(200, {}, {"_text": self.EXPOSED[path]})
+        if where == "frontend" and path in ("/", "/index.html"):
+            return Resp(200, {}, {"_text": self._page()})        # VULN: no security headers
+        return Resp(404, {}, {"error": "not found"})
+
+    @staticmethod
+    def _page():
+        return ('<!doctype html><html><head><title>App</title>'
+                '<script src="/assets/app.js"></script></head><body></body></html>')
+
+    # VULN: server-side credentials compiled into the browser bundle. (The key
+    # id is AWS's published documentation example, not a real credential.)
+    def frontend_assets(self):
+        js = ('const cfg = {awsAccessKeyId: "AKIAIOSFODNN7EXAMPLE", '
+              'client_secret: "example-client-secret-0123456789"};')
+        return [("/", self._page()), ("/assets/app.js", js)]
+
+    # VULN: CORS reflects whatever Origin asks, with credentials allowed.
+    def cors_probe(self, token, origin, preflight=False):
+        return Resp(204 if preflight else 200,
+                    {"Access-Control-Allow-Origin": origin,
+                     "Access-Control-Allow-Credentials": "true"}, {})
 
     # VULN: no size/shape limits — pathological input reaches the parser and
     # the request dies with an unhandled error.

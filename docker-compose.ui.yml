@@ -33,7 +33,7 @@ services:
     extra_hosts:
       - "host.docker.internal:host-gateway"     # makes (A) work on Linux too
     volumes:
-      - ./config:/app/config:ro                 # edit configs without rebuilding
+      - ./config:/app/config                    # configs are read live; "Save config" writes ui.<name>.yaml here
     # networks:
     #   - default
     #   - backend_net

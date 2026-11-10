@@ -128,6 +128,8 @@ class _BaseReferenceTarget(Target):
     def upload(self, token, fetch_url=None, width=None, height=None, filename="v.mp4"):
         return self._wrap(self.app.upload(token, fetch_url, width, height, filename))
     def upload_bytes(self, token, filename, data, content_type):
+        if self.secure and not self.app._verify(token):
+            return Resp(401, {}, {"error": "authentication required"})   # no anonymous uploads
         return self.media.upload_bytes(filename, data, content_type)
 
     # --- reset ---
@@ -144,6 +146,12 @@ class _BaseReferenceTarget(Target):
     # --- misc ---
     def buggy_endpoint(self, payload): return self._wrap(self.app.buggy_endpoint(payload))
     def stress_input(self, kind): return self._wrap(self.app.stress_input(kind))
+
+    # --- attack surface ---
+    def fetch_path(self, where, path): return self._wrap(self.app.fetch_path(where, path))
+    def cors_probe(self, token, origin, preflight=False):
+        return self._wrap(self.app.cors_probe(token, origin, preflight))
+    def frontend_assets(self): return self.app.frontend_assets()
 
     # --- gray-box hooks ---
     def issue_access_token(self, username, aud="api", ttl=None):

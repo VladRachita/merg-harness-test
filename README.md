@@ -11,8 +11,8 @@ burst — and **prove** each one is blocked.
 container is reported as **inconclusive**, never as a pass.
 
 ```
-86 checks · 6 suites        secure reference build:      86 / 86 blocked
-                            vulnerable reference build:   86 / 86 leak   (every check has teeth)
+96 checks · 7 suites · 9 flows     secure reference build:      96 / 96 blocked
+                                   vulnerable reference build:   96 / 96 leak   (every check has teeth)
 ```
 
 ---
@@ -28,41 +28,65 @@ python -m sentinel.cli run --target reference-secure --suite all
 # 2. negative control — every check must catch the deliberately broken build
 python -m sentinel.cli run --target reference-vulnerable --suite all
 
-# 3. your backend: give it the port (host defaults to the config's)
-python -m sentinel.cli run --target http --config config/target.yaml --port 8080 --suite all
+# 3. your app: give it the backend port, and the front-end port if there is one
+python -m sentinel.cli run --target http --config config/target.yaml \
+    --port 8080 --frontend-port 3000 --suite all
 
-# 4. or use the web UI
+# 4. only some flows
+python -m sentinel.cli run --target http --config config/target.yaml --port 8080 \
+    --flow login registration upload
+
+# 5. or do all of that in the web UI
 python -m sentinel.ui                  # http://127.0.0.1:8090
 ```
 
 ## The web UI
 
-Type the backend's host and port, press **Start run**, and watch each check land
-live: a score out of 100, counts per outcome, the reason for every leak or
-inconclusive check, and the fix for every leak.
+Enter the **backend port** and the **front-end port**, tick the flows you want
+attacked — login, registration, uploads, sessions, password reset, data access,
+OAuth, front end, load — and press **Start run**. Each check lands live: a score
+out of 100, a card per flow, the reason for every leak or inconclusive check,
+and the fix for every leak.
 
 ```bash
 python -m sentinel.ui                              # local
 docker compose -f docker-compose.ui.yml up --build # in Docker → http://localhost:8090
 ```
 
-- **Check connection** tells you, before a run, whether something answers on
-  that port, whether the configured test user can log in, and whether the token
-  opens a protected route.
-- **What to test** switches between your backend and the two built-in reference
-  apps (useful to see what a clean and a broken result look like).
-- **Config file** picks any `config/*.yaml`; host/port/scheme/base path typed in
-  the form override it for that run.
-- **Download JSON report** saves the finished run (same format as `--json`).
+What the page does, top to bottom:
 
-Reaching your backend from the UI container (see `docker-compose.ui.yml`):
-a port published on your machine → host `host.docker.internal` + that port;
-a backend in another compose project → join its network and use its service
-name + internal port.
+- **Backend (API)** — host, port, scheme, base path.
+- **Front end (web)** — host and port of the web app, if it has its own. With a
+  port set, the front-end checks run (exposed files, security headers, secrets
+  in its JavaScript). Tick *Send the API attacks through the front-end port* to
+  hit the API the way a browser does, through the front end's proxy, and give
+  the path it proxies under (e.g. `/api`).
+- **Flows to attack** — pick by what you want tested, not by suite.
+- **Try the flows** — before attacking anything, the harness performs each flow
+  once, legitimately: reach the backend and the front end, log in, read the
+  user's own data, register an account, upload a file, log in as admin. Each
+  line is ✓, ✗ with the status and what to check, or skipped. A flow that can't
+  be done legitimately can't be attacked meaningfully, so get these green first.
+- **Flow settings** — the route and field names for login, registration and
+  upload, where the token is in the login response, how it is sent, the route
+  only its owner may read, and the test accounts. Edit a line, press *Try the
+  flows* again, repeat until green — no YAML editing. **Save config** writes the
+  result to `config/ui.<name>.yaml` (git-ignored; rename it to
+  `target.<name>.yaml` to share it).
+- **By flow / results** — click a flow card to see only its checks; filter by
+  outcome; **Download JSON report** saves the finished run.
+- **What to test** also offers the two built-in reference apps, to see what a
+  clean and a broken result look like.
+
+Reaching your app from the UI container (see `docker-compose.ui.yml`):
+ports published on your machine → host `host.docker.internal` + those ports;
+containers in another compose project → join its network and use the service
+names + internal ports.
 
 The page can launch attacks, so it is locked down: bound to loopback (published
 on `127.0.0.1` only in the compose file), every API call needs a per-process
-token, the `Host` header is checked, and the scope guard below still applies.
+token, the `Host` header is checked, it can only write `config/ui.*.yaml`, and
+the scope guard below still applies.
 **Do not expose port 8090 to a network other people can reach.**
 
 ## How it's wired
@@ -72,7 +96,7 @@ token, the `Host` header is checked, and the scope guard below still applies.
                     │
           ┌─────────┴───────── suites (the attacks) ─────────────────────┐
           │ access_control  media_injection  oct2026  nov2026            │
-          │ automation (bots/spam)  resilience (load)  xss (optional)    │
+          │ automation (bots/spam)  resilience (load)  surface (front end) │
           └─────────┬────────────────────────────────────────────────────┘
                     │  Target contract (adapters/base.py)
    ┌────────────────┼──────────────────────────┐
@@ -110,16 +134,33 @@ the meaning flips: `0` only if *every* check leaked.
 
 | Suite | Checks | What it asserts |
 |---|---|---|
-| `access_control` | 45 | Brute force & lockout, SQLi/traversal/SSRF, security headers, JWT forgery (alg:none, key confusion, attacker secret, expiry), session fixation/revocation/refresh reuse/cookie flags/CSRF, admin escalation, IDOR/BOLA, verb tampering, mass assignment, OAuth2/PKCE, reset-token and e-mail takeover, upload abuse, step-up, info leaks |
+| `access_control` | 48 | Brute force & lockout, SQLi/traversal/SSRF, security headers, JWT forgery (alg:none, key confusion, attacker secret, expiry, a token naming its own key), session fixation/revocation/refresh reuse/cookie flags/CSRF, admin escalation, IDOR/BOLA, verb tampering, mass assignment, weak passwords at sign-up, OAuth2/PKCE, reset-token and e-mail takeover, unauthenticated and abusive uploads, step-up, info leaks |
 | `media_injection` | 4 | Malformed and disguised media are refused; SQL in file metadata creates no DB row and is never echoed |
 | `oct2026` | 10 | Techniques exploited in October 2026: token-type confusion, reset-endpoint injection, unauthenticated privileged ops, SSRF in 16 spellings, disguised uploads, verb tampering, BOLA, mass assignment |
 | `nov2026` | 12 | Flaws disclosed mid-Oct → early Nov 2026: empty-HMAC-key tokens, key-confusion encodings, tokens surviving logout / password change, deactivated accounts signing in, MFA skipped on reset or login, password change without step-up, credential fields in responses, spoofed identity headers, tokens without a grant, stolen authorization codes |
 | `automation` | 6 | **Bots / scripted agents / spam** (OWASP Automated Threats): the login limit can't be dodged by rotating client-IP headers, User-Agent/device ids, route spellings or body encoding; sign-up bursts and reset-token guessing are throttled |
 | `resilience` | 9 | **Load and hostile input shapes**: 1 MB field, 5,000-deep JSON, 20,000-key JSON, gzip bomb, bad encoding/charset, 2,000-part multipart, huge `Accept` header — refused or handled quickly, no 5xx, still healthy after; plus a 60-request concurrent burst with a p95 latency limit |
+| `surface` | 7 | **What an anonymous visitor can reach**: no `.env`, `.git`, dumps or management endpoints served (23 paths, on backend and front end, confirmed by content); CORS grants no credentialed access to arbitrary origins; the front end sends CSP, anti-framing and nosniff headers and ships no server-side secrets in its JavaScript |
 | `xss` | optional | Headless Chromium proves injected payloads don't execute. Needs `requirements-xss.txt`; run with `--suite xss` |
 
+The same 96 checks are also grouped into **flows** — what the UI's checkboxes and
+`--flow` select:
+
+| Flow | Checks | |
+|---|---|---|
+| `login` | 17 | brute force, lockout, bots dodging the limit, SQL injection, MFA |
+| `registration` | 5 | privilege fields at sign-up, weak passwords, sign-up bursts |
+| `upload` | 12 | malicious, disguised and oversized files, anonymous uploads, SSRF via import-by-URL |
+| `session` | 18 | forged tokens, logout and revocation, CSRF, account changes |
+| `reset` | 8 | reset-token reuse and guessing, injection, enumeration |
+| `access` | 9 | other users' data, admin endpoints, spoofed identity |
+| `oauth` | 8 | PKCE, redirect URI, code replay and theft |
+| `frontend` | 7 | exposed files, CORS, front-end headers, secrets in JavaScript |
+| `platform` | 12 | hostile request shapes, a load burst, headers, error leaks |
+
 `python -m sentinel.cli list` prints every check. Which incident each one comes
-from, how each claim was verified, and what is **not** covered:
+from, how each claim was verified, how far this goes against the OWASP API
+Security Top 10, and what is **not** covered:
 [`docs/THREATS-2026-Q4.md`](docs/THREATS-2026-Q4.md).
 
 ## Safety rails
@@ -170,6 +211,9 @@ documents every key; `config/target.demo.yaml` is the working config for the dem
 | port | `target.port` | `SENTINEL_PORT` | `--port` |
 | host | `target.host` | `SENTINEL_HOST` | `--host` |
 | base path | `target.base_path` | `SENTINEL_BASE_PATH` | `--base-path` |
+| front-end port | `frontend.port` | `SENTINEL_FRONTEND_PORT` | `--frontend-port` |
+| front-end host | `frontend.host` | `SENTINEL_FRONTEND_HOST` | `--frontend-host` |
+| API path on the front end | `frontend.api_path` | | `--frontend-api-path`, `--via-frontend` |
 | scheme | `target.scheme` | `SENTINEL_SCHEME` | `--scheme` |
 | any endpoint | `endpoints.<name>` | `SENTINEL_ENDPOINT_<NAME>` | |
 | any field name | `fields.<name>` | `SENTINEL_FIELD_<NAME>` | |
@@ -180,10 +224,13 @@ warning. Nothing falls back to defaults silently.
 
 ### Wiring it to your API
 
-Everything that differs between backends is in the config — no code edits.
+Everything that differs between backends is in the config — no code edits. The
+quickest way is the web UI: type the ports, open *Flow settings*, and use *Try
+the flows* until every line is green, then *Save config*. By hand:
 
 1. **Copy** `config/target.example.yaml` to `config/target.<project>.yaml`.
-2. **Where it listens:** `target.scheme/host/port/base_path`. A project that
+2. **Where it listens:** `target.scheme/host/port/base_path`, and
+   `frontend.host/port` if the web app has its own port. A project that
    spans several internal services can give an absolute URL for any endpoint:
    `login: "POST http://auth-service:9000/login"`.
 3. **Routes:** `endpoints.<name>: "METHOD /path/{params}"`. `resource` matters
@@ -217,7 +264,8 @@ Each inconclusive line in the output names the key that still needs fixing.
 
 | Capability | Turn it on with | Unlocks |
 |---|---|---|
-| `media_upload` | `features: [media_upload]` | INJ6, OUT5, UP2, UP3, MED1–4, OCT5, OCT6 |
+| `media_upload` | `features: [media_upload]` | INJ6, OUT5, UP1, UP2, UP3, MED1–4, OCT5, OCT6 |
+| `frontend` | `frontend.port` (the front-end port) | FE1–FE5 |
 | `oauth` | `features: [oauth]` + `oauth:` block | OA1–OA5, OCT1, NOV11, NOV12 |
 | `mfa` | `features: [mfa]` (seed accounts have a 2nd factor) | BF5, NOV7, NOV6 |
 | `csrf` | `features: [csrf]` (auth rides on a cookie) | SES6 |
@@ -229,9 +277,9 @@ Each inconclusive line in the output names the key that still needs fixing.
 | `db_probe` | `hooks.db_probe` | MED3 |
 | — | `hooks.reset` (restore clean state) | Nothing new, but keeps one check's lockout from making a later one inconclusive, and makes repeated campaign passes meaningful |
 
-A pure black-box run (no hooks) against the demo backend proves 71 checks, skips
+A pure black-box run (no hooks) against the demo backend proves 81 checks, skips
 14 and leaves 1 inconclusive (the second lockout test finds the client address
-already throttled by the first); with every hook it proves all 86.
+already throttled by the first); with every hook it proves all 96.
 
 ## Fuzzer and campaign report
 
@@ -261,7 +309,7 @@ window, or expose a reset hook in its test profile.
 
 ```bash
 pip install -r requirements-dev.txt
-pytest -q          # 54 tests, ~35 s
+pytest -q          # 68 tests, ~50 s
 ```
 
 They cover the two reference invariants (secure: all blocked; vulnerable: all
@@ -270,7 +318,9 @@ modes, and each failure this harness must never repeat: a dead backend, a wrong
 route or wrong credentials passing; state bleed in a black-box run; traversal
 sequences being normalised away by the HTTP client; cookie bleed; ignored config
 keys; plus the scope guard, the bot-evasion checks (each catches exactly its own
-bypass) and the web UI's own lockdown.
+bypass), the front-end checks (a single-page app's catch-all page is not
+mistaken for an exposed file; publishable keys are not mistaken for secrets),
+flow selection, "try the flows", and the web UI's own lockdown.
 
 ## Layout
 
@@ -291,6 +341,8 @@ appsec-sentinel/
 │   │   ├── access_control.py  media_injection.py  oct2026.py  nov2026.py
 │   │   ├── automation.py           # bots / agents / spam
 │   │   ├── resilience.py           # hostile input shapes + load burst
+│   │   ├── surface.py              # exposed files, CORS, the web front end
+│   │   ├── flows.py                # checks grouped by product flow
 │   │   ├── remediation.py          # the fix for each leak
 │   │   └── xss.py  jwt_forge.py  pkce.py
 │   ├── media/generator.py          # hostile-media corpus generator
@@ -314,10 +366,11 @@ mapping — the Python project is the primary runner.
 
 ## Honesty notes
 
-- **Verified here:** the Python runner against both reference apps (86/86 each
+- **Verified here:** the Python runner against both reference apps (96/96 each
   way); the HTTP adapter against the demo backend over a real socket in secure,
   vulnerable, black-box and dead-backend configurations; the web UI driven in
-  headless Chromium; the fuzzer, preflight and campaign scripts; 54 pytest tests.
+  headless Chromium (ports, try the flows, fixing a route, saving, running by
+  flow); the fuzzer, preflight and campaign scripts; 68 pytest tests.
 - **Not verified here:** the Docker image build and the compose files (syntax
   checked only — no Docker daemon in the environment this was written in), the
   Kotlin `gradle test`, the `xss` suite (Python Playwright not installed), and
@@ -328,8 +381,15 @@ mapping — the Python project is the primary runner.
   NOV8, SES6 and AT4 need adapting — expect inconclusive or misleading results
   there until then. OAuth checks assume the authorize endpoint can be called
   directly; flows that require an interactive login first will be inconclusive.
+- **The front-end checks look at what the front end serves** (files, headers,
+  scripts). They do not click through your app in a browser; driving your real
+  login or upload screens needs selectors only you know (the optional `xss`
+  suite is the place to add that).
 - **A green run is not a penetration test.** It shows these specific controls
-  hold. It can't find business-logic flaws, and it says nothing about the
+  hold. Against the OWASP API Top 10 it is good on authentication, resource
+  consumption and SSRF, partial on authorization and misconfiguration, and does
+  not cover API inventory or third-party API trust (table in
+  `docs/THREATS-2026-Q4.md`). It can't find business-logic flaws, and it says nothing about the
   classes listed under "not covered" in `docs/THREATS-2026-Q4.md` (runtime RCEs
   fixed by patching, HTTP/2–3 protocol floods, volumetric load, LLM behaviour).
 - A keylogger can't be tested server-side — the suites check its *mitigations*

@@ -1,5 +1,5 @@
 """Suite registry. Each builder takes a Config and returns a list[Attack]."""
-from . import access_control, media_injection, oct2026, nov2026, automation, resilience
+from . import access_control, media_injection, oct2026, nov2026, automation, resilience, surface
 
 BUILDERS = {
     "access_control": access_control.build,     # auth, sessions, authz, OAuth, takeover
@@ -8,6 +8,7 @@ BUILDERS = {
     "nov2026": nov2026.build,                   # disclosures mid-Oct → early Nov 2026
     "automation": automation.build,             # bots / scripted agents / spam (OWASP OAT)
     "resilience": resilience.build,             # pathological input + bounded load
+    "surface": surface.build,                   # exposed files, CORS, the web front end
 }
 
 SUITE_INFO = {
@@ -17,4 +18,5 @@ SUITE_INFO = {
     "nov2026": "Flaws disclosed mid-October to early November 2026",
     "automation": "Bots, scripted agents and spam (rate-limit evasion, sign-up bursts)",
     "resilience": "Pathological input and a bounded load burst",
+    "surface": "Exposed files, CORS and the web front end",
 }

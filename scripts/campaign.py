@@ -5,7 +5,7 @@ and then writes a Markdown report of strong vs. weak points, so you can fix
 things before the next run.
 
 It loops for --minutes, each pass running every suite (access_control,
-media_injection, oct2026, nov2026, automation, resilience) plus — against a live
+media_injection, oct2026, nov2026, automation, resilience, surface) plus — against a live
 HTTP target — a shuffled pass of the input fuzzer (scripts/fuzz.py). Across
 passes a check is recorded as:
 

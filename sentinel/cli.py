@@ -37,8 +37,13 @@ def load_config(args):
     cfg = cfgmod.load(args.config)
     cfgmod.retarget(cfg, host=getattr(args, "host", None), port=getattr(args, "port", None),
                     scheme=getattr(args, "scheme", None),
-                    base_path=getattr(args, "base_path", None))
+                    base_path=getattr(args, "base_path", None),
+                    frontend_host=getattr(args, "frontend_host", None),
+                    frontend_port=getattr(args, "frontend_port", None),
+                    frontend_api_path=getattr(args, "frontend_api_path", None))
     cfgmod.validate(cfg)
+    if getattr(args, "via_frontend", False):
+        cfgmod.route_via_frontend(cfg)
     return cfg
 
 
@@ -56,8 +61,15 @@ def run(args):
         if s not in BUILDERS and s != "xss":
             print(f"warning: unknown suite '{s}' skipped (known: {', '.join(BUILDERS)}, xss)",
                   file=sys.stderr)
+    known_flows = [k for k, _, _ in engine.FLOWS]
+    for fl in args.flow or []:
+        if fl not in known_flows:
+            print(f"unknown flow '{fl}' (known: {', '.join(known_flows)})", file=sys.stderr)
+            return 2
+    if args.flow and not args.suite:
+        suites = list(BUILDERS)                  # a flow cuts across every suite
     try:
-        factory, attacks, notes = engine.prepare(args.target, cfg, suites)
+        factory, attacks, notes = engine.prepare(args.target, cfg, suites, args.flow or None)
     except ScopeError as e:
         print(str(e), file=sys.stderr)
         return 2
@@ -65,6 +77,11 @@ def run(args):
         print(f"note: {n}")
 
     print(f"target: {engine.target_label(args.target, cfg)}   (suites: {', '.join(suites)})")
+    if args.target == "http" and cfg.frontend_origin:
+        print(f"front end: {cfg.frontend_origin}"
+              + ("   (API traffic is routed through it)" if cfg.backend_origin else ""))
+    if args.flow:
+        print(f"flows: {', '.join(args.flow)}")
     caps = ", ".join(sorted(c.value for c in factory().capabilities())) or "none"
     print(f"capabilities: {caps}\n")
 
@@ -97,6 +114,10 @@ def run(args):
     if c["INCONCLUSIVE"]:
         print("        inconclusive = the check could not prove the control works "
               "(see the reason next to each '?'); it is not a pass.")
+    flows = engine.flow_summary(findings)
+    if len(flows) > 1:
+        print("        by flow: " + "  ".join(f"{f['label']} {f['counts']['BLOCKED']}/{f['ran']}"
+                                             for f in flows if f["ran"]))
     return code
 
 
@@ -155,6 +176,15 @@ def main(argv=None):
     r.add_argument("--port", type=int, help="override target.port")
     r.add_argument("--base-path", dest="base_path", help="override target.base_path, e.g. /api/v1")
     r.add_argument("--scheme", choices=["http", "https"], help="override target.scheme")
+    r.add_argument("--frontend-port", dest="frontend_port", type=int,
+                   help="port of the web front end (enables the front-end checks)")
+    r.add_argument("--frontend-host", dest="frontend_host", help="front-end host (default: --host)")
+    r.add_argument("--frontend-api-path", dest="frontend_api_path",
+                   help="prefix under which the front end proxies the API, e.g. /api")
+    r.add_argument("--via-frontend", dest="via_frontend", action="store_true",
+                   help="send the API attacks through the front-end port, as a browser would")
+    r.add_argument("--flow", nargs="*", help="only these product flows: "
+                   + ", ".join(k for k, _, _ in engine.FLOWS))
     r.add_argument("--json", help="write a JSON report to this path")
     sub.add_parser("list", help="list every check")
     u = sub.add_parser("ui", help="start the web UI")

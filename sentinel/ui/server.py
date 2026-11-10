@@ -24,6 +24,7 @@ import datetime as _dt
 import glob
 import json
 import os
+import re
 import secrets
 import threading
 import time
@@ -31,10 +32,15 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
 from .. import config as cfgmod
 from .. import engine
-from ..adapters.base import Unreachable
 from ..safety import ScopeError
 from ..suites import BUILDERS, SUITE_INFO
-from ..suites.common import run_catalogue, summarize
+from ..suites.common import collect, run_catalogue, summarize
+from ..suites.flows import FLOWS, FLOW_LABEL
+
+try:
+    import yaml
+except Exception:  # pragma: no cover
+    yaml = None
 
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 CONFIG_DIR = os.path.join(ROOT, "config")
@@ -56,8 +62,9 @@ class BadRequest(Exception):
     pass
 
 
-def build_config(req: dict):
-    """A Config from the form: a config file (optional) + host/port overrides."""
+def build_config(req: dict, route=True):
+    """A Config from the form: a config file (optional), the backend and
+    front-end address typed in, and the flow settings (routes, fields, users)."""
     mode = req.get("mode") or "http"
     if mode not in engine.TARGETS:
         raise BadRequest(f"unknown mode: {mode}")
@@ -68,14 +75,49 @@ def build_config(req: dict):
         cfg = cfgmod.load(os.path.join(ROOT, name)) if name else cfgmod.load(None)
         if mode == "http":
             port = req.get("port")
-            cfgmod.retarget(cfg, host=req.get("host"), port=port if port not in ("", None) else None,
-                            scheme=req.get("scheme"),
-                            base_path=req.get("base_path") if "base_path" in req else None)
+            cfgmod.retarget(
+                cfg, host=req.get("host"), port=port if port not in ("", None) else None,
+                scheme=req.get("scheme"),
+                base_path=req.get("base_path") if "base_path" in req else None,
+                frontend_host=req.get("frontend_host"),
+                frontend_port=req.get("frontend_port") if "frontend_port" in req else None,
+                frontend_scheme=req.get("frontend_scheme"),
+                frontend_api_path=req.get("api_path") if "api_path" in req else None)
+            cfgmod.apply_overrides(cfg, req.get("overrides"))
+            if route and req.get("via_frontend"):
+                cfgmod.route_via_frontend(cfg)
         cfgmod.validate(cfg)
-    except cfgmod.ConfigError as e:
+    except (cfgmod.ConfigError, TypeError, ValueError) as e:
         raise BadRequest(str(e))
     suites = [s for s in (req.get("suites") or []) if s in BUILDERS] or list(BUILDERS)
-    return mode, cfg, suites
+    flows = [f for f in (req.get("flows") or []) if f in FLOW_LABEL] or None
+    return mode, cfg, suites, flows
+
+
+def save_config(req: dict) -> str:
+    """Write the form as config/ui.<name>.yaml — a complete, standalone config.
+    Only that namespace is writable, so the UI can never overwrite a hand-written
+    config (or anything outside config/)."""
+    name = str(req.get("name") or "").strip().lower()
+    if not re.fullmatch(r"[a-z0-9][a-z0-9-]{0,39}", name):
+        raise BadRequest("name: 1–40 characters, a–z, 0–9 and '-' only")
+    if yaml is None:
+        raise BadRequest("PyYAML is not installed")
+    _, cfg, _, _ = build_config({**req, "mode": "http"}, route=False)
+    path = os.path.join(CONFIG_DIR, f"ui.{name}.yaml")
+    if os.path.islink(path):
+        raise BadRequest("refusing to write through a symlink")
+    header = (f"# Saved from the appsec-sentinel web UI on {_now()}.\n"
+              f"# Based on: {req.get('config') or 'built-in defaults'}. Complete and standalone —\n"
+              f"# see config/target.example.yaml for what every key means.\n\n")
+    try:
+        with open(path, "w") as fh:
+            fh.write(header + yaml.safe_dump(cfgmod.to_dict(cfg), sort_keys=False,
+                                             default_flow_style=False, allow_unicode=True))
+    except OSError as e:
+        raise BadRequest(f"could not write {os.path.relpath(path, ROOT)}: {e.strerror or e} "
+                         f"(is config/ mounted read-only?)")
+    return os.path.relpath(path, ROOT).replace(os.sep, "/")
 
 
 class Runs:
@@ -93,23 +135,27 @@ class Runs:
             return (json.loads(json.dumps(self.run)) if self.run else None), list(self.history)
 
     def start(self, req: dict):
-        mode, cfg, suites = build_config(req)
+        mode, cfg, suites, flows = build_config(req)
         with self.lock:
             if self.run and self.run["status"] == "running":
                 raise BadRequest("a run is already in progress")
         try:
-            factory, attacks, notes = engine.prepare(mode, cfg, suites)
+            factory, attacks, notes = engine.prepare(mode, cfg, suites, flows)
         except ScopeError as e:
             raise BadRequest(str(e))
         if not attacks:
-            raise BadRequest("no checks selected")
+            raise BadRequest("no checks selected — pick at least one flow and one suite")
+        http = mode == "http"
         run = {
             "id": secrets.token_hex(4), "status": "running", "mode": mode,
             "target": engine.target_label(mode, cfg), "config": req.get("config") or "",
             "suites": suites, "started": _now(), "finished": None, "t0": time.time(),
             "elapsed": 0.0, "total": len(attacks), "done": 0, "current": None,
-            "findings": [], "summary": summarize([]), "notes": notes + list(cfg.warnings),
-            "error": None, "requests": 0,
+            "findings": [], "summary": summarize([]), "by_flow": [],
+            "notes": notes + list(cfg.warnings), "error": None, "requests": 0,
+            "flows": flows or [k for k, _, _ in FLOWS],
+            "frontend": cfg.frontend_origin if http else None,
+            "via_frontend": bool(http and cfg.backend_origin),
         }
         self._stop.clear()
         with self.lock:
@@ -135,6 +181,7 @@ class Runs:
                 run["findings"].append(engine.finding_dict(f))
                 run["done"] = len(done)
                 run["summary"] = summarize(done)
+                run["by_flow"] = engine.flow_summary(done)
                 run["elapsed"] = round(time.time() - run["t0"], 1)
                 run["requests"] = getattr(factory(), "requests_sent", 0) if mode == "http" else 0
 
@@ -149,6 +196,7 @@ class Runs:
         with self.lock:
             run.update(status=status, error=error, current=None, finished=_now(),
                        elapsed=round(time.time() - run["t0"], 1), summary=summarize(findings),
+                       by_flow=engine.flow_summary(findings),
                        report=engine.report(mode, cfg, suites, findings),
                        exit_code=engine.exit_code(mode, cfg, findings))
             s = run["summary"]
@@ -160,44 +208,37 @@ class Runs:
 
 
 def preflight(req: dict) -> dict:
-    """Is something listening, and do the configured credentials log in?"""
-    mode, cfg, _ = build_config(req)
+    """Try each product flow once, legitimately (see engine.try_flows)."""
+    mode, cfg, _, _ = build_config(req)
     if mode != "http":
-        return {"ok": True, "lines": [["ok", "Built-in reference app — nothing to connect to."]]}
-    lines = []
+        return {"ok": True, "steps": [{"key": "ref", "label": "Built-in reference app", "state": "ok",
+                                       "text": "runs in-process — nothing to connect to"}]}
     try:
-        factory, _, notes = engine.prepare(mode, cfg, [])
+        steps = engine.try_flows(cfg)
     except ScopeError as e:
-        return {"ok": False, "lines": [["fail", str(e).split("\n")[0]]]}
-    lines += [["note", n] for n in notes]
-    t = factory()
-    try:
-        r = t._call("GET", "/")
-        lines.append(["ok", f"{cfg.base_url} answered (HTTP {r.status})"])
-    except Unreachable as e:
-        return {"ok": False, "lines": lines + [["fail", f"Nothing answered at {cfg.base_url} — "
-                f"is the backend up, on this network, and is the port right? ({e})"]]}
-    ok = True
-    try:
-        u = cfg.users["user"]
-        r = t.login(u["username"], u["password"])
-        if r.body.get("access_token"):
-            lines.append(["ok", f"Login as '{u['username']}' returned a token"])
-            own = t.get_resource(r.body["access_token"], u["id"])
-            if own.ok:
-                lines.append(["ok", "That token can read the user's own resource"])
-            else:
-                ok = False
-                lines.append(["fail", f"…but reading the user's own resource returned HTTP "
-                              f"{own.status}: check endpoints.resource and auth_header"])
-        else:
-            ok = False
-            lines.append(["fail", f"Login as '{u['username']}' gave no token (HTTP {r.status}): "
-                          f"check endpoints.login, fields, users and token_json_path"])
-    except Unreachable as e:
-        ok = False
-        lines.append(["fail", str(e)])
-    return {"ok": ok, "lines": lines}
+        steps = [{"key": "scope", "label": "Target in scope", "state": "fail",
+                  "text": str(e).split("\n")[0]}]
+    return {"ok": not any(s["state"] == "fail" for s in steps), "steps": steps}
+
+
+def settings_of(cfg) -> dict:
+    """What the form shows for a config: addresses and the flow settings."""
+    u, a = cfg.users.get("user", {}), cfg.users.get("admin", {})
+    fe = cfg.frontend
+    return {
+        "host": cfg.host, "port": cfg.port, "scheme": cfg.scheme, "base_path": cfg.base_path,
+        "frontend_host": fe.get("host") or "", "frontend_port": fe.get("port") or "",
+        "frontend_scheme": fe.get("scheme") or "http", "api_path": fe.get("api_path") or "",
+        "login": cfg.endpoints["login"], "register": cfg.endpoints["register"],
+        "upload": cfg.endpoints["upload"], "resource": cfg.endpoints["resource"],
+        "username_field": cfg.fields["username"], "password_field": cfg.fields["password"],
+        "upload_field": cfg.fields.get("upload_file") or "file",
+        "token_json_path": cfg.token_json_path, "auth_header": cfg.auth_header,
+        "user": {"username": u.get("username", ""), "password": u.get("password", ""),
+                 "id": u.get("id", "")},
+        "admin": {"username": a.get("username", ""), "password": a.get("password", "")},
+        "media_upload": "media_upload" in cfg.features,
+    }
 
 
 def defaults(config_hint=None) -> dict:
@@ -207,17 +248,18 @@ def defaults(config_hint=None) -> dict:
         env = os.environ.get("SENTINEL_CONFIG", "")
         rel = os.path.relpath(os.path.abspath(env), ROOT).replace(os.sep, "/") if env else ""
         chosen = rel if rel in configs else ""
-    out = {"configs": configs, "config": chosen, "targets": list(engine.TARGETS),
-           "suites": [], "config_targets": {}}
     base = cfgmod.Config()
-    for name, build in BUILDERS.items():
-        out["suites"].append({"name": name, "info": SUITE_INFO.get(name, ""),
-                              "count": len(build(base))})
+    catalogue = collect(BUILDERS, list(BUILDERS), base)
+    out = {"configs": configs, "config": chosen, "targets": list(engine.TARGETS),
+           "suites": [{"name": name, "info": SUITE_INFO.get(name, ""),
+                       "count": sum(a.suite == name for a in catalogue)} for name in BUILDERS],
+           "flows": [{"key": key, "label": label, "info": info,
+                      "count": sum(a.flow == key for a in catalogue)} for key, label, info in FLOWS],
+           "config_targets": {}}
     for c in [""] + configs:
         try:
             cfg = cfgmod.load(os.path.join(ROOT, c)) if c else cfgmod.load(None)
-            out["config_targets"][c] = {"host": cfg.host, "port": cfg.port, "scheme": cfg.scheme,
-                                        "base_path": cfg.base_path}
+            out["config_targets"][c] = settings_of(cfg)
             if not c and os.environ.get("SENTINEL_UI_DEFAULT_HOST") and "SENTINEL_HOST" not in os.environ:
                 # in a container "localhost" is the harness itself; prefill the
                 # address of the machine running docker instead
@@ -324,6 +366,8 @@ class Handler(BaseHTTPRequestHandler):
                 return self._send(200, {"ok": True})
             if self.path == "/api/preflight":
                 return self._send(200, preflight(self._json()))
+            if self.path == "/api/save":
+                return self._send(200, {"ok": True, "config": save_config(self._json())})
         except BadRequest as e:
             return self._send(400, {"error": str(e)})
         return self._send(404, {"error": "not found"})

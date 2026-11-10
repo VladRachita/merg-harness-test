@@ -17,11 +17,12 @@ from sentinel import config as cfgmod
 from sentinel import engine
 from sentinel.adapters.base import Inconclusive, Resp, Unreachable
 from sentinel.adapters.http_target import HttpTarget
-from sentinel.adapters.reference.secure_app import SecureApp
+from sentinel.adapters.reference.secure_app import SecureApp, FRONTEND_HEADERS, FRONTEND_PAGE
 from sentinel.adapters.reference_target import ReferenceSecureTarget
 from sentinel.safety import Pacer, BudgetExceeded, ScopeError, check_scope, classify_host
-from sentinel.suites import BUILDERS, automation
-from sentinel.suites.common import (Status, denied, expect_ok, refused, run_catalogue,
+from sentinel.suites import BUILDERS, automation, surface
+from sentinel.suites.flows import FLOWS, FLOW_LABEL, FLOW_OF
+from sentinel.suites.common import (Status, collect, denied, expect_ok, refused, run_catalogue,
                                     summarize, Finding)
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -65,7 +66,7 @@ def vulnerable_port():
 
 def _cfg(port, hooks=True):
     cfg = cfgmod.load(os.path.join(ROOT, "config", "target.demo.yaml"))
-    cfgmod.retarget(cfg, host="127.0.0.1", port=port)
+    cfgmod.retarget(cfg, host="127.0.0.1", port=port, frontend_host="127.0.0.1", frontend_port=port)
     if not hooks:                       # a true black-box run: no test profile at all
         cfg.hooks = {"reset": None, "user_admin": None, "db_probe": None,
                      "reset_introspect": False, "other_aud_token": None}
@@ -432,3 +433,195 @@ def test_ui_runs_and_scores_live(ui):
     first = history[-1]
     assert first["score"] == 100 and first["verdict"] == "PASS"
     assert first["counts"]["BLOCKED"] == 18
+
+
+# ---------------------------------------------------------------------------
+#  flows: login / registration / upload … selected by name
+# ---------------------------------------------------------------------------
+def test_every_check_belongs_to_exactly_one_flow():
+    attacks = collect(BUILDERS, ALL, cfgmod.Config())
+    assert all(a.flow in FLOW_LABEL for a in attacks), [a.id for a in attacks if a.flow not in FLOW_LABEL]
+    assert set(FLOW_OF) == {a.id for a in attacks}, "flows.py lists a check id that no longer exists"
+    assert {a.flow for a in attacks} == {k for k, _, _ in FLOWS}
+
+
+def test_flow_selection_runs_only_those_flows():
+    cfg = cfgmod.Config()
+    findings, s = engine.execute("reference-secure", cfg, ALL, flows=["login", "registration", "upload"])
+    assert {f.flow for f in findings} == {"login", "registration", "upload"}
+    assert s["verdict"] == "PASS" and len(findings) == 34
+    by_flow = {f["flow"]: f for f in engine.flow_summary(findings)}
+    assert by_flow["upload"]["counts"]["BLOCKED"] == 12 and by_flow["login"]["score"] == 100
+    report = engine.report("reference-secure", cfg, ALL, findings)
+    assert [f["flow"] for f in report["flows"]] == ["login", "registration", "upload"]
+    assert report["findings"][0]["flow_label"]
+
+
+# ---------------------------------------------------------------------------
+#  front end, exposed files, CORS
+# ---------------------------------------------------------------------------
+def _surface(target_cls):
+    return {f.id: f for f in run_catalogue(target_cls, surface.build(cfgmod.Config()))}
+
+
+def test_spa_fallback_page_is_not_reported_as_an_exposed_file():
+    """A single-page app answers 200 + index.html for ANY path. That must not
+    read as '/.env is exposed' — hits are confirmed by content, not status."""
+    class Spa(ReferenceSecureTarget):
+        def fetch_path(self, where, path):
+            return Resp(200, dict(FRONTEND_HEADERS), {"_text": FRONTEND_PAGE})
+    st = _surface(Spa)
+    assert st["SUR1"].status == Status.BLOCKED and st["FE1"].status == Status.BLOCKED
+
+
+def test_cors_exact_allow_list_passes_but_null_and_lookalikes_leak():
+    assert _surface(ReferenceSecureTarget)["SUR2"].status == Status.BLOCKED
+
+    def allowing(rule):
+        class T(ReferenceSecureTarget):
+            def cors_probe(self, token, origin, preflight=False):
+                h = {"Access-Control-Allow-Origin": origin,
+                     "Access-Control-Allow-Credentials": "true"} if rule(origin) else {}
+                return Resp(200, h, {})
+        return _surface(T)["SUR2"]
+    null = allowing(lambda o: o == "null")
+    assert null.status == Status.LEAK and "null" in null.detail
+    assert allowing(lambda o: o.endswith("app.example")).status == Status.LEAK      # evilapp.example
+    assert allowing(lambda o: "app.example" in o).status == Status.LEAK             # app.example.evil…
+    assert allowing(lambda o: o == "https://app.example").status == Status.BLOCKED
+
+    class WildcardNoCredentials(ReferenceSecureTarget):      # fine for a public, token-only API
+        def cors_probe(self, token, origin, preflight=False):
+            return Resp(200, {"Access-Control-Allow-Origin": "*"}, {})
+    assert _surface(WildcardNoCredentials)["SUR2"].status == Status.BLOCKED
+
+
+def test_secret_scanner_flags_server_secrets_not_publishable_keys():
+    def shipping(js):
+        class T(ReferenceSecureTarget):
+            def frontend_assets(self):
+                return [("/", FRONTEND_PAGE), ("/assets/app.js", js)]
+        return _surface(T)["FE5"]
+    ok = shipping('const stripe = Stripe("pk_live_' + "a" * 24 + '"); const maps = "AIza' + "b" * 35 + '";')
+    assert ok.status == Status.BLOCKED
+    secret = "sk_live_" + "Z9" * 12
+    leak = shipping(f'const s = "{secret}";')
+    assert leak.status == Status.LEAK and "Stripe secret key" in leak.detail
+    assert secret not in leak.detail                         # the report must not re-leak it
+    assert shipping('var c = {clientSecret: "0123456789abcdef"};').status == Status.LEAK
+
+
+def test_frontend_checks_are_skipped_without_a_frontend_port(secure_port):
+    cfg = _cfg(secure_port)
+    cfg.frontend["port"] = None
+    findings, _ = engine.execute("http", cfg, ["surface"])
+    st = {f.id: f for f in findings}
+    assert all(st[i].status == Status.SKIPPED and "frontend" in st[i].detail
+               for i in ("FE1", "FE2", "FE3", "FE4", "FE5"))
+    assert st["SUR1"].status == Status.BLOCKED and st["SUR2"].status == Status.BLOCKED
+
+
+def test_api_attacks_can_be_routed_through_the_frontend_port(secure_port):
+    cfg = _cfg(secure_port)
+    cfgmod.route_via_frontend(cfg)
+    assert cfg.backend_origin == f"http://127.0.0.1:{secure_port}"
+    assert cfg.hooks["reset"].startswith("POST http://127.0.0.1:")       # hooks stay on the backend
+    findings, s = engine.execute("http", cfg, ALL, flows=["login", "registration", "upload"])
+    assert s["verdict"] == "PASS" and len(findings) == 34, _by_status(findings)
+    with pytest.raises(cfgmod.ConfigError):
+        cfgmod.route_via_frontend(cfgmod.Config())                       # no front end configured
+
+
+def test_frontend_host_is_scope_checked():
+    cfg = cfgmod.Config()
+    cfgmod.retarget(cfg, frontend_host="www.mycompany.io", frontend_port=443)
+    with pytest.raises(ScopeError):
+        check_scope(cfg, resolve=False)
+
+
+# ---------------------------------------------------------------------------
+#  "try the flows" and the flow settings typed into the UI
+# ---------------------------------------------------------------------------
+def test_try_flows_reports_what_works_and_what_to_fix(secure_port):
+    steps = {s["key"]: s for s in engine.try_flows(_cfg(secure_port))}
+    assert list(steps) == ["backend", "reset", "frontend", "login", "own_data", "registration",
+                           "upload", "upload_request", "admin"]
+    assert all(s["state"] == "ok" for s in steps.values()), steps
+
+    cfg = _cfg(secure_port)
+    cfg.endpoints["login"] = "POST /auth/signin"
+    cfg.frontend["port"] = _free_port()
+    steps = {s["key"]: s for s in engine.try_flows(cfg)}
+    assert steps["login"]["state"] == "fail" and "login route" in steps["login"]["text"]
+    assert steps["own_data"]["state"] == "skip" and steps["upload"]["state"] == "skip"
+    assert steps["frontend"]["state"] == "fail" and steps["registration"]["state"] == "ok"
+
+
+def test_try_flows_never_echoes_secrets():
+    text = engine._excerpt(Resp(401, {}, {"access_token": "tok-abc", "user": {
+        "name": "alice", "password": "hunter2", "apiKey": "k-123"}, "error": "nope"}))
+    assert "tok-abc" not in text and "hunter2" not in text and "k-123" not in text
+    assert "alice" in text and "nope" in text
+
+
+def test_overrides_accept_only_known_keys():
+    cfg = cfgmod.Config()
+    cfgmod.apply_overrides(cfg, {
+        "endpoints": {"login": "POST /api/sign-in", "made_up": "GET /x"},
+        "fields": {"username": "email", "bogus": "z"},
+        "users": {"user": {"username": "u@test", "password": "pw", "id": "42"}, "root": {"username": "r"}},
+        "token_json_path": "data.accessToken", "media_upload": False,
+        "hooks": {"reset": "POST http://evil.example/x"}, "safety": {"allowed_hosts": ["*"]},
+    })
+    assert cfg.endpoints["login"] == "POST /api/sign-in" and "made_up" not in cfg.endpoints
+    assert cfg.fields["username"] == "email" and "bogus" not in cfg.fields
+    assert cfg.users["user"] == {"username": "u@test", "password": "pw", "id": 42, "email": "alice@x.com"}
+    assert "root" not in cfg.users and cfg.token_json_path == "data.accessToken"
+    assert "media_upload" not in cfg.features
+    assert cfg.hooks["reset"] is None and cfg.safety["allowed_hosts"] == []      # untouchable from the form
+    with pytest.raises(cfgmod.ConfigError):
+        cfgmod.apply_overrides(cfg, {"endpoints": {"login": "no-method-or-slash"}})
+
+
+def test_ui_tries_flows_and_filters_by_flow(ui, secure_port):
+    form = {"mode": "http", "config": "config/target.demo.yaml", "host": "127.0.0.1",
+            "port": secure_port, "frontend_host": "127.0.0.1", "frontend_port": secure_port}
+    code, body = _ui(ui, "/api/preflight", form)
+    assert code == 200 and body["ok"] and len(body["steps"]) == 9, body
+    code, body = _ui(ui, "/api/preflight", {**form, "overrides": {"endpoints": {"login": "POST /nope"}}})
+    assert code == 200 and not body["ok"]
+
+    code, defaults = _ui(ui, "/api/defaults")
+    assert [f["key"] for f in defaults["flows"]] == [k for k, _, _ in FLOWS]
+    assert sum(f["count"] for f in defaults["flows"]) == sum(s["count"] for s in defaults["suites"])
+    assert defaults["config_targets"]["config/target.demo.yaml"]["login"] == "POST /auth/login"
+
+    code, body = _ui(ui, "/api/run", {**form, "flows": ["upload", "frontend"], "via_frontend": True})
+    assert code == 200, body
+    for _ in range(300):
+        run = _ui(ui, "/api/state")[1]["run"]
+        if run["status"] != "running":
+            break
+        time.sleep(0.1)
+    assert run["status"] == "done" and run["via_frontend"] and run["summary"]["verdict"] == "PASS"
+    assert [f["flow"] for f in run["by_flow"]] == ["upload", "frontend"]
+    assert {f["flow"] for f in run["findings"]} == {"upload", "frontend"}
+
+
+def test_ui_save_is_confined_to_its_own_namespace(ui, tmp_path, monkeypatch):
+    from sentinel.ui import server
+    (tmp_path / "config").mkdir()
+    monkeypatch.setattr(server, "ROOT", str(tmp_path))
+    monkeypatch.setattr(server, "CONFIG_DIR", str(tmp_path / "config"))
+    form = {"mode": "http", "config": "", "host": "127.0.0.1", "port": 9001, "frontend_port": 3000,
+            "overrides": {"endpoints": {"login": "POST /api/sign-in"},
+                          "users": {"user": {"username": "qa@test", "password": "pw", "id": 7}}}}
+    code, body = _ui(ui, "/api/save", {**form, "name": "My-App"})
+    assert code == 200 and body["config"] == "config/ui.my-app.yaml", body
+    saved = cfgmod.load(str(tmp_path / "config" / "ui.my-app.yaml"))
+    assert (saved.port, saved.frontend["port"], saved.endpoints["login"]) == (9001, 3000, "POST /api/sign-in")
+    assert saved.users["user"]["username"] == "qa@test" and not saved.warnings
+    for bad in ("../../etc/cron", "a b", "", "x" * 60, "target.demo"):
+        assert _ui(ui, "/api/save", {**form, "name": bad})[0] == 400, bad
+    assert sorted(os.listdir(tmp_path / "config")) == ["ui.my-app.yaml"]
+    assert _ui(ui, "/api/save", {**form, "name": "x"}, token=False)[0] == 403

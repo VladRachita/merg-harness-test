@@ -22,9 +22,10 @@ import collections
 import gzip
 import http.cookiejar
 import os
+import re
 import secrets
 import time
-from urllib.parse import quote, urlencode, urlsplit, urlunsplit, parse_qs
+from urllib.parse import quote, urlencode, urljoin, urlsplit, urlunsplit, parse_qs
 
 import requests
 
@@ -33,6 +34,9 @@ from ..config import Config, dotget, split_spec
 from ..safety import Pacer
 
 VERSION = "2"
+ASSET_CAP = 2_000_000          # bytes of one front-end script scanned for secrets
+MAX_SCRIPTS = 15
+_SCRIPT_SRC = re.compile(r"<script[^>]+src=[\"']([^\"']+)[\"']", re.I)
 
 
 def _variant(url: str, kind: str) -> str:
@@ -88,6 +92,8 @@ class HttpTarget(Target):
                 caps.add(cap)
         if self.cfg.jwks_url:
             caps.add(Capability.SIGNING_KEY)
+        if self.cfg.frontend_origin:
+            caps.add(Capability.FRONTEND)
         h = self.cfg.hooks
         if h.get("user_admin"):
             caps.add(Capability.USER_ADMIN)
@@ -127,7 +133,7 @@ class HttpTarget(Target):
         return {name.strip(): value.strip()} if sep and name.strip() else {}
 
     def _call(self, method, path, *, headers=None, json=None, data=None, files=None,
-              raw=False, variant=None, timeout=None):
+              raw=False, variant=None, timeout=None, text_cap=2000):
         url = self.cfg.url_for(path)
         if variant:
             url, raw = _variant(url, variant), True
@@ -139,6 +145,8 @@ class HttpTarget(Target):
         self._pacer.tick()
         self.requests_sent += 1
         shown = urlsplit(url).path or "/"
+        if urlsplit(url).netloc != urlsplit(self.cfg.base_url).netloc:
+            shown = f"{urlsplit(url).netloc}{shown}"         # another origin (front end, hook)
         t0 = time.monotonic()
         try:
             req = requests.Request(method, self.cfg.base_url + "/" if raw else url,
@@ -155,7 +163,7 @@ class HttpTarget(Target):
                                   allow_redirects=False, **env)
         except requests.RequestException as e:
             self._trace.append(f"{method} {shown} → no response")
-            raise Unreachable(f"{method} {shown}: no response from {self.cfg.host}:{self.cfg.port} "
+            raise Unreachable(f"{method} {shown}: no response from {urlsplit(url).netloc} "
                               f"({type(e).__name__})") from None
         elapsed = time.monotonic() - t0
         try:
@@ -163,7 +171,7 @@ class HttpTarget(Target):
             if not isinstance(body, dict):
                 body = {"_raw": body}
         except Exception:
-            body = {"_text": r.text[:2000]}
+            body = {"_text": r.text[:text_cap]}
         try:
             cookies = list(r.raw.headers.getlist("Set-Cookie"))
         except Exception:
@@ -344,6 +352,38 @@ class HttpTarget(Target):
     def buggy_endpoint(self, payload):
         m, p = self.cfg.spec("buggy")
         return self._call(m, f"{p}?value={quote(str(payload), safe='')}")
+
+    # ---- attack surface --------------------------------------------------
+    def fetch_path(self, where, path):
+        origin = self.cfg.origin_of(where)
+        if not origin:
+            raise Inconclusive(f"no {where} origin configured (set frontend.port)")
+        return self._call("GET", origin + path, raw=True)
+
+    def cors_probe(self, token, origin, preflight=False):
+        m, p = self.cfg.spec("resource")
+        path = p.format(owner_id=self.cfg.users["user"]["id"])
+        if preflight:
+            return self._call("OPTIONS", path, headers={
+                "Origin": origin, "Access-Control-Request-Method": m,
+                "Access-Control-Request-Headers": "authorization, content-type"})
+        return self._call(m, path, headers={**self._auth(token), "Origin": origin})
+
+    def frontend_assets(self):
+        origin = self.cfg.frontend_origin
+        if not origin:
+            raise Inconclusive("no front end configured (set frontend.port)")
+        page = self._call("GET", origin + "/", text_cap=ASSET_CAP)
+        html = page.body.get("_text") or ""
+        out = [("/", html)]
+        for src in _SCRIPT_SRC.findall(html)[:MAX_SCRIPTS]:
+            url = urljoin(origin + "/", src)
+            if urlsplit(url).netloc != urlsplit(origin).netloc:
+                continue                            # a third-party CDN: not ours to scan
+            r = self._call("GET", url, text_cap=ASSET_CAP)
+            if r.ok and r.body.get("_text"):
+                out.append((urlsplit(url).path, r.body["_text"]))
+        return out
 
     # ---- resilience ------------------------------------------------------
     def stress_input(self, kind):

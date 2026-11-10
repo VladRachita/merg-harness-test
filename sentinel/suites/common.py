@@ -57,6 +57,7 @@ class Attack:
     requires: set = field(default_factory=set)
     stage: int = PROBE
     suite: str = ""                   # filled in by collect()
+    flow: str = ""                    # the product flow it attacks (suites/flows.py)
 
 
 @dataclass
@@ -67,6 +68,7 @@ class Finding:
     status: Status
     detail: str = ""
     suite: str = ""
+    flow: str = ""
 
 
 # ---------------------------------------------------------------------------
@@ -236,7 +238,8 @@ def run_catalogue(factory, attacks: list[Attack], *, on_start=None, on_result=No
         atk = attacks[i]
 
         def done(status, detail=""):
-            results[i] = Finding(atk.id, atk.category, atk.desc, status, detail, atk.suite)
+            results[i] = Finding(atk.id, atk.category, atk.desc, status, detail, atk.suite,
+                                 atk.flow)
             if on_result:
                 on_result(results[i])
 
@@ -301,13 +304,16 @@ def summarize(findings) -> dict:
             "coverage": coverage, "verdict": verdict}
 
 
-def collect(builders: dict, suites: list, cfg) -> list[Attack]:
+def collect(builders: dict, suites: list, cfg, flows=None) -> list[Attack]:
     """All attacks of the named suites as ONE catalogue, so stage ordering holds
-    across suites (a lockout test in one suite can't starve the next suite)."""
+    across suites (a lockout test in one suite can't starve the next suite).
+    `flows` (optional) keeps only the checks of those product flows."""
+    from .flows import flow_of
     out: list[Attack] = []
     for s in suites:
         if s in builders:
             for a in builders[s](cfg):
-                a.suite = s
-                out.append(a)
+                a.suite, a.flow = s, flow_of(a.id)
+                if flows is None or a.flow in flows:
+                    out.append(a)
     return out

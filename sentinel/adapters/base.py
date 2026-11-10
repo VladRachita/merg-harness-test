@@ -73,6 +73,7 @@ class Capability(str, Enum):
     MEDIA_UPLOAD   = "media_upload"     # file upload endpoint present
     MFA            = "mfa"              # the seed accounts have a second factor
     CSRF           = "csrf"             # auth rides on an ambient credential (cookie)
+    FRONTEND       = "frontend"         # a web front end is configured (its own port)
 
 
 # Request shapes a bot uses to dodge a rate limiter. `Target.login(evasion=...)`
@@ -160,6 +161,19 @@ class Target:
 
     # --- misc ---
     def buggy_endpoint(self, payload) -> Resp: raise NotImplementedError
+
+    # --- attack surface: what an anonymous visitor can see ---
+    def fetch_path(self, where, path) -> Resp:
+        """Anonymous GET of `path` on the "backend" or "frontend" origin. Text
+        bodies come back under body["_text"]."""
+        raise NotImplementedError
+    def cors_probe(self, token, origin, preflight=False) -> Resp:
+        """An authenticated API request that claims to come from the web page
+        `origin` (or its CORS preflight). Only the response HEADERS matter."""
+        raise NotImplementedError
+    def frontend_assets(self) -> list:
+        """[(path, text)]: the front-end page and the same-origin scripts it loads."""
+        raise NotImplementedError
 
     # --- resilience ---
     def stress_input(self, kind) -> Resp:

@@ -21,11 +21,12 @@ import time
 
 from ..adapters.base import Capability
 from ..config import Config
-from .common import (Attack, Inconclusive, NotApplicable, PROBE, MUTATES, EXHAUSTS, OTP_LOCK,
+from .common import (Attack, Inconclusive, Leak, NotApplicable, PROBE, MUTATES, EXHAUSTS, OTP_LOCK,
                      LOCKS, FLOODS, STRONG_PW,
                      STACK_TRACE, authed, denied, expect_ok, need_reset_token, need_token, reached, refused,
                      restore_password, stable, throttled, unique)
 from . import jwt_forge as jf
+from .media_injection import samples, valid_upload
 from .pkce import s256
 
 TRAVERSALS = (
@@ -185,6 +186,29 @@ def build(cfg: Config) -> list[Attack]:
     add("C5", "jwt", "expired (but validly signed) token rejected", expired,
         [Capability.OTHER_AUD_TOKEN])
 
+    def embedded_keys(t):
+        _, jwk = jf.attacker_key()
+        forgeries = [
+            ("its own public key in the 'jwk' header", jf.forge_rs256({"typ": "JWT", "jwk": jwk}, claims())),
+            ("a 'jku' URL pointing at the attacker's key set",
+             jf.forge_rs256({"typ": "JWT", "kid": "attacker",
+                             "jku": "https://attacker.example/.well-known/jwks.json"}, claims())),
+            ("an 'x5u' URL pointing at the attacker's certificate",
+             jf.forge_rs256({"typ": "JWT", "x5u": "https://attacker.example/cert.pem"}, claims())),
+            ("a 'kid' that traverses to an empty file (HMAC with an empty key)",
+             jf.forge({"alg": "HS256", "typ": "JWT", "kid": "../../../../../../dev/null"}, claims(), b"")),
+            ("a 'kid' carrying SQL that returns the attacker's key",
+             jf.forge({"alg": "HS256", "typ": "JWT", "kid": "x' UNION SELECT 'attacker-key' -- "},
+                      claims(), b"attacker-key")),
+        ]
+        admin_works(t)
+        for what, tok in forgeries:
+            if not denied(t.admin_users(tok), "token naming its own verification key"):
+                raise Leak(f"the server accepted a token that supplied {what}")
+        return True
+    add("C6", "jwt", "token that names its own key rejected (jwk / jku / x5u / kid injection)",
+        embedded_keys)
+
     def fixation(t):
         r = reached(t.login(user["username"], user["password"], prev_session="attacker-chosen-id"))
         if not r.body.get("access_token"):
@@ -323,6 +347,15 @@ def build(cfg: Config) -> list[Attack]:
     add("AZ7", "authz", "self-registration with role=admin gains no admin access (black-box)",
         selfreg_admin, stage=MUTATES)
 
+    def weak_passwords(t):
+        expect_ok(t.register(unique("signup"), STRONG_PW), "signing up with a strong password")
+        for pw in ("123456", "password", "12345678"):
+            if not denied(t.register(unique("weak"), pw), "sign-up with a weak password"):
+                raise Leak(f"an account was created with the password '{pw}'")
+        return True
+    add("REG1", "registration", "sign-up refuses the most common passwords", weak_passwords,
+        stage=MUTATES)
+
     # ---- 6. oauth2 / pkce --------------------------------------------------
     VERIFIER = "verifier-xyz-" + "0" * 32                   # RFC 7636: 43..128 chars
 
@@ -396,6 +429,20 @@ def build(cfg: Config) -> list[Attack]:
         email_change_check(cfg, "attacker@evil.example"), stage=MUTATES)
 
     # ---- 8. upload abuse ---------------------------------------------------
+    def upload_needs_auth(t):
+        tok = authed(t, user)
+        expect_ok(t.upload(tok), "a plain upload by a signed-in user")
+        if not denied(t.upload(""), "upload without a token"):
+            raise Leak("the upload endpoint accepted a request with no token")
+        valid_upload(t, tok)
+        m, data = samples(lambda m: m["expect"] == "control")[0]
+        if not denied(t.upload_bytes("", m["file"], data, m["content_type"]),
+                      "file upload without a token"):
+            raise Leak("a file was stored for an anonymous caller")
+        return True
+    add("UP1", "upload", "uploads require authentication", upload_needs_auth,
+        [Capability.MEDIA_UPLOAD])
+
     def pixel_flood(t):
         tok = authed(t, user)
         expect_ok(t.upload(tok), "a plain upload")
@@ -405,8 +452,13 @@ def build(cfg: Config) -> list[Attack]:
 
     def upload_rate(t):
         tok = authed(t, user)
-        expect_ok(t.upload(tok, filename="0.mp4"), "a plain upload")
-        return any(throttled(reached(t.upload(tok, filename=f"{i}.mp4")), cfg) for i in range(1, 9))
+        for i in range(9):
+            r = reached(t.upload(tok, filename=f"{i}.mp4"))
+            if throttled(r, cfg):
+                return True
+            if i == 0 and not r.ok:
+                raise Inconclusive(f"control failed — a plain upload returned HTTP {r.status}")
+        return False
     add("UP3", "upload", "upload endpoint rate-limited", upload_rate, [Capability.MEDIA_UPLOAD],
         stage=EXHAUSTS)
 

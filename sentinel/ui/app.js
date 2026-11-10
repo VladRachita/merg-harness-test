@@ -9,7 +9,13 @@
                     FAIL: "FAIL — at least one attack got through",
                     INCOMPLETE: "INCOMPLETE — some checks proved nothing",
                     EMPTY: "Nothing ran" };
-  let defaults = null, filter = "ALL", lastRun = null, timer = null, userEdited = false;
+  // form field id -> key in a config's settings (see settings_of() in server.py)
+  const TARGET_FIELDS = ["host", "port", "scheme", "base_path", "frontend_host", "frontend_port", "api_path"];
+  const FLOW_FIELDS = { fs_login: "login", fs_register: "register", fs_upload: "upload",
+                        fs_resource: "resource", fs_username_field: "username_field",
+                        fs_password_field: "password_field", fs_upload_field: "upload_field",
+                        fs_token_json_path: "token_json_path", fs_auth_header: "auth_header" };
+  let defaults = null, filter = "ALL", flowFilter = null, lastRun = null, timer = null;
 
   // ---- tiny DOM helper: text is always set as text, never parsed as HTML ----
   function el(tag, attrs, ...kids) {
@@ -37,55 +43,93 @@
   }
 
   // ---- form -----------------------------------------------------------------
+  const checked = (sel) => [...document.querySelectorAll(sel + " input:checked")].map((c) => c.value);
+  const val = (id) => $(id).value.trim();
+
   function form() {
-    const suites = [...document.querySelectorAll("#suites input:checked")].map((c) => c.value);
-    return { mode: $("mode").value, config: $("config").value, host: $("host").value.trim(),
-             port: $("port").value.trim(), scheme: $("scheme").value,
-             base_path: $("base_path").value.trim(), suites };
+    return {
+      mode: $("mode").value, config: $("config").value,
+      host: val("host"), port: val("port"), scheme: $("scheme").value, base_path: val("base_path"),
+      frontend_host: val("frontend_host"), frontend_port: val("frontend_port"),
+      api_path: val("api_path"), via_frontend: $("via_frontend").checked,
+      flows: checked("#flows"), suites: checked("#suites"),
+      overrides: {
+        endpoints: { login: val("fs_login"), register: val("fs_register"),
+                     upload: val("fs_upload"), resource: val("fs_resource") },
+        fields: { username: val("fs_username_field"), password: val("fs_password_field"),
+                  upload_file: val("fs_upload_field") },
+        token_json_path: val("fs_token_json_path"), auth_header: val("fs_auth_header"),
+        users: { user: { username: val("fs_user"), password: $("fs_pass").value, id: val("fs_uid") },
+                 admin: { username: val("fs_admin_user"), password: $("fs_admin_pass").value } },
+        media_upload: $("fs_media_upload").checked,
+      },
+    };
   }
 
   function preview() {
     const f = form();
-    $("urlPreview").textContent = f.scheme + "://" + (f.host || "…") + ":" + (f.port || "…") + f.base_path;
+    const fe = f.frontend_port ? "http://" + (f.frontend_host || f.host || "…") + ":" + f.frontend_port : "";
+    const viaFe = f.via_frontend && fe;
+    $("urlPreview").textContent = viaFe ? fe + f.api_path + "  (through the front end)"
+      : f.scheme + "://" + (f.host || "…") + ":" + (f.port || "…") + f.base_path;
+    $("fePreview").textContent = fe;
+    $("fePreviewWrap").hidden = !fe;
+    $("via_frontend").disabled = !f.frontend_port;
+    if (!f.frontend_port) $("via_frontend").checked = false;
+    $("apiPathField").hidden = !$("via_frontend").checked;
   }
 
-  function applyConfigTarget() {
+  function applyConfig() {
     const t = defaults.config_targets[$("config").value] || {};
     if (t.error) { $("formError").textContent = t.error; return; }
     $("formError").textContent = "";
-    $("host").value = t.host || ""; $("port").value = t.port || "";
-    $("scheme").value = t.scheme || "http"; $("base_path").value = t.base_path || "";
-    userEdited = false;
+    for (const id of TARGET_FIELDS) $(id).value = t[id] === undefined || t[id] === null ? "" : t[id];
+    $("scheme").value = t.scheme || "http";
+    for (const [id, key] of Object.entries(FLOW_FIELDS)) $(id).value = t[key] || "";
+    $("fs_user").value = t.user.username; $("fs_pass").value = t.user.password;
+    $("fs_uid").value = t.user.id; $("fs_admin_user").value = t.admin.username;
+    $("fs_admin_pass").value = t.admin.password;
+    $("fs_media_upload").checked = !!t.media_upload;
+    $("via_frontend").checked = false;
     preview();
   }
 
   function modeChanged() {
     const http = $("mode").value === "http";
-    $("httpFields").hidden = !http; $("refHint").hidden = http; $("check").hidden = !http;
+    $("httpFields").hidden = !http; $("settings").hidden = !http;
+    $("refHint").hidden = http; $("check").hidden = !http;
     $("preflight").replaceChildren();
   }
 
-  function buildForm() {
+  function checklist(box, items, prefix) {
+    box.replaceChildren(...items.map((s) => {
+      const key = s.key || s.name, id = prefix + key;
+      return el("label", { class: "suite", for: id },
+        el("input", { type: "checkbox", id, value: key, checked: "" }),
+        el("span", {}, el("b", { text: (s.label || s.name) + " (" + s.count + ")" }),
+           el("small", { text: s.info })));
+    }));
+  }
+
+  function fillConfigs(selected) {
     const cfg = $("config");
-    cfg.append(el("option", { value: "", text: "(built-in defaults)" }));
-    for (const c of defaults.configs) cfg.append(el("option", { value: c, text: c }));
-    cfg.value = defaults.config;
-    const box = $("suites");
-    for (const s of defaults.suites) {
-      const id = "suite-" + s.name;
-      box.append(el("label", { class: "suite", for: id },
-        el("input", { type: "checkbox", id, value: s.name, checked: "" }),
-        el("span", {}, el("b", { text: s.name + " (" + s.count + ")" }), el("small", { text: s.info }))));
-    }
-    applyConfigTarget();
+    cfg.replaceChildren(el("option", { value: "", text: "(built-in defaults)" }),
+      ...defaults.configs.map((c) => el("option", { value: c, text: c })));
+    cfg.value = selected;
+  }
+
+  function buildForm() {
+    fillConfigs(defaults.config);
+    checklist($("flows"), defaults.flows, "flow-");
+    checklist($("suites"), defaults.suites, "suite-");
+    applyConfig();
     modeChanged();
   }
 
   // ---- rendering --------------------------------------------------------------
   function renderFilters(counts, total) {
-    const box = $("filters");
     const items = [["ALL", "All", total]].concat(STATUSES.map((s) => [s, LABEL[s], counts[s] || 0]));
-    box.replaceChildren(...items.map(([key, label, n]) => {
+    $("filters").replaceChildren(...items.map(([key, label, n]) => {
       const b = el("button", { type: "button", class: "chip", role: "tab",
                                "aria-selected": String(filter === key), text: label + " " + n });
       b.addEventListener("click", () => { filter = key; render(lastRun); });
@@ -93,23 +137,49 @@
     }));
   }
 
+  function renderFlows(run) {
+    const flows = run.by_flow || [];
+    $("flowPanel").hidden = !flows.length;
+    $("byFlow").replaceChildren(...flows.map((f) => {
+      const c = f.counts, ran = f.ran;
+      const state = c.LEAK || c.ERROR ? "LEAK" : c.INCONCLUSIVE ? "INCONCLUSIVE" : ran ? "BLOCKED" : "SKIPPED";
+      const bar = el("div", { class: "fbar" });
+      for (const s of ["BLOCKED", "LEAK", "INCONCLUSIVE", "ERROR", "SKIPPED"]) {
+        if (c[s]) { const seg = el("span", { class: "seg " + s }); seg.style.flexGrow = String(c[s]); bar.append(seg); }
+      }
+      const parts = [c.BLOCKED + " blocked"];
+      if (c.LEAK) parts.push(c.LEAK + " leak" + (c.LEAK > 1 ? "s" : ""));
+      if (c.INCONCLUSIVE) parts.push(c.INCONCLUSIVE + " inconclusive");
+      if (c.ERROR) parts.push(c.ERROR + " error" + (c.ERROR > 1 ? "s" : ""));
+      if (c.SKIPPED) parts.push(c.SKIPPED + " skipped");
+      const card = el("button", { type: "button", class: "fcard " + state,
+                                  "aria-pressed": String(flowFilter === f.flow) },
+        el("span", { class: "fname", text: f.label }),
+        el("span", { class: "fscore", text: ran ? c.BLOCKED + "/" + ran : "–" }),
+        bar, el("span", { class: "fdetail", text: parts.join(" · ") }));
+      card.addEventListener("click", () => {
+        flowFilter = flowFilter === f.flow ? null : f.flow; render(lastRun);
+      });
+      return card;
+    }));
+  }
+
   function renderRows(findings) {
     const order = Object.fromEntries(STATUSES.map((s, i) => [s, i]));
     const rows = findings.map((f, i) => [f, i])
-      .filter(([f]) => filter === "ALL" || f.status === filter)
+      .filter(([f]) => (filter === "ALL" || f.status === filter) && (!flowFilter || f.flow === flowFilter))
       .sort((a, b) => (order[a[0].status] - order[b[0].status]) || (a[1] - b[1]));
-    const body = $("results").tBodies[0];
-    body.replaceChildren(...rows.map(([f]) => {
+    $("results").tBodies[0].replaceChildren(...rows.map(([f]) => {
       const what = el("td", {}, el("div", { text: f.desc }));
       if (f.detail) what.append(el("div", { class: "detail", text: f.detail }));
       if (f.fix) what.append(el("div", { class: "fix" }, el("b", { text: "Fix: " }), f.fix));
       return el("tr", {},
         el("td", {}, el("span", { class: "badge " + f.status, text: LABEL[f.status] })),
-        el("td", { class: "id" }, f.id, el("small", { text: f.suite || f.category })),
+        el("td", { class: "id" }, f.id, el("small", { text: f.flow_label || f.suite || f.category })),
         what);
     }));
     $("empty").hidden = rows.length > 0;
-    $("empty").textContent = findings.length ? "No checks with this result."
+    $("empty").textContent = findings.length ? "No checks match this filter."
                                               : "Results appear here as each check finishes.";
   }
 
@@ -130,8 +200,11 @@
     const v = $("verdict");
     if (running) { v.className = "verdict none"; v.textContent = "Running — score so far"; }
     else { v.className = "verdict " + s.verdict; v.textContent = VERDICT[s.verdict] || s.verdict; }
-    $("meta").textContent = run.target + " · " + run.suites.length + " suite(s) · coverage " +
-      s.coverage + "% · " + run.elapsed + "s" + (run.requests ? " · " + run.requests + " requests" : "");
+    const bits = [run.target + (run.via_frontend ? " (via the front end)" : "")];
+    if (run.frontend && !run.via_frontend) bits.push("front end " + run.frontend);
+    bits.push(run.flows.length + " flow(s)", "coverage " + s.coverage + "%", run.elapsed + "s");
+    if (run.requests) bits.push(run.requests + " requests");
+    $("meta").textContent = bits.join(" · ");
 
     const pct = run.total ? Math.round(100 * run.done / run.total) : 0;
     $("bar").style.width = pct + "%";
@@ -144,10 +217,10 @@
     $("progressText").textContent = text;
     $("notes").replaceChildren(...(run.notes || []).map((n) => el("li", { text: n })));
 
+    renderFlows(run);
     renderFilters(c, run.findings.length);
     renderRows(run.findings);
-    const dl = $("download");
-    dl.hidden = running;
+    $("download").hidden = running;
   }
 
   function renderHistory(history) {
@@ -180,8 +253,9 @@
   $("start").addEventListener("click", async () => {
     $("formError").textContent = ""; $("preflight").replaceChildren();
     const f = form();
-    if (!f.suites.length) { $("formError").textContent = "Pick at least one suite."; return; }
-    try { await api("/api/run", f); filter = "ALL"; poll(); }
+    if (!f.flows.length) { $("formError").textContent = "Pick at least one flow."; return; }
+    if (!f.suites.length) { $("formError").textContent = "Pick at least one suite (Advanced)."; return; }
+    try { await api("/api/run", f); filter = "ALL"; flowFilter = null; poll(); }
     catch (e) { $("formError").textContent = e.message; }
   });
 
@@ -192,11 +266,27 @@
   $("check").addEventListener("click", async () => {
     const box = $("preflight");
     $("formError").textContent = "";
-    box.replaceChildren(el("li", { class: "note", text: "Checking…" }));
+    box.replaceChildren(el("li", { class: "note", text: "Trying each flow once…" }));
     try {
       const r = await api("/api/preflight", form());
-      box.replaceChildren(...r.lines.map(([kind, text]) => el("li", { class: kind, text })));
+      box.replaceChildren(...r.steps.map((s) => el("li", { class: s.state },
+        el("b", { text: s.label + ": " }), s.text)));
+      if (r.steps.some((s) => s.state === "fail" && s.key !== "backend" && s.key !== "frontend")) {
+        $("settings").open = true;
+      }
     } catch (e) { box.replaceChildren(el("li", { class: "fail", text: e.message })); }
+  });
+
+  $("save").addEventListener("click", async () => {
+    const msg = $("saveMsg");
+    msg.textContent = "";
+    try {
+      const r = await api("/api/save", Object.assign(form(), { name: val("saveName") }));
+      defaults = await api("/api/defaults");
+      fillConfigs(r.config);
+      applyConfig();
+      msg.textContent = "Saved as " + r.config + " and selected.";
+    } catch (e) { msg.textContent = "Not saved: " + e.message; }
   });
 
   $("download").addEventListener("click", async (ev) => {
@@ -210,16 +300,15 @@
     } catch (e) { $("formError").textContent = e.message; }
   });
 
-  $("toggleSuites").addEventListener("click", () => {
-    const boxes = [...document.querySelectorAll("#suites input")];
+  $("toggleFlows").addEventListener("click", () => {
+    const boxes = [...document.querySelectorAll("#flows input")];
     const all = boxes.every((b) => b.checked);
     boxes.forEach((b) => { b.checked = !all; });
   });
   $("mode").addEventListener("change", modeChanged);
-  $("config").addEventListener("change", applyConfigTarget);
-  for (const id of ["host", "port", "scheme", "base_path"]) {
-    $(id).addEventListener("input", () => { userEdited = true; preview(); });
-  }
+  $("config").addEventListener("change", applyConfig);
+  for (const id of TARGET_FIELDS.concat(["scheme"])) $(id).addEventListener("input", preview);
+  $("via_frontend").addEventListener("change", preview);
 
   (async function init() {
     try { defaults = await api("/api/defaults"); buildForm(); }

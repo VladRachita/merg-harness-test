@@ -19,7 +19,7 @@ from urllib.parse import urlparse, parse_qs
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 from sentinel.adapters.base import Resp
-from sentinel.adapters.reference.secure_app import SecureApp, RSA_PUB
+from sentinel.adapters.reference.secure_app import SecureApp, RSA_PUB, FRONTEND_HEADERS
 from sentinel.adapters.reference.vulnerable_app import VulnerableApp
 from sentinel.adapters.reference_target import MediaBackend
 
@@ -153,6 +153,37 @@ class Handler(BaseHTTPRequestHandler):
         self.end_headers()
         self.wfile.write(payload)
 
+    def _send_text(self, resp, ctype):
+        """A non-JSON response (the demo front end, served on the same port)."""
+        payload = str(resp.body.get("_text", "")).encode()
+        self.send_response(resp.status)
+        for k, v in resp.headers.items():
+            self.send_header(k, v)
+        self.send_header("Content-Type", ctype)
+        self.send_header("Content-Length", str(len(payload)))
+        self.end_headers()
+        self.wfile.write(payload)
+
+    def _static(self, path):
+        """The front end and anything else an anonymous visitor may fetch. The
+        app decides what exists: the secure build serves its page and script and
+        nothing more; the vulnerable build also hands out dotfiles and dumps."""
+        app = STATE.app
+        if path == "/assets/app.js":
+            js = dict(app.frontend_assets()).get(path, "")
+            return self._send_text(Resp(200, dict(FRONTEND_HEADERS) if SECURE else {},
+                                        {"_text": js}), "text/javascript; charset=utf-8")
+        r = app.fetch_path("frontend", path)
+        if "_text" in r.body:
+            html = path in ("/", "/index.html")
+            return self._send_text(r, "text/html; charset=utf-8" if html else "text/plain; charset=utf-8")
+        return None
+
+    def do_OPTIONS(self):
+        # CORS preflight: the app decides which Origin (if any) is allowed
+        self._dispatch(lambda: self._send(STATE.app.cors_probe(
+            "", self.headers.get("Origin", ""), preflight=True)))
+
     def _send_raw(self, status, body):
         # the secure build sets its security headers on EVERY response, errors included
         headers = {"X-Content-Type-Options": "nosniff",
@@ -233,7 +264,12 @@ class Handler(BaseHTTPRequestHandler):
         if p == "/admin/users":
             return self._send(app.admin_users(self._token(), self._spoof()))
         if p.startswith("/resources/"):
-            return self._send(app.get_resource(self._token(), int(p.rsplit("/", 1)[1])))
+            r = app.get_resource(self._token(), int(p.rsplit("/", 1)[1]))
+            if self.headers.get("Origin"):          # a browser on another origin is asking
+                r.headers.update({k: v for k, v in app.cors_probe(
+                    self._token(), self.headers["Origin"]).headers.items()
+                    if k.lower().startswith("access-control-") or k == "Vary"})
+            return self._send(r)
         if p.startswith("/videos/"):
             return self._send(app.get_object(self._token(), "video", int(p.rsplit("/", 1)[1])))
         if p.startswith("/media/"):
@@ -260,7 +296,9 @@ class Handler(BaseHTTPRequestHandler):
             return self._send_raw(200, {"access_token": tok})
         if p == "/test/injected":
             return self._send_raw(200, {"exists": STATE.media.injected_row_exists(q.get("marker", [""])[0])})
-        return self._send_raw(404, {"error": "not found"})
+        if self._static(p) is None:
+            return self._send_raw(404, {"error": "not found"})
+        return None
 
     def _post(self):
         p = urlparse(self.path).path
@@ -302,6 +340,8 @@ class Handler(BaseHTTPRequestHandler):
         if p == "/upload":
             ctype = self.headers.get("Content-Type", "")
             if ctype.startswith("multipart/"):
+                if SECURE and not app._verify(self._token()):
+                    return self._send_raw(401, {"error": "authentication required"})
                 fn, data = self._multipart_file(raw)
                 return self._send(STATE.media.upload_bytes(fn or "f", data or b"", ctype))
             return self._send(app.upload(self._token(), body.get("fetchUrl"),

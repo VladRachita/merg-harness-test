@@ -54,6 +54,21 @@ class Resp:
         return 200 <= self.status < 300
 
 
+FRONTEND_ORIGIN = "https://app.example"          # the one web origin allowed to call the API
+COMMON_PASSWORDS = {"password", "password1", "12345678", "123456789", "1234567890", "qwerty123",
+                    "qwertyuiop", "iloveyou", "11111111", "letmein123", "admin123", "welcome1"}
+
+FRONTEND_PAGE = """<!doctype html><html><head><meta charset="utf-8"><title>App</title>
+<script src="/assets/app.js" defer></script></head><body><div id="root"></div></body></html>"""
+FRONTEND_JS = """const API = "/api"; export async function login(u, p) {
+  return fetch(API + "/auth/login", {method: "POST", body: JSON.stringify({u, p})}); }"""
+FRONTEND_HEADERS = {
+    "Content-Security-Policy": "default-src 'self'; frame-ancestors 'none'; object-src 'none'",
+    "X-Frame-Options": "DENY",
+    "X-Content-Type-Options": "nosniff",
+    "Referrer-Policy": "strict-origin-when-cross-origin",
+}
+
 SECURE_HEADERS = {
     "Content-Security-Policy": "default-src 'none'; frame-ancestors 'none'",
     "X-Content-Type-Options": "nosniff",
@@ -65,7 +80,8 @@ class SecureApp:
     IP_LIMIT = 10
     OTP_LIMIT = 5
     UPLOAD_LIMIT = 5
-    REGISTER_LIMIT = 10      # sign-ups per client before throttling (bot sign-up waves)
+    REGISTER_LIMIT = 12      # sign-ups per client before throttling (bot sign-up waves)
+    MIN_PASSWORD = 8
     RESET_GUESS_LIMIT = 10   # wrong reset tokens per client before throttling (token cracking)
 
     def __init__(self):
@@ -193,9 +209,14 @@ class SecureApp:
 
     def register(self, username, password, requested_role=None, extra=None):
         key = self._norm(username)
-        self.register_count += 1
-        if self.register_count > self.REGISTER_LIMIT:
+        if self.register_count >= self.REGISTER_LIMIT:
             return self._resp(429, {"error": "too many sign-ups"})
+        # password policy: long enough, and not one of the passwords every
+        # credential-stuffing list starts with
+        pw = password if isinstance(password, str) else ""
+        if len(pw) < self.MIN_PASSWORD or pw.lower() in COMMON_PASSWORDS or pw.lower() == key:
+            return self._resp(400, {"error": "password too weak"})
+        self.register_count += 1
         if key in self.users:
             return self._resp(409, {"error": "exists"})
         # role + privilege fields are SERVER-assigned; attacker input ignored
@@ -420,6 +441,28 @@ class SecureApp:
             return self._resp(200, {"parsed": int(payload)})
         except Exception:
             return self._resp(400, {"error": "bad request"})   # no stack trace
+
+    # ---- attack surface -----------------------------------------------------
+    def fetch_path(self, where, path):
+        """Only the app itself is served: no dotfiles, no backups, no debug or
+        management endpoints, on either origin."""
+        if where == "frontend" and path in ("/", "/index.html"):
+            return Resp(200, dict(FRONTEND_HEADERS), {"_text": FRONTEND_PAGE})
+        if where == "frontend" and path == "/assets/app.js":
+            return Resp(200, dict(FRONTEND_HEADERS), {"_text": FRONTEND_JS})
+        return self._resp(404, {"error": "not found"})
+
+    def frontend_assets(self):
+        return [("/", FRONTEND_PAGE), ("/assets/app.js", FRONTEND_JS)]   # no secrets shipped
+
+    def cors_probe(self, token, origin, preflight=False):
+        """Cross-origin access is granted to ONE configured origin, never to
+        whatever Origin the request names (and never to "null")."""
+        r = self._resp(204 if preflight else 200)
+        if origin == FRONTEND_ORIGIN:
+            r.headers.update({"Access-Control-Allow-Origin": origin,
+                              "Access-Control-Allow-Credentials": "true", "Vary": "Origin"})
+        return r
 
     # ---- resilience --------------------------------------------------------
     def stress_input(self, kind):

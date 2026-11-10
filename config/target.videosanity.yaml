@@ -23,6 +23,14 @@ target:
   verify_tls: false
   timeout_s: 10
 
+# ── Web front end ── TODO(verify) ───────────────────────────────────────────
+# Set the port videosanity's web UI listens on to enable the front-end checks
+# (FE1–FE5). Leave it out if the API serves the UI itself or there is none.
+# frontend:
+#   host: videosanity-videosanity-web-1   # TODO(verify)
+#   port: 3000                            # TODO(verify)
+#   api_path: /api                        # TODO(verify): if the web server proxies the API
+
 # ── Route map — TODO(verify) EVERY LINE against videosanity's real API ──────
 # Format: "METHOD /path/with/{params}" (or an absolute URL for a route served by
 # another internal service/port). Delete a line to fall back to the default in
@@ -113,6 +121,6 @@ hooks:
   db_probe: null
   reset_introspect: false
 
-suites: [access_control, media_injection]   # `--suite all` adds oct2026, nov2026, automation, resilience
+suites: [access_control, media_injection]   # `--suite all` adds oct2026, nov2026, automation, resilience, surface
 fail_on_leak: true
 fail_on_inconclusive: true

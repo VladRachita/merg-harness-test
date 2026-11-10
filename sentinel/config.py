@@ -77,6 +77,18 @@ DEFAULT_SIGNALS = {
     "email_verified_header": "X-Email-Verified: true",  # proof the new e-mail was verified
 }
 
+# The web front end, if the project has one on its own port. With a port set,
+# the `surface` suite also checks the front end (headers, exposed files, secrets
+# shipped in its JavaScript). `api_path` is the prefix under which the front end
+# proxies the API (e.g. "/api") — set it to run the API attacks THROUGH the
+# front-end port, the way a browser reaches them.
+DEFAULT_FRONTEND = {
+    "scheme": "http",
+    "host": None,          # defaults to target.host
+    "port": None,          # no port = no front end configured
+    "api_path": None,
+}
+
 DEFAULT_SAFETY = {
     # Hosts that are loopback, private, single-label (docker service names) or
     # on a reserved test TLD are always allowed. Anything else — i.e. anything
@@ -105,14 +117,14 @@ DEFAULT_LOAD = {
 }
 
 _TOP_LEVEL_KEYS = {
-    "target", "endpoints", "fields", "signals", "users", "oauth", "hooks", "safety", "load",
-    "limits", "bola_object", "token_json_path", "refresh_json_path", "auth_header", "jwks_url",
+    "target", "frontend", "endpoints", "fields", "signals", "users", "oauth", "hooks", "safety",
+    "load", "limits", "bola_object", "token_json_path", "refresh_json_path", "auth_header", "jwks_url",
     "jwt_iss", "jwt_aud", "features", "suites", "fail_on_leak", "fail_on_inconclusive",
     "session_cookie", "throttle_statuses", "media_sample", "xss_reflect_path",
     "stress_endpoint",
 }
 _TARGET_KEYS = ("scheme", "host", "port", "base_path", "verify_tls", "timeout_s")
-_DICT_SECTIONS = ("endpoints", "fields", "signals", "users", "oauth", "hooks", "safety",
+_DICT_SECTIONS = ("frontend", "endpoints", "fields", "signals", "users", "oauth", "hooks", "safety",
                   "load", "limits", "bola_object")
 _SCALARS = ("token_json_path", "refresh_json_path", "auth_header", "jwks_url", "jwt_iss",
             "jwt_aud", "features", "suites", "fail_on_leak", "fail_on_inconclusive",
@@ -129,6 +141,10 @@ class Config:
     base_path: str = ""              # e.g. "/api/v1"
     verify_tls: bool = True
     timeout_s: float = 10.0
+    frontend: dict = field(default_factory=lambda: dict(DEFAULT_FRONTEND))
+    # set when API traffic is routed through the front-end port: where the
+    # backend itself still is (for exposed-file probes and test hooks)
+    backend_origin: str | None = None
 
     # --- how to talk to it ---
     # "METHOD /path" is relative to scheme://host:port/base_path. A project that
@@ -210,6 +226,24 @@ class Config:
     def base_url(self) -> str:
         return f"{self.scheme}://{self.host}:{self.port}{self.base_path}".rstrip("/")
 
+    @property
+    def origin(self) -> str:
+        """scheme://host:port of the API target, without the base path."""
+        return f"{self.scheme}://{self.host}:{self.port}"
+
+    @property
+    def frontend_origin(self) -> str | None:
+        """scheme://host:port of the front end, or None when none is configured."""
+        fe = self.frontend
+        if not fe.get("port"):
+            return None
+        return f"{fe.get('scheme') or 'http'}://{fe.get('host') or self.host}:{fe['port']}"
+
+    def origin_of(self, where: str) -> str | None:
+        if where == "frontend":
+            return self.frontend_origin
+        return self.backend_origin or self.origin
+
     def url_for(self, path: str) -> str:
         """Absolute URL for an endpoint/hook path. Absolute URLs pass through, so
         one project can reach several internal services/ports."""
@@ -232,6 +266,9 @@ class Config:
                 out.add(urlsplit(path).hostname or "")
         if self.jwks_url:
             out.add(urlsplit(self.jwks_url).hostname or "")
+        for origin in (self.frontend_origin, self.backend_origin):
+            if origin:
+                out.add(urlsplit(origin).hostname or "")
         return {h for h in out if h}
 
 
@@ -299,7 +336,9 @@ def load(path: str | None = None) -> Config:
     }
     where = {a: _coerce(getattr(cfg, a), env[ev]) for ev, a in simple.items()
              if ev in env and a in ("scheme", "host", "port", "base_path")}
-    retarget(cfg, **where)
+    retarget(cfg, frontend_host=env.get("SENTINEL_FRONTEND_HOST"),
+             frontend_port=env.get("SENTINEL_FRONTEND_PORT"),
+             frontend_scheme=env.get("SENTINEL_FRONTEND_SCHEME"), **where)
     for ev, attr in simple.items():
         if ev in env and attr not in where:
             setattr(cfg, attr, _coerce(getattr(cfg, attr), env[ev]))
@@ -319,10 +358,20 @@ def load(path: str | None = None) -> Config:
     return cfg
 
 
-def retarget(cfg: Config, host=None, port=None, scheme=None, base_path=None) -> Config:
-    """Point a loaded config at another host/port/scheme/base path. A `jwks_url`
-    that lived on the old address follows the target, so "same app, other port"
-    needs exactly one change."""
+def retarget(cfg: Config, host=None, port=None, scheme=None, base_path=None,
+             frontend_host=None, frontend_port=None, frontend_scheme=None,
+             frontend_api_path=None) -> Config:
+    """Point a loaded config at another host/port/scheme/base path (and front
+    end). A `jwks_url` that lived on the old address follows the target, so
+    "same app, other port" needs exactly one change."""
+    if frontend_host not in (None, ""):
+        cfg.frontend["host"] = str(frontend_host).strip()
+    if frontend_port is not None:                      # "" clears it
+        cfg.frontend["port"] = frontend_port if frontend_port != "" else None
+    if frontend_scheme not in (None, ""):
+        cfg.frontend["scheme"] = frontend_scheme
+    if frontend_api_path is not None:
+        cfg.frontend["api_path"] = str(frontend_api_path).strip() or None
     old_origin = f"{cfg.scheme}://{cfg.host}:{cfg.port}"
     if host not in (None, ""):
         cfg.host = str(host).strip()
@@ -338,8 +387,103 @@ def retarget(cfg: Config, host=None, port=None, scheme=None, base_path=None) -> 
     return cfg
 
 
+def route_via_frontend(cfg: Config) -> Config:
+    """Send the API traffic through the FRONT-END port (its reverse proxy), the
+    way a browser reaches the API. Test hooks and exposed-file probes keep going
+    to the backend directly."""
+    if not cfg.frontend_origin:
+        raise ConfigError("frontend.port is not set — nothing to route through")
+    backend_base = cfg.base_url
+    cfg.backend_origin = cfg.origin
+    for name, spec in list(cfg.hooks.items()):
+        if isinstance(spec, str) and spec:
+            method, path = split_spec(spec, f"hooks.{name}")
+            if not path.startswith(("http://", "https://")):
+                cfg.hooks[name] = f"{method} {backend_base}{path}"
+    fe = cfg.frontend
+    cfg.scheme, cfg.host, cfg.port = fe.get("scheme") or "http", fe.get("host") or cfg.host, fe["port"]
+    cfg.base_path = fe.get("api_path") or ""
+    validate(cfg)
+    return cfg
+
+
+KNOWN_FEATURES = ("oauth", "media_upload", "mfa", "csrf")
+
+
+def apply_overrides(cfg: Config, ov: dict) -> Config:
+    """Apply flow settings a person typed into the web UI (routes, field names,
+    test accounts). Only known keys are accepted and everything is re-validated,
+    so the form cannot smuggle in arbitrary configuration."""
+    ov = ov if isinstance(ov, dict) else {}
+    for name, spec in (ov.get("endpoints") or {}).items():
+        if name in DEFAULT_ENDPOINTS and isinstance(spec, str) and spec.strip():
+            cfg.endpoints[name] = spec.strip()
+    for name, val in (ov.get("fields") or {}).items():
+        if name in DEFAULT_FIELDS and isinstance(val, str):
+            cfg.fields[name] = val.strip()
+    for role, u in (ov.get("users") or {}).items():
+        if role not in ("user", "user2", "admin", "lockout") or not isinstance(u, dict):
+            continue
+        cur = dict(cfg.users.get(role) or {})
+        for k in ("username", "password", "email"):
+            if isinstance(u.get(k), str) and u[k] != "":
+                cur[k] = u[k]
+        if u.get("id") not in (None, ""):
+            raw = str(u["id"]).strip()
+            cur["id"] = int(raw) if raw.lstrip("-").isdigit() else raw
+        if cur:
+            cfg.users[role] = cur
+    for k in ("token_json_path", "refresh_json_path", "auth_header"):
+        if isinstance(ov.get(k), str) and ov[k].strip():
+            setattr(cfg, k, ov[k].strip())
+    if isinstance(ov.get("media_upload"), bool):
+        feats = [f for f in cfg.features if f != "media_upload"]
+        cfg.features = feats + (["media_upload"] if ov["media_upload"] else [])
+    validate(cfg)
+    return cfg
+
+
+def to_dict(cfg: Config) -> dict:
+    """A complete, standalone YAML-able form of a config (what the UI saves)."""
+    return {
+        "target": {"scheme": cfg.scheme, "host": cfg.host, "port": cfg.port,
+                   "base_path": cfg.base_path, "verify_tls": cfg.verify_tls,
+                   "timeout_s": cfg.timeout_s},
+        "frontend": dict(cfg.frontend),
+        "endpoints": dict(cfg.endpoints), "fields": dict(cfg.fields),
+        "signals": dict(cfg.signals),
+        "token_json_path": cfg.token_json_path, "refresh_json_path": cfg.refresh_json_path,
+        "auth_header": cfg.auth_header, "session_cookie": cfg.session_cookie,
+        "throttle_statuses": list(cfg.throttle_statuses),
+        "jwks_url": cfg.jwks_url, "jwt_iss": cfg.jwt_iss, "jwt_aud": cfg.jwt_aud,
+        "users": {k: dict(v) for k, v in cfg.users.items()},
+        "bola_object": dict(cfg.bola_object), "media_sample": cfg.media_sample,
+        "stress_endpoint": cfg.stress_endpoint, "oauth": dict(cfg.oauth),
+        "features": list(cfg.features), "hooks": dict(cfg.hooks),
+        "limits": dict(cfg.limits), "load": dict(cfg.load), "safety": dict(cfg.safety),
+        "suites": list(cfg.suites), "fail_on_leak": cfg.fail_on_leak,
+        "fail_on_inconclusive": cfg.fail_on_inconclusive,
+    }
+
+
 def validate(cfg: Config) -> None:
     """Fail fast on a config that cannot work, instead of mid-run."""
+    fe = cfg.frontend
+    if fe.get("port") not in (None, ""):
+        try:
+            fe["port"] = int(fe["port"])
+        except (TypeError, ValueError):
+            raise ConfigError(f"frontend.port must be a number, got {fe['port']!r}")
+        if not 0 < fe["port"] < 65536:
+            raise ConfigError(f"frontend.port out of range: {fe['port']}")
+    else:
+        fe["port"] = None
+    if (fe.get("scheme") or "http") not in ("http", "https"):
+        raise ConfigError(f"frontend.scheme must be http or https, got {fe.get('scheme')!r}")
+    if fe.get("host") and any(c in str(fe["host"]) for c in "/@ ?#"):
+        raise ConfigError(f"frontend.host must be a bare hostname or IP, got {fe['host']!r}")
+    if fe.get("api_path") and not str(fe["api_path"]).startswith("/"):
+        raise ConfigError(f"frontend.api_path must start with '/', got {fe['api_path']!r}")
     try:
         cfg.port = int(cfg.port)
     except (TypeError, ValueError):
