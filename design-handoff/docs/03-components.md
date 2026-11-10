@@ -506,6 +506,26 @@ Optional "Brand" tone: tile `#EEEAFD`, icon `#5B3FD6`. Default is Mono.
 - Closed (switch off): the day `text.tertiary`, the times at 0.4. Time buttons open the platform time picker, 24-hour.
 - Seen in: BC6. Full spec: `21-business-conversion.md` §7.
 
+## 87. Booking choice card
+- A white card, radius 18, 1px `line.card`. Its header is the C71 row and is one radio:
+  - radio 22;
+  - icon circle 44 (picked: ink with a white icon; else `bg.soft`);
+  - the option 16/22 600 and its line 13.5/1.4 `text.body`;
+  - padding 14 (12 on small).
+- Under a `line.rowSeparator` line, the card lists what the option covers:
+  - section labels 12/16 600 capitals, `text.secondary`;
+  - C88 rows;
+  - the "You:" row (`bg.page`, radius 12, `user` 18).
+- Picked: 1px ink border + `elevation.selectionRing`. Not picked: the whole card at 0.4, still tappable.
+- Seen in: BC5B, BC5BP (In-app, By phone). Full spec: `21-business-conversion.md` §6a.
+
+## 88. Covered row
+- Circle 22:
+  - covered: ink with a white `check` 13;
+  - not covered: `bg.soft` with a `text.tertiary` `minus` 13.
+- Text 14/20: `text.primary` (covered) or `text.secondary` (not covered). Gap 10; rows gap 10.
+- Seen in: BC5B, BC5BP.
+
 ## 83. Label pill (website)
 - 32 tall, radius 16, padding `0 14 0 12`, `brand.tintBg`, text `brand.tintIcon` 14/18 500; a dot 8 `brand.accent` before the text, gap 8. Not a button.
 - Seen in: LP1, LP2 ("New · Now in Brașov"). Full spec: `22-landing-page.md` §2.

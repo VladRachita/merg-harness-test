@@ -52,6 +52,26 @@ Read in this order, then build:
 
 ## What's new in this update
 
+- **Convert to Business · How do you take bookings?** is now its own step, `BC5B`, right after the business details. It shows what each option covers before the person picks, as two cards (C87) with covered and not-covered rows (C88):
+  - **In-app**: "People book in Merg. You answer in Reservations." Merg does it for you:
+    - a Book button on your profile and videos;
+    - requests in Reservations, accepted or declined in one tap;
+    - confirmations and cancellations sent for you;
+    - today's reservations in one list;
+    - visits counted, to see regulars and send them rewards;
+    - coupons and rewards taken off the price.
+
+    "You: answer each request within 24 hours."
+  - **By phone**: "People call you. You keep your own agenda."
+    - Included: a Call button, your number on your events, nothing to answer in the app.
+    - Not included: requests, confirmations and the day's list; visit counts, regulars and automatic rewards; coupons and rewards at booking.
+
+    "You: answer calls and note each booking yourself." `BC5BP` shows By phone picked, with the required **Phone number people will call**.
+
+  Two references at small, medium and large, drawn taller. BC5 no longer asks the question: its reference is unchanged in this update, and `docs/21` §6 says what to leave out. Spec: [`docs/21-business-conversion.md`](docs/21-business-conversion.md) §6a.
+
+### Earlier updates
+
 - **Website · Landing page (MVP)** — the MVP has no web version of the app, so the website is one static page that shows what Merg is and sends people to the stores. Two references:
   - `LP1` **on a computer** (1440 × 900, one screen):
     - the label "New · Now in Brașov", the headline "Deals and events near you, in short videos.", one lead line;
@@ -60,8 +80,6 @@ Read in this order, then build:
   - `LP2` **on a phone** (360, 390 and 430 wide, full scroll): the same text with the two store buttons side by side in the first screen, the phone picture under them, and "Own a place? Merg for businesses" in the footer. No QR.
 
   The page calls no API: it is static, served from a CDN, and the store choice happens in a server redirect (`/get`, rule A25). The pictures are files in `assets/landing/` (WebP, about 100 KB on a phone), plus `og-image.jpg` for link previews. Copy in Romanian and English. Spec: [`docs/22-landing-page.md`](docs/22-landing-page.md). New components C83–C86; new tokens `font.size.landingTitle*` and `landingLead*`. The other boards on the canvas's Web version page (the map ideas) are work in progress and not in this handoff.
-
-### Earlier updates
 
 - **Convert to Business** — a signed-in person turns their account into a business (a host). Every text, input and option of the owner's sketch is kept, and only **Continue** is added. The page has 7 screens plus the category states (11 references at small, medium and large):
   - `BC1` **Overview**: home of the flow, with three step cards (Legal Documents · Business Information · Business Hours), the two agreements and **Create Business Account**, disabled until every step is done.

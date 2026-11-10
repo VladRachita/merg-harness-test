@@ -3208,6 +3208,70 @@
       ]
     },
     {
+      "id": "BC5B-bookings",
+      "area": "convert-to-business",
+      "title": "Convert to Business · How do you take bookings?",
+      "purpose": "Step 2, its own screen after the details form: In-app and By phone as two cards with what each covers; In-app picked; drawn taller.",
+      "canvas": "https://claude.ai/artifact/Vwih7Qv5GPRzwhYsL6zS6x",
+      "source": "BC2-Booking-A.dc.html",
+      "files": {
+        "small": {
+          "html": "screens/small/bc5b-bookings.html",
+          "png": "screenshots/small/bc5b-bookings.png",
+          "width": 360,
+          "height": 1340
+        },
+        "medium": {
+          "html": "screens/medium/bc5b-bookings.html",
+          "png": "screenshots/medium/bc5b-bookings.png",
+          "width": 390,
+          "height": 1284
+        },
+        "large": {
+          "html": "screens/large/bc5b-bookings.html",
+          "png": "screenshots/large/bc5b-bookings.png",
+          "width": 430,
+          "height": 1230
+        }
+      },
+      "links_to": [
+        "bc5-details",
+        "bc6-hours"
+      ]
+    },
+    {
+      "id": "BC5BP-bookings-phone",
+      "area": "convert-to-business",
+      "title": "Convert to Business · How do you take bookings? · By phone",
+      "purpose": "BC5B with By phone picked: what is included and not included, and the required phone number people will call; drawn taller.",
+      "canvas": "https://claude.ai/artifact/Vwih7Qv5GPRzwhYsL6zS6x",
+      "source": "BC2-Booking-A-Phone.dc.html",
+      "files": {
+        "small": {
+          "html": "screens/small/bc5bp-bookings-phone.html",
+          "png": "screenshots/small/bc5bp-bookings-phone.png",
+          "width": 360,
+          "height": 1477
+        },
+        "medium": {
+          "html": "screens/medium/bc5bp-bookings-phone.html",
+          "png": "screenshots/medium/bc5bp-bookings-phone.png",
+          "width": 390,
+          "height": 1421
+        },
+        "large": {
+          "html": "screens/large/bc5bp-bookings-phone.html",
+          "png": "screenshots/large/bc5bp-bookings-phone.png",
+          "width": 430,
+          "height": 1367
+        }
+      },
+      "links_to": [
+        "bc5-details",
+        "bc6-hours"
+      ]
+    },
+    {
       "id": "BC6-hours",
       "area": "convert-to-business",
       "title": "Convert to Business · Operating hours",

@@ -87,7 +87,8 @@ Use this for every screen before calling it done.
 - [ ] **BC1 / BC7**: overview with the three step cards (next step ink, done with the green check), the agreements card, Create Business Account disabled until every step is done and both boxes are ticked.
 - [ ] **BC2**: CUI (numeric, "RO" allowed) and the certificate photo under "Before you upload"; Continue to Business Info opens BC3.
 - [ ] **BC3 / BC4**: one category (C71), its place types 3 per row with the others at 0.4, "What do you offer?" 5 per row for Food & Beverage and Accommodation; names never overflow their tile.
-- [ ] **BC5**: the details form in order, How do you take bookings? (In-app · By phone), the map picker, "n / 1000"; **BC6**: seven days with 24-hour pickers and a switch.
+- [ ] **BC5**: the details form in order (without How do you take bookings?), the map picker, "n / 1000", Continue → BC5B; **BC6**: seven days with 24-hour pickers and a switch.
+- [ ] **BC5B / BC5BP**: How do you take bookings? on its own step: the In-app and By phone cards (C87) with what each covers (C88), one picked and the other at 0.4; By phone asks the phone number people will call.
 - [ ] Everything in `21-business-conversion.md` §13 (definition of done).
 - [ ] **LP1** (website, computer): one screen at 1440 × 900: label, headline, lead, official store badges, the QR card; the phone picture from `assets/landing/` on the right; footer.
 - [ ] **LP2** (website, phone): headline and both store buttons in the first screen at 360, 390 and 430; the phone picture full width under them; no QR.
