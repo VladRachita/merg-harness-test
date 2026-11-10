@@ -1,360 +1,397 @@
 # appsec-sentinel
 
 A standalone security test harness you point at your backend (host/port/path via
-config) to run a catalogue of attacks — SQL injection, brute force, XSS, session
-spoofing, privilege escalation, OAuth/PKCE abuse, account takeover, malicious
-media uploads — and prove each one is blocked. It's the three harnesses from our
-earlier work (media-injection, login/auth, expanded app-security) combined into
-one project with pluggable **adapters** so the same suites run against the
-in-process reference app *or* your real backend over HTTP.
+config, CLI flag or the web UI) to run a catalogue of attacks — SQL injection,
+brute force, bot evasion, session spoofing, privilege escalation, OAuth/PKCE
+abuse, account takeover, malicious uploads, hostile input shapes and a load
+burst — and **prove** each one is blocked.
 
-Everything here was verified end-to-end: the self-test passes 48/48, the
-deliberately-broken build is caught on 44, and the HTTP adapter was run against a
-live backend over a real socket (48/48 blocked; 17 flaws found against the
-broken backend).
+"Prove" is the point. A check only reports ✓ when a legitimate request worked
+*and* the attack was refused. A wrong route, a locked-out test account or a dead
+container is reported as **inconclusive**, never as a pass.
+
+```
+96 checks · 7 suites · 9 flows     secure reference build:      96 / 96 blocked
+                                   vulnerable reference build:   96 / 96 leak   (every check has teeth)
+```
 
 ---
+
+## Quick start
+
+```bash
+pip install -r requirements.txt        # + ffmpeg on PATH for the media suite
+
+# 1. self-test — no backend needed; proves the suites + runner work
+python -m sentinel.cli run --target reference-secure --suite all
+
+# 2. negative control — every check must catch the deliberately broken build
+python -m sentinel.cli run --target reference-vulnerable --suite all
+
+# 3. your app: give it the backend port, and the front-end port if there is one
+python -m sentinel.cli run --target http --config config/target.yaml \
+    --port 8080 --frontend-port 3000 --suite all
+
+# 4. only some flows
+python -m sentinel.cli run --target http --config config/target.yaml --port 8080 \
+    --flow login registration upload
+
+# 5. or do all of that in the web UI
+python -m sentinel.ui                  # http://127.0.0.1:8090
+```
+
+## The web UI
+
+Enter the **backend port** and the **front-end port**, tick the flows you want
+attacked — login, registration, uploads, sessions, password reset, data access,
+OAuth, front end, load — and press **Start run**. Each check lands live: a score
+out of 100, a card per flow, the reason for every leak or inconclusive check,
+and the fix for every leak.
+
+```bash
+python -m sentinel.ui                              # local
+docker compose -f docker-compose.ui.yml up --build # in Docker → http://localhost:8090
+```
+
+What the page does, top to bottom:
+
+- **Backend (API)** — host, port, scheme, base path.
+- **Front end (web)** — host and port of the web app, if it has its own. With a
+  port set, the front-end checks run (exposed files, security headers, secrets
+  in its JavaScript). Tick *Send the API attacks through the front-end port* to
+  hit the API the way a browser does, through the front end's proxy, and give
+  the path it proxies under (e.g. `/api`).
+- **Flows to attack** — pick by what you want tested, not by suite.
+- **Try the flows** — before attacking anything, the harness performs each flow
+  once, legitimately: reach the backend and the front end, log in, read the
+  user's own data, register an account, upload a file, log in as admin. Each
+  line is ✓, ✗ with the status and what to check, or skipped. A flow that can't
+  be done legitimately can't be attacked meaningfully, so get these green first.
+- **Flow settings** — the route and field names for login, registration and
+  upload, where the token is in the login response, how it is sent, the route
+  only its owner may read, and the test accounts. Edit a line, press *Try the
+  flows* again, repeat until green — no YAML editing. **Save config** writes the
+  result to `config/ui.<name>.yaml` (git-ignored; rename it to
+  `target.<name>.yaml` to share it).
+- **By flow / results** — click a flow card to see only its checks; filter by
+  outcome; **Download JSON report** saves the finished run.
+- **What to test** also offers the two built-in reference apps, to see what a
+  clean and a broken result look like.
+
+Reaching your app from the UI container (see `docker-compose.ui.yml`):
+ports published on your machine → host `host.docker.internal` + those ports;
+containers in another compose project → join its network and use the service
+names + internal ports.
+
+The page can launch attacks, so it is locked down: bound to loopback (published
+on `127.0.0.1` only in the compose file), every API call needs a per-process
+token, the `Host` header is checked, it can only write `config/ui.*.yaml`, and
+the scope guard below still applies.
+**Do not expose port 8090 to a network other people can reach.**
 
 ## How it's wired
 
 ```
-                 ┌─────────────── suites (the attacks) ───────────────┐
-   CLI  ───────► │ access_control (44)   media_injection (4)   xss     │
-                 └───────────────────────┬─────────────────────────────┘
-                                          │ Target contract (adapters/base.py)
-          ┌───────────────────────────────┼───────────────────────────────┐
-   reference-secure            reference-vulnerable                 http  ──┼──► YOUR backend
-   (self-test, no backend)     (negative control)         (config: host/port/path)
+        CLI · web UI · campaign runner
+                    │
+          ┌─────────┴───────── suites (the attacks) ─────────────────────┐
+          │ access_control  media_injection  oct2026  nov2026            │
+          │ automation (bots/spam)  resilience (load)  surface (front end) │
+          └─────────┬────────────────────────────────────────────────────┘
+                    │  Target contract (adapters/base.py)
+   ┌────────────────┼──────────────────────────┐
+ reference-secure   reference-vulnerable       http ──► YOUR backend
+ (self-test)        (negative control)         (config: host/port/path)
 ```
 
 - **Suites** are written once against an abstract `Target`. They never hard-code HTTP.
 - **Adapters** implement `Target`: the in-process reference apps, and `HttpTarget`
   which turns each operation into a real HTTP call against your backend.
-- **Capabilities**: attacks needing a gray-box hook (disable a user, read a stored
-  field, a DB probe, the signing key) are **SKIPPED** with a reason when that hook
-  isn't configured — so a pure black-box run stays honest instead of faking a pass.
+- **Capabilities**: checks needing a gray-box hook (disable a user, read a stored
+  field, a DB probe, the signing key) or an optional feature are **skipped** with
+  a reason when it isn't configured.
 
-## Quick start
+## Reading a result
 
-```bash
-# 1. self-test — runs with no backend, proves the suites + runner work
-python -m sentinel.cli run --target reference-secure --suite all
+| Mark | Status | Meaning |
+|---|---|---|
+| `✓` | BLOCKED | Proven: the legitimate request worked and the attack was refused |
+| `✗ LEAK` | LEAK | The attack was accepted. The line below says what was seen; the UI/report add the fix |
+| `? n/a` | INCONCLUSIVE | Nothing was proven — a control request failed, the backend didn't answer, it returned a 5xx. The reason names what to fix. **Not a pass** |
+| `– skip` | SKIPPED | A capability/feature isn't configured, or the control doesn't apply (e.g. cookie flags on a token-only API) |
+| `! err` | ERROR | The check itself crashed (harness or config bug) |
 
-# 2. negative control — proves the suites actually catch flaws
-python -m sentinel.cli run --target reference-vulnerable --suite all
+**Score** = the share of checks that *ran* which were proven blocked. Leaks,
+errors and inconclusive checks all count against it; skipped checks lower
+**coverage** instead. A dead backend scores 0, not 100.
 
-# 3. against a backend over HTTP (see config below)
-SENTINEL_CONFIG=config/target.yaml python -m sentinel.cli run --target http --suite all
-```
-
-## Docker — the two-container workflow
-
-`docker compose up` builds one image and runs two containers on a shared network:
-a backend and the harness, which reaches it by **service name + port** — exactly
-how you point it at your own backend.
-
-```bash
-docker compose up --build --abort-on-container-exit     # harness vs. the bundled demo
-# flip the demo to its broken build and watch the harness light up:
-#   docker compose run -e DEMO_MODE=vulnerable demo-target   (or edit compose)
-```
-
-To test **your** backend instead of the demo:
-1. Add your backend as a compose service (or point config at an external host).
-2. Copy `config/target.example.yaml` → `config/target.yaml` and fill in
-   `host`, `port`, `base_path`, the `endpoints` map, and the login `fields`.
-3. Point the `sentinel` service's `SENTINEL_CONFIG` at it.
-
-Your backend lives in its own project/repo/image; sentinel only needs to reach it
-over the network and know its routes.
-
-## Configuration (the input parameters)
-
-Config comes from a YAML file (`--config` or `SENTINEL_CONFIG`) overlaid with env
-vars. The two you asked about:
-
-| Parameter | YAML | Env |
-|-----------|------|-----|
-| port | `target.port` | `SENTINEL_PORT` |
-| base path | `target.base_path` | `SENTINEL_BASE_PATH` |
-| host | `target.host` | `SENTINEL_HOST` |
-| scheme | `target.scheme` | `SENTINEL_SCHEME` |
-| any endpoint | `endpoints.<name>` | `SENTINEL_ENDPOINT_<NAME>` |
-
-`config/target.example.yaml` documents every key (endpoints, field names, token
-extraction path, OAuth client, seed users, feature flags, gray-box hooks).
-`config/target.demo.yaml` is the working config for the bundled demo.
+**Exit codes** (gate CI on them): `0` everything that ran was proven blocked ·
+`1` a leak or a crashed check · `2` no leak, but something is unproven, the
+config is unusable, or the target is out of scope. For `reference-vulnerable`
+the meaning flips: `0` only if *every* check leaked.
 
 ## What it runs
 
-**access_control** (44 attacks): brute force (lockout, spraying, XFF-spoof, OTP,
-enumeration), injection (SQLi, path traversal, SSRF), output headers (nosniff,
-CSP, upload disposition), session/token (alg:none, RS256→HS256 confusion,
-attacker-secret, expired, fixation, logout & password-change revocation, refresh
-reuse, cookie flags, CSRF, token substitution), authorization (admin escalation,
-IDOR, BOLA, method-confusion BFLA, mass assignment, disabled account),
-OAuth2/PKCE (mandatory PKCE, exact redirect_uri, state, single-use & client-bound
-code), account takeover (single-use/expiring reset, session revocation, email
-re-verification), credential-theft mitigations (step-up re-auth, short tokens),
-info disclosure (no stack traces, uniform responses, Host-header injection).
+| Suite | Checks | What it asserts |
+|---|---|---|
+| `access_control` | 48 | Brute force & lockout, SQLi/traversal/SSRF, security headers, JWT forgery (alg:none, key confusion, attacker secret, expiry, a token naming its own key), session fixation/revocation/refresh reuse/cookie flags/CSRF, admin escalation, IDOR/BOLA, verb tampering, mass assignment, weak passwords at sign-up, OAuth2/PKCE, reset-token and e-mail takeover, unauthenticated and abusive uploads, step-up, info leaks |
+| `media_injection` | 4 | Malformed and disguised media are refused; SQL in file metadata creates no DB row and is never echoed |
+| `oct2026` | 10 | Techniques exploited in October 2026: token-type confusion, reset-endpoint injection, unauthenticated privileged ops, SSRF in 16 spellings, disguised uploads, verb tampering, BOLA, mass assignment |
+| `nov2026` | 12 | Flaws disclosed mid-Oct → early Nov 2026: empty-HMAC-key tokens, key-confusion encodings, tokens surviving logout / password change, deactivated accounts signing in, MFA skipped on reset or login, password change without step-up, credential fields in responses, spoofed identity headers, tokens without a grant, stolen authorization codes |
+| `automation` | 6 | **Bots / scripted agents / spam** (OWASP Automated Threats): the login limit can't be dodged by rotating client-IP headers, User-Agent/device ids, route spellings or body encoding; sign-up bursts and reset-token guessing are throttled |
+| `resilience` | 9 | **Load and hostile input shapes**: 1 MB field, 5,000-deep JSON, 20,000-key JSON, gzip bomb, bad encoding/charset, 2,000-part multipart, huge `Accept` header — refused or handled quickly, no 5xx, still healthy after; plus a 60-request concurrent burst with a p95 latency limit |
+| `surface` | 7 | **What an anonymous visitor can reach**: no `.env`, `.git`, dumps or management endpoints served (23 paths, on backend and front end, confirmed by content); CORS grants no credentialed access to arbitrary origins; the front end sends CSP, anti-framing and nosniff headers and ships no server-side secrets in its JavaScript |
+| `xss` | optional | Headless Chromium proves injected payloads don't execute. Needs `requirements-xss.txt`; run with `--suite xss` |
 
-**media_injection** (4 checks): generates benign media carrying SQL strings in
-filename/metadata/pixels plus malformed and content/extension-mismatch files,
-uploads them, and asserts malformed/mismatched are rejected and valid-but-hostile
-files create no injected DB row (and never crash or reflect the payload).
+The same 96 checks are also grouped into **flows** — what the UI's checkboxes and
+`--flow` select:
 
-**xss** (headless browser, optional): loads pages in real Chromium and proves
-injected payloads don't execute. Needs `requirements-xss.txt` + a browser; run via
-`python -m sentinel.cli run --suite xss` or the standalone `sentinel/suites/xss.py`.
+| Flow | Checks | |
+|---|---|---|
+| `login` | 17 | brute force, lockout, bots dodging the limit, SQL injection, MFA |
+| `registration` | 5 | privilege fields at sign-up, weak passwords, sign-up bursts |
+| `upload` | 12 | malicious, disguised and oversized files, anonymous uploads, SSRF via import-by-URL |
+| `session` | 18 | forged tokens, logout and revocation, CSRF, account changes |
+| `reset` | 8 | reset-token reuse and guessing, injection, enumeration |
+| `access` | 9 | other users' data, admin endpoints, spoofed identity |
+| `oauth` | 8 | PKCE, redirect URI, code replay and theft |
+| `frontend` | 7 | exposed files, CORS, front-end headers, secrets in JavaScript |
+| `platform` | 12 | hostile request shapes, a load burst, headers, error leaks |
 
-## October-2026 threat suite, fuzzer & campaign report
+`python -m sentinel.cli list` prints every check. Which incident each one comes
+from, how each claim was verified, how far this goes against the OWASP API
+Security Top 10, and what is **not** covered:
+[`docs/THREATS-2026-Q4.md`](docs/THREATS-2026-Q4.md).
 
-Three additions model this month's real app-level attacks and make a fast,
-repeatable pass that produces an improvement report:
+## Safety rails
 
-- **`oct2026` suite** (`--suite oct2026`): checks mapped to October-2026
-  incidents — OAuth state/token confusion (Better Auth CVE-2026-110862),
-  reset-endpoint SQLi & token replay (Metabase CVE-2026-72898), unauthenticated
-  privileged ops (BeyondTrust CVE-2026-102764), media SSRF and malicious-media /
-  transcode abuse (Plex CVE-2026-96652/54/55/56), verb-tampering on edge APIs,
-  BOLA, and mass assignment. Validated against the reference controls
-  (10 blocked on secure; 8 leaks on vulnerable).
-- **`scripts/fuzz.py`**: a fast, config-driven input fuzzer — 87 payloads (SQLi,
-  XSS, HTML-entity/encoding, traversal, command/template injection, NoSQL/LDAP,
-  CRLF, and a large validation/boundary set) swept across login/registration/
-  route fields, with response-signal detection (reflection, SQL errors, stack
-  traces, auth bypass, 5xx, time-based latency). `--dry-run` shows the plan;
-  signals are leads for human review, not confirmed vulns.
-- **`scripts/campaign.py`**: runs the suites (plus the fuzzer against an HTTP
-  target) on a loop for `--minutes N`, then writes
-  `reports/appsec-report-<ts>.md` + a `.json` sidecar — strong vs. weak points
-  (each weakness mapped to its technique and fix), coverage gaps, fuzzer signals,
-  and a diff vs. the previous run so you can track improvement run-over-run.
+The harness sends real attacks and changes data, so it is hard to aim at the wrong thing.
+
+- **Scope guard.** It talks freely to internal targets: `localhost`, private and
+  link-local IPs, single-label names (Docker service/container names),
+  `host.docker.internal`, `*.test`, `*.internal`, `*.local`, … Any other host is
+  **refused** unless listed in `safety.allowed_hosts` (or `$SENTINEL_ALLOWED_HOSTS`).
+  Only list systems you own and are authorised to test; never production.
+- **Disposable instance.** Checks change passwords, create junk accounts, upload
+  files and trip lockouts. Seed accounts are restored on a best-effort basis.
+- **Attributable traffic.** Every request carries `User-Agent: appsec-sentinel/…`,
+  `X-Sentinel-Run` and `X-Sentinel-Check`, so backend logs show which check sent
+  what (turn off with `safety.tag_requests: false`).
+- **Bounded load.** The resilience suite is eight single requests and one small
+  burst; the fuzzer's 10 MB payload is opt-in (`--huge`). `safety.max_rps` and
+  `safety.max_requests` pace or cap a run on shared environments.
+
+## Docker
 
 ```bash
-# 0. confirm the config maps to videosanity's real routes (guards false PASS)
-python scripts/preflight.py --config config/target.videosanity.yaml
-# 1. a 10-minute threat-informed campaign that writes a Markdown report
-SENTINEL_CONFIG=config/target.videosanity.yaml python scripts/campaign.py --target http --minutes 10
+# harness vs. the bundled demo backend (two containers, one network)
+docker compose up --build --abort-on-container-exit
+#   set DEMO_MODE: vulnerable in docker-compose.yml to watch every check leak
+
+# the web UI
+docker compose -f docker-compose.ui.yml up --build
+docker compose -f docker-compose.ui.yml --profile demo up --build   # + demo backend
+
+# one pass against an already-running project on its own network
+docker compose -f docker-compose.videosanity.yml run --build --rm sentinel
 ```
 
-These are defensive, authorized tests; run them against a **disposable**
-instance (they mutate state / create junk accounts).
+The harness reaches a backend by **service name + internal port** on a shared
+Docker network — nothing needs to be published on the host. Your backend lives
+in its own project; sentinel only needs to reach it and know its routes.
 
-## Exit codes & reports
+## Configuration
 
-The CLI exits non-zero if any attack is unblocked (gate CI with it). `--json PATH`
-writes a machine-readable report. The `reference-vulnerable` target inverts the
-verdict: it *expects* leaks and fails if it finds none (so the suites can't rot).
+One YAML file per project (`--config` or `$SENTINEL_CONFIG`), overlaid by env
+vars, overlaid by CLI flags / the UI form. `config/target.example.yaml`
+documents every key; `config/target.demo.yaml` is the working config for the demo.
 
-## Wiring it to YOUR API — full checklist & worked example (do this manually)
+| Parameter | YAML | Env | CLI |
+|---|---|---|---|
+| port | `target.port` | `SENTINEL_PORT` | `--port` |
+| host | `target.host` | `SENTINEL_HOST` | `--host` |
+| base path | `target.base_path` | `SENTINEL_BASE_PATH` | `--base-path` |
+| front-end port | `frontend.port` | `SENTINEL_FRONTEND_PORT` | `--frontend-port` |
+| front-end host | `frontend.host` | `SENTINEL_FRONTEND_HOST` | `--frontend-host` |
+| API path on the front end | `frontend.api_path` | | `--frontend-api-path`, `--via-frontend` |
+| scheme | `target.scheme` | `SENTINEL_SCHEME` | `--scheme` |
+| any endpoint | `endpoints.<name>` | `SENTINEL_ENDPOINT_<NAME>` | |
+| any field name | `fields.<name>` | `SENTINEL_FIELD_<NAME>` | |
+| allowed public hosts | `safety.allowed_hosts` | `SENTINEL_ALLOWED_HOSTS` | |
 
-The harness is driven by **one config file** plus a few optional code tweaks.
-Until these match your real backend, results are meaningless: a wrong/missing
-route returns 404, which the suites count as "blocked" (a false PASS). Always run
-`scripts/preflight.py` after editing to confirm the routes resolve and login
-returns a token.
+A missing config file or a malformed endpoint is an error; an unknown key is a
+warning. Nothing falls back to defaults silently.
 
-### Where everything lives
-| File | Role |
-|------|------|
-| `config/target.<name>.yaml` | **The one file you edit.** Copy `config/target.videosanity.yaml` (or `target.example.yaml`) and fill it in. |
-| `sentinel/adapters/http_target.py` | A handful of request-shaping spots marked `# ADAPT` you may need to change (headers, field names). |
-| env vars `SENTINEL_*` | Override any single value without touching the YAML. Precedence: **built-in defaults < YAML < env vars**. |
+### Wiring it to your API
 
-Point the run at your file with `--config config/target.videosanity.yaml` or
-`SENTINEL_CONFIG=config/target.videosanity.yaml`.
+Everything that differs between backends is in the config — no code edits. The
+quickest way is the web UI: type the ports, open *Flow settings*, and use *Try
+the flows* until every line is green, then *Save config*. By hand:
 
-### Step 1 — fill in the config (what every key is, and how to find it)
-| Key | What it is | How to find it | Example |
-|-----|-----------|----------------|---------|
-| `target.scheme/host/port/base_path` | Where the app listens | your deploy / container | `http` / `videosanity-videosanity-app-1` / `8080` / `/api/v1` |
-| `endpoints.<name>` | `"METHOD /path/with/{params}"` for each operation | your API routes / OpenAPI / controller code | `login: "POST /auth/login"` |
-| `fields.username/password/otp/email/token/new_password` | The **JSON field names** your API expects | a real request body (DevTools → Network) | `username: email` if login takes `email` |
-| `token_json_path` | Dot-path to the access token in the login JSON | a real login response | `data.accessToken` |
-| `refresh_json_path` | Dot-path to the refresh token | a real login response | `data.refreshToken` |
-| `auth_header` | How the token is sent | your auth docs | `Authorization: Bearer {token}` (or a cookie — see ADAPT) |
-| `users.user/user2/admin` | **Real throwaway accounts** that already exist | create them on the test instance | see example below |
-| `jwt_iss` / `jwt_aud` | Expected issuer/audience, so forged-token tests fail on the *algorithm*, not iss/aud | a decoded JWT (jwt.io) | `https://auth.videosanity.test` / `api` |
-| `jwks_url` | Public-key endpoint (enables the RS256→HS256 test, C2) | `/.well-known/jwks.json` if present | optional |
-| `features` | `[oauth, media_upload]` — attacks for a feature not listed are SKIPPED | what your app actually has | `[media_upload]` |
-| `hooks.*` | Optional **test-build** endpoints that unlock gray-box checks | only if you expose them | leave `null` for black-box |
+1. **Copy** `config/target.example.yaml` to `config/target.<project>.yaml`.
+2. **Where it listens:** `target.scheme/host/port/base_path`, and
+   `frontend.host/port` if the web app has its own port. A project that
+   spans several internal services can give an absolute URL for any endpoint:
+   `login: "POST http://auth-service:9000/login"`.
+3. **Routes:** `endpoints.<name>: "METHOD /path/{params}"`. `resource` matters
+   most — "the user reads their own resource" is the control most checks run first.
+4. **Field names:** `fields.*` (`username: email` if login is by e-mail;
+   `otp: ""` if there's no second factor; `old_password`, `upload_file`,
+   `fetch_url`, `role`).
+5. **Signals:** `signals.*` — the header your proxy uses for the client IP, and
+   how a same-site write, a step-up re-auth and a verified e-mail are signalled.
+6. **Tokens:** `token_json_path`, `refresh_json_path`, `auth_header`
+   (`Authorization: Bearer {token}` or `Cookie: session={token}`),
+   `session_cookie`, `jwt_iss`/`jwt_aud`, optional `jwks_url`.
+7. **Test data:** `users.user/user2/admin` (real throwaway accounts),
+   `bola_object` (something `user2` owns), `media_sample` (a media path that exists).
+8. **Features and hooks** — the table below.
+9. **Verify, then run:**
 
-> **Field-name gotcha:** the login *identifier* value comes from
-> `users.<role>.username`, and it is sent under the JSON key `fields.username`.
-> So if your API logs in by email, set `fields.username: email` **and** put the
-> email address in each user's `username`. Same idea for `otp`→`totp`,
-> `new_password`→`newPassword`, etc.
-
-### Step 2 — adjust the `# ADAPT` spots in `sentinel/adapters/http_target.py`
-These are request details config can't express. Search the file for `# ADAPT`:
-| Spot (method) | Default | Change to |
-|---------------|---------|-----------|
-| `login` — client IP header | `X-Forwarded-For` | your real client-IP header (e.g. `X-Real-IP`), used by the brute-force/IP-limit checks |
-| `_mutate_headers` — CSRF signal | `Origin` / `X-CSRF-Token` | however your API distinguishes same-site vs cross-site writes |
-| `_mutate_headers` — step-up signal | `X-Step-Up: reauthed` | your re-auth / step-up signal (used by CT1, SES6) |
-| `change_email` — verified signal | `X-Email-Verified: true` | your "email re-verified" signal (AT4, OCT2) |
-| `upload_bytes` — multipart field | `file` | your upload form-field name (e.g. `media`) |
-| `upload` — import-by-URL field | `fetchUrl` | your "import from URL" field (e.g. `sourceUrl`), used by the SSRF checks (INJ6, OCT5) |
-
-> If the app authenticates with a **session cookie** instead of a bearer token,
-> set `auth_header` to a cookie (`Cookie: session={token}`) and make sure
-> `token_json_path` points at whatever the login returns (or the `sid` the
-> adapter lifts from `Set-Cookie`). `fields.token` is reused for **both** the
-> refresh-token and reset-token request bodies — if your API names them
-> differently, split them in `refresh_token()` / `reset_confirm()`.
-
-### Step 3 — worked example
-Say videosanity's real API (from its docs/code) looks like this:
-
-```
-POST /api/v1/auth/login     {"email","password","totp"}  -> 200 {"data":{"accessToken","refreshToken"}}
-POST /api/v1/auth/logout    Bearer                        -> 204
-POST /api/v1/auth/refresh   {"refreshToken"}              -> 200 {"data":{"accessToken"}}
-POST /api/v1/auth/register  {"email","password"}          -> 201
-GET  /api/v1/admin/users            Bearer(admin)
-DELETE /api/v1/admin/users/{target} Bearer(admin)
-GET  /api/v1/users/{owner_id}/library   Bearer (owner-only)
-GET  /api/v1/videos/{id}                Bearer (owner-only)
-POST /api/v1/account/password  {"currentPassword","newPassword"}
-POST /api/v1/account/payout             (step-up protected)
-POST /api/v1/account/email     {"email"}
-GET  /media/{path}
-POST /api/v1/uploads           multipart field "media"; import via {"sourceUrl"}
-POST /api/v1/auth/password/forgot {"email"}
-POST /api/v1/auth/password/reset  {"token","newPassword"}
-Auth: Authorization: Bearer <token>   ·   client IP from X-Real-IP
+```bash
+python scripts/preflight.py --config config/target.<project>.yaml
+python -m sentinel.cli run --target http --config config/target.<project>.yaml --suite all
 ```
 
-The matching `config/target.videosanity.yaml` is:
+Each inconclusive line in the output names the key that still needs fixing.
 
-```yaml
-target:
-  scheme: http
-  host: videosanity-videosanity-app-1
-  port: 8080
-  base_path: /api/v1            # prefixes every endpoint below (except absolute ones)
+> **Field-name gotcha:** the login identifier *value* comes from
+> `users.<role>.username` and is sent under the JSON key `fields.username`. If
+> your API logs in by e-mail, set `fields.username: email` **and** put the
+> address in each user's `username`.
 
-endpoints:
-  login:           "POST /auth/login"
-  logout:          "POST /auth/logout"
-  refresh:         "POST /auth/refresh"
-  register:        "POST /auth/register"
-  admin_users:     "GET /admin/users"
-  admin_delete:    "DELETE /admin/users/{target}"
-  resource:        "GET /users/{owner_id}/library"
-  object:          "GET /videos/{id}"          # suite calls get_object(.,'video',102)
-  change_password: "POST /account/password"
-  sensitive:       "POST /account/payout"
-  change_email:    "POST /account/email"
-  media:           "GET /media/{path}"         # note: no /api/v1 prefix? then set base_path:"" and prefix each route
-  upload:          "POST /uploads"
-  reset_request:   "POST /auth/password/forgot"
-  reset_confirm:   "POST /auth/password/reset"
-  buggy:           "GET /videos/{id}"          # any route that parses input; reuse one you have
-
-fields:
-  username: email                # <-- login takes "email", so map it here
-  password: password
-  otp: totp
-  email: email
-  token: token                   # reset body uses {"token": ...}
-  new_password: newPassword
-
-token_json_path: "data.accessToken"
-refresh_json_path: "data.refreshToken"
-auth_header: "Authorization: Bearer {token}"
-
-users:
-  user:  { username: "alice@videosanity.test", password: "Alice-Pw-123!", id: 1001, email: "alice@videosanity.test" }
-  user2: { username: "bob@videosanity.test",   password: "Bob-Pw-123!",   id: 1002, email: "bob@videosanity.test" }
-  admin: { username: "admin@videosanity.test", password: "Admin-Pw-123!", id: 1,    email: "admin@videosanity.test" }
-
-jwt_iss: "https://auth.videosanity.test"
-jwt_aud: "api"
-
-features: [media_upload]         # add "oauth" only if videosanity exposes OAuth endpoints
-
-hooks:                           # leave null for black-box; ~8 checks then SKIP (honest)
-  reset: null
-  user_admin: null
-  other_aud_token: null
-  db_probe: null
-  reset_introspect: false
-```
-
-…plus two `# ADAPT` edits in `http_target.py`: change the client-IP header to
-`X-Real-IP`, the multipart field from `file` to `media`, and the import field
-from `fetchUrl` to `sourceUrl`.
-
-### Step 4 — which checks run, and what each hook/feature unlocks
-Without a capability, the dependent checks **SKIP** (honest) rather than fake a pass:
+### What each feature / hook unlocks
 
 | Capability | Turn it on with | Unlocks |
-|-----------|-----------------|---------|
-| `media_upload` | `features: [media_upload]` | INJ6, OUT5, UP2, UP3, MED1, MED2, MED4, **OCT5, OCT6** |
-| `oauth` | `features: [oauth]` + `oauth:` block | OA1–OA5, **OCT1** |
-| `two_accounts` | a real `users.user2` | AZ2, AZ3, **OCT8** |
-| `signing_key` | `jwks_url` | C2 (RS256→HS256 confusion) |
-| `reset_introspect` | `hooks.reset_introspect: true` (test build echoes the reset link) | AT1, AT3, ID3, **OCT3b** |
-| `user_admin` | `hooks.user_admin` (test endpoint to read/set a user) | AZ5, AZ6, **OCT9** |
-| `other_aud_token` | `hooks.other_aud_token` | SES7 |
+|---|---|---|
+| `media_upload` | `features: [media_upload]` | INJ6, OUT5, UP1, UP2, UP3, MED1–4, OCT5, OCT6 |
+| `frontend` | `frontend.port` (the front-end port) | FE1–FE5 |
+| `oauth` | `features: [oauth]` + `oauth:` block | OA1–OA5, OCT1, NOV11, NOV12 |
+| `mfa` | `features: [mfa]` (seed accounts have a 2nd factor) | BF5, NOV7, NOV6 |
+| `csrf` | `features: [csrf]` (auth rides on a cookie) | SES6 |
+| `two_accounts` | a real `users.user2` | AZ2, AZ3, OCT8 |
+| `signing_key` | `jwks_url` | C2, NOV2 |
+| `reset_introspect` | `hooks.reset_introspect: true` (test build echoes the reset link) | AT1, AT3, ID3, OCT3b, NOV6 |
+| `user_admin` | `hooks.user_admin` (test endpoint: GET reads a user, POST `{"enabled": bool}`) | AZ5, AZ6, OCT9, NOV5; makes AT4/OCT2 conclusive when the server accepts the request |
+| `other_aud_token` | `hooks.other_aud_token` (mint a token; supports `{aud}`, `{username}`, `{ttl}`) | SES7, C5 |
 | `db_probe` | `hooks.db_probe` | MED3 |
+| — | `hooks.reset` (restore clean state) | Nothing new, but keeps one check's lockout from making a later one inconclusive, and makes repeated campaign passes meaningful |
 
-### Step 5 — verify, then run
+A pure black-box run (no hooks) against the demo backend proves 81 checks, skips
+14 and leaves 1 inconclusive (the second lockout test finds the client address
+already throttled by the first); with every hook it proves all 96.
+
+## Fuzzer and campaign report
+
+- **`scripts/fuzz.py`** — a fast, config-driven input fuzzer: 92 payloads in 11
+  categories (SQLi, XSS, encoding, traversal, command/template injection,
+  NoSQL/LDAP, CRLF, validation/boundary, and hidden-instruction text aimed at
+  any LLM/agent that later reads the field) swept across login, registration and
+  route fields, with response-signal detection (reflection, SQL errors, stack
+  traces, auth bypass, 5xx, time-based latency). `--dry-run` shows the plan.
+  **Signals are leads for human review, not confirmed vulnerabilities.**
+- **`scripts/campaign.py`** — runs every suite (plus the fuzzer against an HTTP
+  target) in a loop for `--minutes N`, then writes
+  `reports/appsec-report-<ts>.md` + a `.json` sidecar: score, weak points with
+  their fix, checks that couldn't be proven and why, strong points, coverage
+  gaps, fuzzer signals, and a diff against the previous run.
+
 ```bash
-# a) routes resolve + login returns a token (fails loudly if not)
 python scripts/preflight.py --config config/target.videosanity.yaml
-# b) sanity-check the suites themselves still pass/fail correctly
-python -m sentinel.cli run --target reference-secure --suite all
-python -m sentinel.cli run --target reference-vulnerable --suite all
-# c) the real run (single pass) or the timed campaign with a Markdown report
-SENTINEL_CONFIG=config/target.videosanity.yaml python -m sentinel.cli run --target http --suite all
-SENTINEL_CONFIG=config/target.videosanity.yaml python scripts/campaign.py --target http --minutes 10
+SENTINEL_CONFIG=config/target.videosanity.yaml python scripts/campaign.py --target http --minutes 10 --cooldown 60
 ```
 
-Run against a **disposable** instance — the suites and fuzzer mutate state
-(change passwords/email, create accounts, upload files).
+Without `hooks.reset`, locked accounts and a throttled client address carry
+from one pass into the next; use `--cooldown` longer than the backend's lockout
+window, or expose a reset hook in its test profile.
+
+## Tests
+
+```bash
+pip install -r requirements-dev.txt
+pytest -q          # 68 tests, ~50 s
+```
+
+They cover the two reference invariants (secure: all blocked; vulnerable: all
+leak), the full catalogue over a real socket against the demo backend in both
+modes, and each failure this harness must never repeat: a dead backend, a wrong
+route or wrong credentials passing; state bleed in a black-box run; traversal
+sequences being normalised away by the HTTP client; cookie bleed; ignored config
+keys; plus the scope guard, the bot-evasion checks (each catches exactly its own
+bypass), the front-end checks (a single-page app's catch-all page is not
+mistaken for an exposed file; publishable keys are not mistaken for secrets),
+flow selection, "try the flows", and the web UI's own lockdown.
 
 ## Layout
 
 ```
 appsec-sentinel/
 ├── sentinel/
-│   ├── cli.py                      # entry point: sentinel run --target --suite
-│   ├── config.py                   # YAML + env config (host/port/path/endpoints)
+│   ├── cli.py                      # sentinel run | list | ui
+│   ├── engine.py                   # one definition of "a run" (CLI, UI, campaign)
+│   ├── config.py                   # YAML + env config, validation, retarget()
+│   ├── safety.py                   # scope guard, pacing, request budget
 │   ├── adapters/
-│   │   ├── base.py                 # Target contract + Capability enum
+│   │   ├── base.py                 # Target contract, Capability, Inconclusive
 │   │   ├── http_target.py          # ← the real backend adapter (HTTP)
 │   │   ├── reference_target.py     # in-process self-test + negative control
-│   │   └── reference/              # the proven secure/vulnerable app models
+│   │   └── reference/              # the secure / vulnerable app models
 │   ├── suites/
-│   │   ├── access_control.py       # 44 attacks, capability-gated
-│   │   ├── media_injection.py      # upload-injection checks
-│   │   ├── xss.py                  # headless-browser XSS
-│   │   └── common.py / jwt_forge.py / pkce.py
-│   └── media/generator.py          # hostile-media corpus generator
+│   │   ├── common.py               # runner, verdict helpers, score
+│   │   ├── access_control.py  media_injection.py  oct2026.py  nov2026.py
+│   │   ├── automation.py           # bots / agents / spam
+│   │   ├── resilience.py           # hostile input shapes + load burst
+│   │   ├── surface.py              # exposed files, CORS, the web front end
+│   │   ├── flows.py                # checks grouped by product flow
+│   │   ├── remediation.py          # the fix for each leak
+│   │   └── xss.py  jwt_forge.py  pkce.py
+│   ├── media/generator.py          # hostile-media corpus generator
+│   └── ui/                         # the web UI (stdlib server + one page)
 ├── demo_target/server.py           # bundled demo backend (stand-in for yours)
-├── config/                         # target.example.yaml, target.demo.yaml
-├── tests/test_suites.py            # pytest wrappers (self-test + negative control)
-├── kotlin/                         # OPTIONAL JVM variant: JUnit + WebTestClient seam
-├── Dockerfile  docker-compose.yml  requirements*.txt
+├── scripts/                        # preflight.py  fuzz.py  campaign.py
+├── config/                         # target.example / demo / videosanity .yaml
+├── docs/THREATS-2026-Q4.md         # check → incident mapping, sources, gaps
+├── tests/                          # pytest: suites + the harness itself
+├── kotlin/                         # OPTIONAL JVM variant (see below)
+└── Dockerfile  docker-compose*.yml  requirements*.txt
 ```
 
 ## The Kotlin variant (optional)
 
-`kotlin/` holds the same catalogue as a JUnit suite behind an `AppUnderTest` seam,
-for teams that prefer to run security tests inside their Gradle build (wire it to
-your Spring Security filter chain with `WebTestClient`). The Python project is the
-primary, dockerized runner; the two don't need to be used together.
+`kotlin/` holds an earlier version of the access-control catalogue as a JUnit suite
+behind an `AppUnderTest` seam, for teams that prefer to run security tests
+inside their Gradle build. It has **not** been updated with the control-first
+verdicts, the `nov2026`/`automation`/`resilience` suites or the corrected threat
+mapping — the Python project is the primary runner.
 
 ## Honesty notes
 
-- Verified in this environment: the Python runner (self-test, negative control)
-  and the HTTP adapter against a live socket. `docker compose config` validates;
-  the image build and the Kotlin `gradle test` should be run on your machine
-  (this sandbox blocks the base-image/Maven mirrors).
+- **Verified here:** the Python runner against both reference apps (96/96 each
+  way); the HTTP adapter against the demo backend over a real socket in secure,
+  vulnerable, black-box and dead-backend configurations; the web UI driven in
+  headless Chromium (ports, try the flows, fixing a route, saving, running by
+  flow); the fuzzer, preflight and campaign scripts; 68 pytest tests.
+- **Not verified here:** the Docker image build and the compose files (syntax
+  checked only — no Docker daemon in the environment this was written in), the
+  Kotlin `gradle test`, the `xss` suite (Python Playwright not installed), and
+  any run against a real application of yours.
+- **Abstractions that may not fit your app.** Step-up, CSRF and "e-mail verified"
+  are modelled as request headers (`signals.*`). If your app expresses them
+  differently (e.g. step-up as a recent-login timestamp inside the token), CT1,
+  NOV8, SES6 and AT4 need adapting — expect inconclusive or misleading results
+  there until then. OAuth checks assume the authorize endpoint can be called
+  directly; flows that require an interactive login first will be inconclusive.
+- **The front-end checks look at what the front end serves** (files, headers,
+  scripts). They do not click through your app in a browser; driving your real
+  login or upload screens needs selectors only you know (the optional `xss`
+  suite is the place to add that).
+- **A green run is not a penetration test.** It shows these specific controls
+  hold. Against the OWASP API Top 10 it is good on authentication, resource
+  consumption and SSRF, partial on authorization and misconfiguration, and does
+  not cover API inventory or third-party API trust (table in
+  `docs/THREATS-2026-Q4.md`). It can't find business-logic flaws, and it says nothing about the
+  classes listed under "not covered" in `docs/THREATS-2026-Q4.md` (runtime RCEs
+  fixed by patching, HTTP/2–3 protocol floods, volumetric load, LLM behaviour).
 - A keylogger can't be tested server-side — the suites check its *mitigations*
   (step-up auth, short tokens). Full DOM-XSS coverage wants a DAST crawler
-  alongside the headless checks here.
-```
+  alongside the headless checks.

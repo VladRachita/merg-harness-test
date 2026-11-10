@@ -3,6 +3,8 @@
 #
 #   docker compose up --build --abort-on-container-exit
 #
+# Prefer a page with a Start button and a live score? See docker-compose.ui.yml.
+#
 # To test YOUR backend instead of the demo:
 #   1. delete the `demo-target` service (or leave it; it's harmless)
 #   2. add your backend as a service, or point config at an external host

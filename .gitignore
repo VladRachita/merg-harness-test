@@ -4,3 +4,7 @@ __pycache__/
 # generated campaign reports (run artifacts; the diff reads them locally).
 # Remove this line if you want to track report history in git.
 reports/
+
+# configs saved from the web UI (config/ui.<name>.yaml). They hold whatever test
+# credentials were typed into the form; rename one to target.<name>.yaml to share it.
+config/ui.*.yaml

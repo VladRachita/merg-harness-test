@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="sentinel-token" content="__SENTINEL_TOKEN__">
+<title>appsec-sentinel</title>
+<link rel="stylesheet" href="/app.css">
+</head>
+<body>
+<header class="top">
+  <div class="brand"><span class="logo" aria-hidden="true"></span>appsec-sentinel</div>
+  <span id="pill" class="pill idle">Idle</span>
+</header>
+
+<main>
+  <aside class="panel" aria-label="Run setup">
+    <h2>Target</h2>
+
+    <label class="field">What to test
+      <select id="mode">
+        <option value="http">Your app, over HTTP</option>
+        <option value="reference-secure">Self-test — built-in secure app</option>
+        <option value="reference-vulnerable">Negative control — built-in broken app</option>
+      </select>
+    </label>
+
+    <div id="httpFields">
+      <label class="field">Start from config
+        <select id="config"></select>
+      </label>
+
+      <h3>Backend (API)</h3>
+      <div class="pair">
+        <label class="field grow">Host
+          <input id="host" type="text" autocomplete="off" spellcheck="false" placeholder="my-backend">
+        </label>
+        <label class="field port">Port
+          <input id="port" type="number" min="1" max="65535" inputmode="numeric" placeholder="8080">
+        </label>
+      </div>
+      <div class="pair">
+        <label class="field scheme">Scheme
+          <select id="scheme"><option>http</option><option>https</option></select>
+        </label>
+        <label class="field grow">Base path
+          <input id="base_path" type="text" autocomplete="off" spellcheck="false" placeholder="/api/v1">
+        </label>
+      </div>
+
+      <h3>Front end (web) <small>optional</small></h3>
+      <div class="pair">
+        <label class="field grow">Host
+          <input id="frontend_host" type="text" autocomplete="off" spellcheck="false" placeholder="same as backend">
+        </label>
+        <label class="field port">Port
+          <input id="frontend_port" type="number" min="1" max="65535" inputmode="numeric" placeholder="3000">
+        </label>
+      </div>
+      <label class="check"><input type="checkbox" id="via_frontend">
+        <span>Send the API attacks through the front-end port, as a browser does</span></label>
+      <label class="field" id="apiPathField" hidden>API path on the front end
+        <input id="api_path" type="text" autocomplete="off" spellcheck="false" placeholder="/api">
+      </label>
+      <p class="hint">API <code id="urlPreview"></code><br><span id="fePreviewWrap">Front end <code id="fePreview"></code></span></p>
+    </div>
+    <p id="refHint" class="hint" hidden>Runs entirely in-process — no backend needed. Use it to
+      confirm the harness itself works (secure app: everything blocked; broken app: everything leaks).</p>
+
+    <fieldset>
+      <legend>Flows to attack <button type="button" id="toggleFlows" class="link">all / none</button></legend>
+      <div id="flows"></div>
+    </fieldset>
+
+    <details id="settings" class="more">
+      <summary>Flow settings — routes, fields, test accounts</summary>
+      <p class="hint">How the harness performs each flow legitimately. Use <b>Try the flows</b>
+        to see which ones work, fix the line that fails, and save.</p>
+      <h3>Login</h3>
+      <label class="field">Route <input id="fs_login" type="text" spellcheck="false" placeholder="POST /auth/login"></label>
+      <div class="pair">
+        <label class="field grow">Username field <input id="fs_username_field" type="text" spellcheck="false"></label>
+        <label class="field grow">Password field <input id="fs_password_field" type="text" spellcheck="false"></label>
+      </div>
+      <label class="field">Where the token is in the response <input id="fs_token_json_path" type="text" spellcheck="false" placeholder="data.accessToken"></label>
+      <label class="field">How the token is sent <input id="fs_auth_header" type="text" spellcheck="false" placeholder="Authorization: Bearer {token}"></label>
+      <h3>Registration</h3>
+      <label class="field">Route <input id="fs_register" type="text" spellcheck="false" placeholder="POST /auth/register"></label>
+      <h3>Upload</h3>
+      <label class="check"><input type="checkbox" id="fs_media_upload"><span>The app has file uploads</span></label>
+      <div class="pair">
+        <label class="field grow">Route <input id="fs_upload" type="text" spellcheck="false" placeholder="POST /upload"></label>
+        <label class="field port">File field <input id="fs_upload_field" type="text" spellcheck="false"></label>
+      </div>
+      <h3>The user's own data</h3>
+      <label class="field">Route only its owner may read <input id="fs_resource" type="text" spellcheck="false" placeholder="GET /users/{owner_id}/profile"></label>
+      <h3>Test accounts <small>throwaway — they get changed</small></h3>
+      <div class="pair">
+        <label class="field grow">User <input id="fs_user" type="text" autocomplete="off" spellcheck="false"></label>
+        <label class="field grow">Password <input id="fs_pass" type="text" autocomplete="off" spellcheck="false"></label>
+        <label class="field idf">Id <input id="fs_uid" type="text" autocomplete="off" spellcheck="false"></label>
+      </div>
+      <div class="pair">
+        <label class="field grow">Admin <input id="fs_admin_user" type="text" autocomplete="off" spellcheck="false"></label>
+        <label class="field grow">Password <input id="fs_admin_pass" type="text" autocomplete="off" spellcheck="false"></label>
+      </div>
+      <div class="pair save">
+        <label class="field grow">Save as <input id="saveName" type="text" spellcheck="false" placeholder="my-project"></label>
+        <button type="button" id="save">Save config</button>
+      </div>
+      <p id="saveMsg" class="hint" aria-live="polite"></p>
+    </details>
+
+    <details class="more">
+      <summary>Advanced — suites</summary>
+      <div id="suites"></div>
+    </details>
+
+    <div class="buttons">
+      <button type="button" id="check">Try the flows</button>
+      <button type="button" id="start" class="primary">Start run</button>
+      <button type="button" id="stop" class="danger" hidden>Stop</button>
+    </div>
+    <ul id="preflight" class="preflight" aria-live="polite"></ul>
+    <p id="formError" class="formerror" role="alert"></p>
+    <p class="hint foot">Only internal targets (localhost, private IPs, Docker service names) are
+      accepted unless a host is allow-listed in the config. Runs change data — use a disposable
+      instance. "Try the flows" creates one test account and uploads one small file.</p>
+  </aside>
+
+  <section class="live" aria-label="Run results">
+    <div class="scorecard panel">
+      <div class="scorebox">
+        <div class="score"><span id="score">–</span><small>/100</small></div>
+        <div id="verdict" class="verdict none">No run yet</div>
+        <div id="meta" class="meta"></div>
+      </div>
+      <div class="tiles">
+        <div class="tile blocked"><b id="nBLOCKED">0</b><span>Blocked</span></div>
+        <div class="tile leak"><b id="nLEAK">0</b><span>Leaks</span></div>
+        <div class="tile inconclusive"><b id="nINCONCLUSIVE">0</b><span>Inconclusive</span></div>
+        <div class="tile skipped"><b id="nSKIPPED">0</b><span>Skipped</span></div>
+        <div class="tile error"><b id="nERROR">0</b><span>Errors</span></div>
+      </div>
+    </div>
+
+    <div class="panel progresswrap">
+      <div class="progress" role="progressbar" aria-valuemin="0" aria-valuemax="100" id="progress">
+        <div id="bar"></div>
+      </div>
+      <p id="progressText" class="hint">Enter the backend port (and the front-end port if there is one), then try the flows or start a run.</p>
+      <ul id="notes" class="notes"></ul>
+    </div>
+
+    <div class="panel" id="flowPanel" hidden>
+      <h2>By flow</h2>
+      <div id="byFlow" class="byflow"></div>
+    </div>
+
+    <div class="panel">
+      <div class="toolbar">
+        <div id="filters" class="chips" role="tablist" aria-label="Filter results"></div>
+        <a id="download" class="link" href="#" hidden>Download JSON report</a>
+      </div>
+      <div class="tablewrap">
+        <table id="results">
+          <thead><tr><th>Result</th><th>Check</th><th>What it proves</th></tr></thead>
+          <tbody></tbody>
+        </table>
+        <p id="empty" class="hint emptystate">Results appear here as each check finishes.</p>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h2>Recent runs</h2>
+      <ul id="history" class="history"><li class="hint">None yet.</li></ul>
+      <p class="hint">Score = share of the checks that ran which were <em>proven</em> blocked.
+        Leaks, errors and inconclusive checks all count against it; skipped checks lower coverage instead.</p>
+    </div>
+  </section>
+</main>
+<script src="/app.js"></script>
+</body>
+</html>

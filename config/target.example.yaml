@@ -1,6 +1,10 @@
-# Template for pointing the harness at YOUR backend. Copy to target.yaml and edit.
-# Anything omitted falls back to a sensible default (see sentinel/config.py).
-# Every value can also be set via env var, e.g. SENTINEL_PORT, SENTINEL_HOST.
+# Template for pointing the harness at YOUR backend. Copy to target.<project>.yaml
+# and edit. Anything omitted falls back to a default (see sentinel/config.py);
+# unknown keys are reported as warnings, a missing file is an error.
+# Every target value can also be set by env var (SENTINEL_HOST, SENTINEL_PORT, …),
+# by CLI flag (--host/--port/--base-path) or in the web UI.
+#
+# After editing:  python scripts/preflight.py --config config/target.<project>.yaml
 
 target:
   scheme: https            # http | https
@@ -10,12 +14,33 @@ target:
   verify_tls: true
   timeout_s: 10
 
-# If your backend publishes a JWKS, set this to enable the RS256->HS256 test (C2)
+# The web front end, if it runs on its own port. With a port set, the `surface`
+# suite also checks what the front end serves (exposed files, security headers,
+# secrets in its JavaScript). Leave port empty if there is no separate front end.
+frontend:
+  scheme: https
+  host: your-frontend      # defaults to target.host
+  port: 3000
+  api_path: /api           # prefix under which the front end proxies the API, if it does;
+                           # lets you run the API attacks THROUGH the front-end port
+                           # (--via-frontend, or the checkbox in the UI)
+
+# Safety. Internal targets (localhost, private IPs, single-label docker names,
+# *.test / *.internal / *.local …) need nothing here. Any other host is REFUSED
+# unless you list it — only list systems you own and are authorised to test.
+safety:
+  allowed_hosts: []        # e.g. ["staging.mycompany.io", "*.staging.mycompany.io"]
+  max_rps: 0               # pace requests (0 = unpaced) — use on shared staging
+  max_requests: 0          # hard request budget per run (0 = unlimited)
+
+# If your backend publishes a JWKS, set this to enable the confusion tests (C2, NOV2)
 jwks_url: "https://your-backend:8443/.well-known/jwks.json"
-jwt_iss: "https://your-issuer"
+jwt_iss: "https://your-issuer"       # so forged tokens fail on the SIGNATURE, not on iss/aud
 jwt_aud: "your-api-audience"
 
-# Map the abstract operations to your real routes: "METHOD /path/with/{params}"
+# Map the abstract operations to your real routes: "METHOD /path/with/{params}".
+# A project that spans several internal services can give an absolute URL for
+# any single endpoint:   login: "POST http://auth-service:9000/login"
 endpoints:
   login:           "POST /auth/login"
   logout:          "POST /auth/logout"
@@ -23,10 +48,11 @@ endpoints:
   register:        "POST /auth/register"
   admin_users:     "GET /admin/users"
   admin_delete:    "DELETE /admin/users/{target}"
-  resource:        "GET /resources/{owner_id}"
+  resource:        "GET /resources/{owner_id}"   # something ONLY its owner may read — the
+                                                 # control ("user reads own resource") for most checks
   object:          "GET /{kind}s/{id}"
   change_password: "POST /account/password"
-  sensitive:       "POST /account/payout"
+  sensitive:       "POST /account/payout"        # any action that needs step-up re-auth
   change_email:    "POST /account/email"
   media:           "GET /media/{path}"
   upload:          "POST /upload"
@@ -34,27 +60,49 @@ endpoints:
   reset_confirm:   "POST /auth/reset/confirm"
   oauth_authorize: "GET /oauth/authorize"
   oauth_token:     "POST /oauth/token"
-  buggy:           "GET /debug/parse"
+  buggy:           "GET /debug/parse"            # any cheap GET that takes ?value= ; also the
+                                                 # endpoint the load burst (RES9) hits
 
 # Request field names your backend expects
 fields:
-  username: username
+  username: username       # set to "email" if login is by e-mail
   password: password
-  otp: otp
+  otp: otp                 # set to "" if there is no second factor
   email: email
-  token: token
+  token: token             # refresh and reset bodies
   new_password: newPassword
+  old_password: old        # current-password field on change-password
+  role: role               # privilege field the mass-assignment checks try to set
+  upload_file: file        # multipart field name for uploads
+  fetch_url: fetchUrl      # "import from URL" field (SSRF checks)
+
+# How your backend signals things the checks need to express — headers, "Name: value".
+signals:
+  client_ip_header: "X-Forwarded-For"            # header your proxy uses for the client IP
+  csrf_header: "X-CSRF-Token: test-csrf-token"   # what a legitimate same-site write carries
+  cross_site_origin: "https://evil.example"      # Origin sent by the CSRF attack
+  step_up_header: "X-Step-Up: reauthed"          # proof of a fresh re-authentication
+  email_verified_header: "X-Email-Verified: true"
 
 # How the access token comes back and how to send it
 token_json_path: "access_token"      # dot-path into the login JSON, e.g. "data.accessToken"
 refresh_json_path: "refresh_token"
-auth_header: "Authorization: Bearer {token}"
+auth_header: "Authorization: Bearer {token}"   # or "Cookie: session={token}"
+session_cookie: sid                  # name of the session cookie, if the app sets one
+throttle_statuses: [429]             # statuses meaning "rate-limited / locked" (add 423 if used)
 
-# Seed accounts that already exist in the test backend
+# Seed accounts that already exist in the test backend (throwaway — checks change them)
 users:
   user:  { username: alice, password: alice-pw, id: 1, email: alice@x.com }
   user2: { username: bob,   password: bob-pw,   id: 2, email: bob@x.com }
   admin: { username: admin, password: admin-pw, id: 3, email: admin@x.com }
+  # lockout: { username: carol, password: carol-pw, id: 4, email: carol@x.com }
+  #   optional: an account for the lockout tests to burn, so `user` stays usable
+
+# An object owned by `owner` that `users.user` must NOT be able to read (BOLA),
+# and a media path that legitimately exists (control for the traversal check).
+bola_object: { kind: video, id: 102, owner: user2 }
+media_sample: intro.mp4
 
 oauth:
   client_id: public-app
@@ -62,17 +110,27 @@ oauth:
   other_client_id: other-app
   other_redirect_uri: https://other.example/cb
 
-# Features your backend has; attacks for a disabled feature are SKIPPED
-features: [oauth, media_upload]
+# Features your backend has; checks for a feature not listed are SKIPPED.
+#   oauth         OAuth2/PKCE endpoints
+#   media_upload  an upload endpoint
+#   mfa           the seed accounts have a second factor
+#   csrf          auth rides on a cookie (cross-site requests are a threat)
+features: [oauth, media_upload, mfa, csrf]
 
 # Gray-box hooks — only in a TEST build of your backend. Leave null/false in prod;
-# the dependent attacks then report SKIPPED instead of failing.
+# the dependent checks then report SKIPPED instead of failing.
 hooks:
-  reset: null                                   # e.g. "POST /test/reset"
-  user_admin: null                              # e.g. "POST /test/users/{username}"
-  other_aud_token: null                         # e.g. "GET /test/token?aud={aud}&username={username}"
+  reset: null                                   # e.g. "POST /test/reset" — clean state before each check
+  user_admin: null                              # e.g. "POST /test/users/{username}"  (GET reads, POST {"enabled": bool})
+  other_aud_token: null                         # e.g. "GET /test/token?aud={aud}&username={username}&ttl={ttl}"
   db_probe: null                                # e.g. "GET /test/injected?marker={marker}"
-  reset_introspect: false                       # true if reset response echoes the link in test mode
+  reset_introspect: false                       # true if the reset response echoes the link in test mode
 
-suites: [access_control, media_injection]
-fail_on_leak: true
+# How hard the brute-force / bot checks push, and the size of the load burst.
+limits: { lockout_attempts: 6, spray_attempts: 13, burst: 15 }
+load:   { burst_requests: 60, concurrency: 12, p95_ms: 2000 }
+
+suites: [access_control, media_injection]   # default set; `--suite all` runs everything;
+                                            # `--flow login registration upload` picks by flow
+fail_on_leak: true                # exit 1 if an attack gets through
+fail_on_inconclusive: true        # exit 2 if a check could not be proven either way

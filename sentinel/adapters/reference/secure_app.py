@@ -10,10 +10,12 @@ Mirrors the Kotlin deliverable's AuthSystemUnderTest contract.
 import base64
 import hashlib
 import hmac
+import ipaddress
 import json
 import secrets
 import time
 from dataclasses import dataclass, field
+from urllib.parse import urlsplit
 
 import jwt
 from cryptography.hazmat.primitives.asymmetric import rsa
@@ -52,6 +54,21 @@ class Resp:
         return 200 <= self.status < 300
 
 
+FRONTEND_ORIGIN = "https://app.example"          # the one web origin allowed to call the API
+COMMON_PASSWORDS = {"password", "password1", "12345678", "123456789", "1234567890", "qwerty123",
+                    "qwertyuiop", "iloveyou", "11111111", "letmein123", "admin123", "welcome1"}
+
+FRONTEND_PAGE = """<!doctype html><html><head><meta charset="utf-8"><title>App</title>
+<script src="/assets/app.js" defer></script></head><body><div id="root"></div></body></html>"""
+FRONTEND_JS = """const API = "/api"; export async function login(u, p) {
+  return fetch(API + "/auth/login", {method: "POST", body: JSON.stringify({u, p})}); }"""
+FRONTEND_HEADERS = {
+    "Content-Security-Policy": "default-src 'self'; frame-ancestors 'none'; object-src 'none'",
+    "X-Frame-Options": "DENY",
+    "X-Content-Type-Options": "nosniff",
+    "Referrer-Policy": "strict-origin-when-cross-origin",
+}
+
 SECURE_HEADERS = {
     "Content-Security-Policy": "default-src 'none'; frame-ancestors 'none'",
     "X-Content-Type-Options": "nosniff",
@@ -63,6 +80,9 @@ class SecureApp:
     IP_LIMIT = 10
     OTP_LIMIT = 5
     UPLOAD_LIMIT = 5
+    REGISTER_LIMIT = 12      # sign-ups per client before throttling (bot sign-up waves)
+    MIN_PASSWORD = 8
+    RESET_GUESS_LIMIT = 10   # wrong reset tokens per client before throttling (token cracking)
 
     def __init__(self):
         now = int(time.time())
@@ -81,6 +101,8 @@ class SecureApp:
         self.ip_fails = {}
         self.otp_fails = {}
         self.upload_counts = {}
+        self.register_count = 0
+        self.reset_guess_fails = 0
         self.revoked_jti = set()
         self.user_jtis = {}                        # username -> set(jti)
         self.refresh = {}                          # token -> dict(family, used, user)
@@ -121,7 +143,10 @@ class SecureApp:
 
     # ---- auth --------------------------------------------------------------
     def login(self, username, password, source_ip="203.0.113.9", xff=None, otp_ok=True,
-              prev_session=None):
+              prev_session=None, evasion=None):
+        # `xff` and `evasion` (spoofed headers, alternate route spellings, a
+        # form-encoded body) are deliberately IGNORED: limits key on the real
+        # peer address and the normalized account, nothing the client controls.
         key = self._norm(username)
         # rate limiting: per-account (normalized) AND per real source IP
         if self.ip_fails.get(source_ip, 0) >= self.IP_LIMIT:
@@ -149,11 +174,18 @@ class SecureApp:
         r.headers["Set-Cookie"] = f"sid={secrets.token_hex(8)}; HttpOnly; Secure; SameSite=Lax; Path=/"
         return r
 
+    def _kill_refresh(self, username):
+        """Revoke every refresh token of a user (logout / password change / reset)."""
+        for rec in self.refresh.values():
+            if rec["user"] == username:
+                rec["used"] = True
+
     def logout(self, token):
         c = self._verify(token)
         if not c:
             return self._resp(401)
         self.revoked_jti.add(c["jti"])
+        self._kill_refresh(c["sub"])              # logout ends the refresh family too
         return self._resp(200, {"status": "logged out"})
 
     def refresh_token(self, rtok):
@@ -177,6 +209,14 @@ class SecureApp:
 
     def register(self, username, password, requested_role=None, extra=None):
         key = self._norm(username)
+        if self.register_count >= self.REGISTER_LIMIT:
+            return self._resp(429, {"error": "too many sign-ups"})
+        # password policy: long enough, and not one of the passwords every
+        # credential-stuffing list starts with
+        pw = password if isinstance(password, str) else ""
+        if len(pw) < self.MIN_PASSWORD or pw.lower() in COMMON_PASSWORDS or pw.lower() == key:
+            return self._resp(400, {"error": "password too weak"})
+        self.register_count += 1
         if key in self.users:
             return self._resp(409, {"error": "exists"})
         # role + privilege fields are SERVER-assigned; attacker input ignored
@@ -206,7 +246,9 @@ class SecureApp:
             return self._resp(403, {"error": "forbidden"})
         return self._resp(200, {"video": obj_id, "owner": owner})
 
-    def admin_users(self, token):
+    def admin_users(self, token, spoof=None):
+        # identity comes ONLY from the verified token; `spoof` (X-Remote-User,
+        # X-Forwarded-User, …) is client-controlled and ignored
         c = self._verify(token)
         if not c:
             return self._resp(401)
@@ -235,6 +277,7 @@ class SecureApp:
         self.users[c["sub"]]["pw"] = new
         for jti in list(self.user_jtis.get(c["sub"], [])):
             self.revoked_jti.add(jti)                 # kill all sessions
+        self._kill_refresh(c["sub"])                  # ...and refresh tokens
         return self._resp(200, {"status": "changed"})
 
     def sensitive_action(self, token, reauthed=False, csrf_ok=True, cross_site=False):
@@ -272,13 +315,14 @@ class SecureApp:
         c = self._verify(token)
         if not c:
             return self._resp(401)
-        self.upload_counts[c["sub"]] = self.upload_counts.get(c["sub"], 0) + 1
-        if self.upload_counts[c["sub"]] > self.UPLOAD_LIMIT:
-            return self._resp(429, {"error": "upload rate limit"})
+        # validate first: a refused request never reaches storage or the quota
         if fetch_url and self._is_internal(fetch_url):
             return self._resp(400, {"error": "ssrf blocked"})     # SSRF defence
         if width and height and width * height > MAX_PIXELS:
             return self._resp(400, {"error": "image too large"})  # pixel-flood
+        self.upload_counts[c["sub"]] = self.upload_counts.get(c["sub"], 0) + 1
+        if self.upload_counts[c["sub"]] > self.UPLOAD_LIMIT:
+            return self._resp(429, {"error": "upload rate limit"})
         r = self._resp(201, {"stored": filename})
         # uploads are served as downloads, never inline HTML/SVG
         r.headers["Content-Disposition"] = "attachment"
@@ -286,10 +330,53 @@ class SecureApp:
         return r
 
     def _is_internal(self, url):
-        bad = ("169.254.169.254", "localhost", "127.0.0.1", "0.0.0.0",
-               "10.", "192.168.", "172.16.", "::1", "metadata")
-        host = url.split("//")[-1].split("/")[0].lower()
-        return any(b in host for b in bad)
+        """SSRF defence: only plain http(s) to a PUBLIC address is fetchable.
+        The host is parsed the way the fetcher will parse it (so `user@host`,
+        `#@`, and the decimal / hex / octal / short / IPv6-mapped spellings of an
+        internal address are all seen for what they are), then range-checked.
+        A real implementation must also resolve DNS and re-check the resolved IP
+        on every redirect hop — this model has no network to resolve against, so
+        it refuses names it cannot prove public."""
+        try:
+            u = urlsplit(url.strip())
+        except ValueError:
+            return True
+        if u.scheme not in ("http", "https") or not u.hostname:
+            return True
+        host = u.hostname.lower().rstrip(".")
+        ip = self._parse_ip(host)
+        if ip is not None:
+            mapped = getattr(ip, "ipv4_mapped", None)
+            ip = mapped or ip
+            return not ip.is_global
+        if host == "localhost" or "." not in host:
+            return True
+        return host.endswith((".localhost", ".local", ".internal", ".lan", ".home.arpa"))
+
+    @staticmethod
+    def _parse_ip(host):
+        try:
+            return ipaddress.ip_address(host)
+        except ValueError:
+            pass
+        # inet_aton-style IPv4: 2130706433, 0x7f000001, 017700000001, 127.1 …
+        parts = host.split(".")
+        if not 1 <= len(parts) <= 4:
+            return None
+        try:
+            nums = [int(p, 16) if p.lower().startswith("0x") else
+                    int(p, 8) if len(p) > 1 and p.startswith("0") else int(p) for p in parts]
+        except ValueError:
+            return None
+        if any(n < 0 for n in nums) or any(n > 255 for n in nums[:-1]):
+            return None
+        tail_bytes = 5 - len(nums)
+        if nums[-1] >= 256 ** tail_bytes:
+            return None
+        value = nums[-1]
+        for i, n in enumerate(nums[:-1]):
+            value += n << (8 * (3 - i))
+        return ipaddress.ip_address(value)
 
     # ---- password reset ----------------------------------------------------
     def reset_request(self, email, host_header="app.example"):
@@ -306,13 +393,18 @@ class SecureApp:
                      "_link_for_test": link})
 
     def reset_confirm(self, token, new_pw):
+        if self.reset_guess_fails >= self.RESET_GUESS_LIMIT:
+            return self._resp(429, {"error": "too many attempts"})   # token guessing
         rec = self.reset_tokens.get(token)
         if not rec or rec["used"] or rec["exp"] < int(time.time()):
+            self.reset_guess_fails += 1
             return self._resp(400, {"error": "invalid or expired"})
         rec["used"] = True
         self.users[rec["user"]]["pw"] = new_pw
         for jti in list(self.user_jtis.get(rec["user"], [])):
             self.revoked_jti.add(jti)                 # reset kills sessions
+        self._kill_refresh(rec["user"])
+        # NO session is issued here: the user signs in again and passes MFA
         return self._resp(200, {"status": "reset"})
 
     # ---- OAuth2 / PKCE -----------------------------------------------------
@@ -349,3 +441,43 @@ class SecureApp:
             return self._resp(200, {"parsed": int(payload)})
         except Exception:
             return self._resp(400, {"error": "bad request"})   # no stack trace
+
+    # ---- attack surface -----------------------------------------------------
+    def fetch_path(self, where, path):
+        """Only the app itself is served: no dotfiles, no backups, no debug or
+        management endpoints, on either origin."""
+        if where == "frontend" and path in ("/", "/index.html"):
+            return Resp(200, dict(FRONTEND_HEADERS), {"_text": FRONTEND_PAGE})
+        if where == "frontend" and path == "/assets/app.js":
+            return Resp(200, dict(FRONTEND_HEADERS), {"_text": FRONTEND_JS})
+        return self._resp(404, {"error": "not found"})
+
+    def frontend_assets(self):
+        return [("/", FRONTEND_PAGE), ("/assets/app.js", FRONTEND_JS)]   # no secrets shipped
+
+    def cors_probe(self, token, origin, preflight=False):
+        """Cross-origin access is granted to ONE configured origin, never to
+        whatever Origin the request names (and never to "null")."""
+        r = self._resp(204 if preflight else 200)
+        if origin == FRONTEND_ORIGIN:
+            r.headers.update({"Access-Control-Allow-Origin": origin,
+                              "Access-Control-Allow-Credentials": "true", "Vary": "Origin"})
+        return r
+
+    # ---- resilience --------------------------------------------------------
+    def stress_input(self, kind):
+        """Pathological input is refused CHEAPLY, before any expensive parsing:
+        size and shape limits answer 4xx, they never crash or stall the worker."""
+        status = {
+            "oversize": 413,        # body larger than the endpoint's limit
+            "deep-json": 400,       # nesting depth limit
+            "wide-json": 400,       # key-count limit
+            "gzip-bomb": 415,       # compressed request bodies are not accepted
+            "bad-encoding": 415,
+            "bad-charset": 415,     # only utf-8 JSON
+            "many-parts": 400,      # part-count limit
+            "long-accept": 431,     # header size limit
+        }.get(kind)
+        if status is None:
+            raise ValueError(f"unknown stress kind: {kind}")
+        return self._resp(status, {"error": "request refused"})

@@ -1,0 +1,3 @@
+# Only needed to run the harness's own tests:  pytest -q
+-r requirements.txt
+pytest>=8
