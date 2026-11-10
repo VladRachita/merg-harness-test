@@ -454,6 +454,13 @@ Counter 1/3 → three step cards (C74): **Legal Documents** "Step 1 of 3 • Qui
 
 ### BC5-details · Business details (long form, drawn taller)
 "**Business Information** · Step 2 of 3 • Quick & Easy" · **Tell us about your business** → Business Name * · Phone Number (🇷🇴 +40) · **How do you take bookings?** * "You can change this anytime from booking settings" (C71 In-app · By phone) · Price Range * "Select price range" · Business Address * (C81 map, "Tap map icon to select location", "Tap the map icon to select your business location") · Max Capacity per Reservation * "e.g., 8" · Venue capacity * "e.g., 40" "How many people fit in your place at once." · Services Offered * (0 / 1000) → **Continue to Hours** (→ BC6).
+How do you take bookings? now has its own step: build BC5 without it, with **Continue** (→ BC5B).
+
+### BC5B-bookings · How do you take bookings? (drawn taller)
+"**Business Information** · Step 2 of 3 • Quick & Easy" · **How do you take bookings?** * "Pick how people reserve with you. Here is what each one covers." → C87 **In-app** (picked) "People book in Merg. You answer in Reservations." · MERG DOES IT FOR YOU: six C88 rows (Book button · Requests in Reservations · Confirmations and cancellations · Today's reservations · Visits counted · Coupons and rewards) · "You: answer each request within 24 hours." → C87 **By phone** at 0.4 (Included · Not included · "You: answer calls…") → "You can change this anytime from booking settings" · **Continue to Hours** (→ BC6).
+
+### BC5BP-bookings-phone · How do you take bookings? · By phone picked
+BC5B with **By phone** picked and In-app at 0.4: INCLUDED (Call button · Your number on your events · Nothing to answer in the app) · NOT INCLUDED (Requests, confirmations and the day's list · Visit counts, regulars and automatic rewards · Coupons and rewards taken off at booking) · "You: answer calls and note each booking yourself." · **Phone number people will call** * (🇷🇴 +40, "e.g., 722 123 456").
 
 ### BC6-hours · Operating hours
 "**Business Hours** · Step 3 of 3 • Almost done!" · **When are you open for customers?** · "Select your operating hours" → hours card (C82): Monday–Sunday, 09:00 to 17:00, a switch each (Sunday closed in the sample) → **Continue** (→ BC7).

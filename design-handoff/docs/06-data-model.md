@@ -315,8 +315,8 @@ BusinessApplicationRequest {
   placeType: "CAFE" | "BAR" | … | "HOTEL" | … | "SALON" | …, // one of the category's list (21 §5); the label shows as BusinessProfile.subcategoryLabel
   offers: ("VEGAN" | "PET_FRIENDLY" | "CHILD_FRIENDLY" | "TERRACE" | "OUTDOOR_DINING" | "FAMILY" | "ROMANTIC")[],  // 0–6, FOOD_BEVERAGE and ACCOMMODATION only
   name: "Bella's Cafe",                                      // Business Name
-  phone?: { countryCode: "+40", number: "722123456" },       // Phone Number (optional in the sketch)
-  bookingChannel: "IN_APP" | "PHONE",                        // How do you take bookings?
+  phone?: { countryCode: "+40", number: "722123456" },       // Phone Number (BC5; optional, required when bookingChannel is PHONE)
+  bookingChannel: "IN_APP" | "PHONE",                        // How do you take bookings? (BC5B)
   priceLevel: 1 | 2 | 3 | 4,                                 // Price Range
   address: { line, city, lat, lng },                         // picked on the map
   maxPartySize: 8,                                           // Max Capacity per Reservation, whole number ≥ 1

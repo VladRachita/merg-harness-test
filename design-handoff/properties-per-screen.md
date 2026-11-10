@@ -41,7 +41,7 @@ Types: `string`, `int`, `bool`, `money` = `{ amount: number, currency: "RON" }`,
 
 ---
 
-## Contents — 17 pages, 104 screens
+## Contents — 17 pages, 106 screens
 
 | Page | Screens |
 |---|---|
@@ -60,7 +60,7 @@ Types: `string`, `int`, `bool`, `money` = `{ amount: number, currency: "RON" }`,
 | Account · Create or sign in | `AU1-profile-signed-out`, `AU2-email`, `AU3-create-account`, `AU4-date-of-birth`, `AU5-too-young` |
 | Admin · Dashboard (web) | `AD1-reviews`, `AD2-analytics`, `AD3-host-approval` |
 | Host · Coupons & events (create) | `OF1-pick-video` … `OF13-event-check` |
-| Account · Convert to Business | `BC1-overview`, `BC2-legal`, `BC3*-category`, `BC4*-place-type`, `BC5-details`, `BC6-hours`, `BC7-ready` |
+| Account · Convert to Business | `BC1-overview`, `BC2-legal`, `BC3*-category`, `BC4*-place-type`, `BC5-details`, `BC5B*-bookings`, `BC6-hours`, `BC7-ready` |
 | Website · Landing page | `LP1-landing-desktop`, `LP2-landing-phone` |
 
 Start with the **quick index** below (what each screen reads and sends). Then each page in detail, then: **§A** rules and jobs the backend runs · **§B** gaps to decide · **§C** entity and field index.
@@ -244,6 +244,7 @@ Full detail per screen is in the page sections below. ⚠ = a gap listed in §B.
 | `BC3*-category` | the three categories (fixed) | — (draft) |
 | `BC4*-place-type` | the category's place types and offers (fixed lists) | — (draft) |
 | `BC5-details` | country codes; the price levels ⚠; the map (OpenStreetMap) and address search | — (draft) |
+| `BC5B-bookings`, `BC5BP-bookings-phone` | the phone from BC5 (to fill the By phone field) | — (draft) |
 | `BC6-hours` | — | — (draft) |
 
 **Website · Landing page** — static, no API.
@@ -1848,12 +1849,24 @@ A signed-in person who is not a host yet sends an application to become one. Ful
 |---|---|---|
 | Business Name | `string` | Required. |
 | Phone Number | `{ countryCode, number }` | Optional in the sketch; +40 by default. Format ⚠ B31. |
-| How do you take bookings? | `IN_APP \| PHONE` | Required. |
 | Price Range | `priceLevel` 1–4 | Required; options ⚠ B31. |
 | Business Address | `{ line, city, lat, lng }` | Required; picked on the map. |
 | Max Capacity per Reservation | `int` ≥ 1 | Required. |
 | Venue capacity | `int` ≥ 1 | Required. Proposal: ≥ Max Capacity per Reservation. |
 | Services Offered | `string` | Required, 10–1000 characters. |
+
+**Actions:** **Continue** → BC5B. (The reference still shows How do you take bookings? and Continue to Hours; that question is now BC5B.)
+
+### Screen 9b · How do you take bookings? (`BC5B-bookings`, board *2.4 · How you take bookings — In-app*; `BC5BP-bookings-phone`, board *2.4 · How you take bookings — By phone*)
+
+**Elements displayed:** fixed copy explaining each option (`21-business-conversion.md` §6a); nothing comes from the backend.
+
+**Inputs**
+
+| Input | Type | Rules |
+|---|---|---|
+| How do you take bookings? | `IN_APP \| PHONE` | Required. No default. |
+| Phone number people will call (By phone only) | `{ countryCode, number }` | Required when `PHONE`. Same field as BC5's Phone Number (filled from it; edits it). Format ⚠ B31. |
 
 **Actions:** **Continue to Hours** → BC6.
 
@@ -1916,7 +1929,7 @@ The MVP website: one static page (1440 × 900 on a computer, full scroll on a ph
 | A21 | **Accounts** | `EmailCheck` (exists or not); `UsernameCheck` (free or not, while typing); `SignUpRequest` creates the account and signs the person in. **Age**: years between `dateOfBirth` and today ≥ `MIN_AGE` (16), checked on the server too; `dateOfBirth` is private (never on the profile). Signed out, actions that need an account (+, Book, Like) open AU1 and return to where the person was after signing in. | AU1–AU5 |
 | A22 | **Admin** | `AdminRole` checked on every admin request (MODERATOR: Reviews, Analytics; SUPER_ADMIN: everything). `ReviewDecision` / `HostDecision` update the item, tell the author or owner, and append to the **read-only** Audit Log (who, what, when, reason). Undo within a few seconds. Two-factor sign-in for admins; password again before rejecting a host, Platform Settings changes and User Management actions. Host application personal data and documents only for host approvers, documents through short-lived links, every view logged. | AD1–AD3 |
 | A23 | **Create offers** | `OfferCreateRequest` creates an `Offer` for the host's business. **Checks:** title 1–100 and description 10–500 characters; a coupon needs a `discount` (above 0, PERCENT at most 100), an event a `bookingChannel`; `usageLimit` / `capacity` null (unlimited) or 1 or more; `startDate` today or later, `endDate ≥ startDate`, `endTime > startTime`. **Schedule:** coupons get one `windows[]` entry per day from `startDate` to `endDate` (`startTime`–`endTime`); events get one `sittings[]` entry per day with `seatsLeft = capacity`; `startsAt` / `endsAt` come from the first and last day. **Limits:** `quantityLeft` starts at the limit (null = ∞); the offer stops at the end or when the limit is reached. **Booking channel:** IN_APP bookings arrive in Reservations; PHONE shows the business phone. **Visibility:** listed in the business's Coupons & Events tab and in Search Deals (A19). | OF1–OF13, CE1, SR6 |
-| A24 | **Host application** | `BusinessApplicationRequest` creates a `HostApplication` (`PENDING`) with `business { name, category, type = placeType, city, address }`, `owner` from the account + `phone`, `documents` = the certificate. **Checks:** every required field, `servicesOffered` 10–1000, capacities whole numbers ≥ 1, `to > from` on open days, `termsAccepted`, one pending application per person. Counts in `hostApplicationsWaiting`. **Approve** (AD3) makes the account a host with a `BusinessProfile` (category, `subcategoryLabel` = place type, phone, address, `openingHours`, `priceLevel`, booking default); **Reject** tells the person the reason. | BC1–BC7, AD3 |
+| A24 | **Host application** | `BusinessApplicationRequest` creates a `HostApplication` (`PENDING`) with `business { name, category, type = placeType, city, address }`, `owner` from the account + `phone`, `documents` = the certificate. **Checks:** every required field (`phone` too when `bookingChannel = PHONE`), `servicesOffered` 10–1000, capacities whole numbers ≥ 1, `to > from` on open days, `termsAccepted`, one pending application per person. Counts in `hostApplicationsWaiting`. **Approve** (AD3) makes the account a host with a `BusinessProfile` (category, `subcategoryLabel` = place type, phone, address, `openingHours`, `priceLevel`, booking default); **Reject** tells the person the reason. | BC1–BC7, AD3 |
 | A25 | **Download link** | `GET /get` is a server redirect (no page, no cookies): iPhone / iPad user agents → `appStoreUrl`, Android → `playStoreUrl`, anything else → the landing page at `#download`. Keeps the query (`?for=business`, campaign values) and counts each redirect by target store and source (QR, button, business link) for the store-click numbers. Cacheable per user-agent class at the CDN edge. | LP1, LP2 |
 
 ---
