@@ -62,7 +62,7 @@ Read in this order, then build:
   - `VR6` **posted**: back in History, ★ N on the visit and "Review posted".
   - On VR1–VR4 the place card stays at the top, at the same position; the other cards are centred below it.
 
-  Spec: [`docs/23-video-review.md`](docs/23-video-review.md). Small / medium / large references; components C89–C93; *Review* data in `docs/06`; rule A26 in the backend contract. Open question #44 (the Rate target) is closed.
+  Spec: [`docs/23-video-review.md`](docs/23-video-review.md). Small / medium / large references; components C89–C93; *Review* data in `docs/06`; rule A26 in the backend contract.
 
 ### Earlier updates
 

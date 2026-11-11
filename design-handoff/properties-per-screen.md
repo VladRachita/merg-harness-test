@@ -2024,7 +2024,7 @@ The MVP website: one static page (1440 × 900 on a computer, full scroll on a ph
 | B24 | "Idea to start" templates: fixed in the app or from the backend | CR4 | |
 | B25 | Rule send time, earliest first send, rewards history beyond this month | CR4, CR5 | 10:00 business time (#33). |
 | B26 | Reservation: no-show display, later days on RV1, cancel confirmation and reason, auto-accept, the answer deadline for requests that start soon, holding the time while WAITING | RV1–RV6 | Open questions #34–#42. |
-| B27 | My activity: empty states, picking a reward at booking (`rewardGrantId` on the booking request), cancel rules, no-show visibility, the entry point | MA1–MA6 | Open questions #43–#49. |
+| B27 | My activity: empty states, picking a reward at booking (`rewardGrantId` on the booking request), cancel rules, no-show visibility, the entry point | MA1–MA6 | Open questions #43, #45–#49. |
 | B28 | Avatar fallback colour: stored or derived | all people / places | Derive in the app from the id. |
 | B29 | Search: when the request is sent, ranking, location / distance, page size and the end of a list, where recent searches are kept (and how many, signed-out people), one tab empty, matching (diacritics, typos), deals at accommodation places, query max length | SR1–SR6 | Open questions #50–#60; query max 100 (proposal). |
 | B30 | A deal opens F4C / F4E, which also need a **service**: an offer's `appliesTo.serviceIds` can list several | SR3, SR6 | Open question #61. Proposal: `DealResult.serviceIds`; with one service open on it, with several open the services list (F1) showing only those. |
