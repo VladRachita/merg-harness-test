@@ -41,7 +41,7 @@ Types: `string`, `int`, `bool`, `money` = `{ amount: number, currency: "RON" }`,
 
 ---
 
-## Contents — 17 pages, 106 screens
+## Contents — 18 pages, 112 screens
 
 | Page | Screens |
 |---|---|
@@ -55,6 +55,7 @@ Types: `string`, `int`, `bool`, `money` = `{ amount: number, currency: "RON" }`,
 | Host · Customers & rewards | `CR1-customers` … `CR10-reward-details` |
 | Host · Reservations | `RV1-reservations` … `RV6-after-visit` |
 | Customer · My activity | `MA1-upcoming` … `MA6-reward` |
+| Customer · Video review | `VR1-stars`, `VR2-details`, `VR3-add-video`, `VR4-video-added`, `VR5-on-video`, `VR6-posted` |
 | Public · Search | `SR1-start`, `SR2-no-results`, `SR3-all`, `SR4-videos`, `SR5-places`, `SR6-deals` |
 | Profile · New post | `NP1-pick-video`, `NP2-empty`, `NP3-written`, `NP4-tag-place`, `EP1-edit-post`, `EP2-delete-video` |
 | Account · Create or sign in | `AU1-profile-signed-out`, `AU2-email`, `AU3-create-account`, `AU4-date-of-birth`, `AU5-too-young` |
@@ -179,10 +180,20 @@ Full detail per screen is in the page sections below. ⚠ = a gap listed in §B.
 |---|---|---|
 | `MA1-upcoming` | `MyActivity.upcoming[]` = `Reservation{id, date, from, to, state, what, people, offer, place.name}` · tab counts | — |
 | `MA2-rewards` | `MyActivity.rewards.ready[]` / `.usedOrEnded[]` = `RewardGrantView{rewardId, discount, title, validUntil, state, usedAt, place.name}` | — |
-| `MA3-history` | `MyActivity.history[]` = `Reservation{id, date, from, state, what, people, declineReason, cancelledBy, myRating, place{name, businessId}}` | rating through the existing review flow ⚠ |
+| `MA3-history` | `MyActivity.history[]` = `Reservation{id, date, from, state, what, people, declineReason, cancelledBy, myRating, place{name, businessId}}` | Rate → VR1 (the video review sends `ReviewCreateRequest`) |
 | `MA4-reservation-waiting` | `Reservation{…all, durationMin, price, teamMemberId → TeamMember.name, offer{discount, pays}, specialRequests, place{businessId, name, type, address, phone, avatarUrl, avatarColor}}` | cancel (`cancelledBy: CUSTOMER`) |
 | `MA5-reservation-confirmed` | as MA4 | cancel (`cancelledBy: CUSTOMER`) |
 | `MA6-reward` | `RewardGrantView{discount, title, validUntil, place{businessId, name, type, city}}` | — (booking with it: `rewardGrantId`⚠) |
+
+**Customer · Video review** — nothing is sent before Post review / Publish; the steps only change the draft.
+
+| Screen | Reads | Sends |
+|---|---|---|
+| `VR1-stars`, `VR2-details` | the visit: `Reservation{id, what, date, place{businessId, name, category, avatarColor}}` · the aspects of `place.category` | — |
+| `VR3-add-video` | as VR1 | **Post review** → `ReviewCreateRequest{reservationId, stars, liked, disliked}` |
+| `VR4-video-added` | the picked clip (the device) | **Post without video** → as VR3 |
+| `VR5-on-video` | signed-in `User{name}` · as VR1 | **Publish** → `ReviewCreateRequest{…, videoUploadId, title?, description?}` |
+| `VR6-posted` | MA3 with `myRating` | — |
 
 **Public · Search**
 
@@ -1348,7 +1359,7 @@ As TB3, plus the **event strip**: `Offer.title` + "Sitting `Offer.sittings[].fro
 | Your rating | `Reservation.myRating` | `int 1–5` | "★ 5" when already rated. |
 
 **Inputs / Actions**
-- **Rate** (DONE, not rated) → the app's existing review flow for this `reservationId` (#44). Afterwards `myRating` is set.
+- **Rate** (DONE, not rated) → VR1, the video review for this `reservationId` (`docs/23-video-review.md`). Afterwards `myRating` is set and the row shows ★ N.
 - **Book again** (DECLINED / CANCELLED) → the place's booking start (`place.businessId`).
 
 ### Screen 4 · Reservation · waiting (`MA4-reservation-waiting`, board *4 · Reservation · waiting for an answer*)
@@ -1881,6 +1892,54 @@ A signed-in person who is not a host yet sends an application to become one. Ful
 
 **Actions:** **Continue** → the overview (BC7 when every step is done).
 
+## Page: Customer · Video review
+
+A customer reviews a done visit from **Rate** in My activity › History: stars (required) → what they liked / didn't like (optional) → one video (optional) → a title and description on the video (optional). One request, `ReviewCreateRequest`, is sent when they post (see `docs/06-data-model.md` → *Review*).
+
+### Screens 1–2 · Stars, liked / didn't like (`VR1-stars`, `VR2-details`)
+
+**Opens with:** the visit's `reservationId` (DONE, not reviewed by this person).
+
+**Elements displayed**
+
+| Element | Field | Type | Notes |
+|---|---|---|---|
+| Place card | `Reservation.place.name`, `.place.avatarColor`, `.what`, `.date` | | "Maestro Bistro · Table · 20 Oct" |
+| Aspects | the six aspects of `place.category` | `Aspect[]` | Fixed per category (§7 of the spec); labels localised in the app. |
+
+**Inputs**
+
+| Input | Type | Rules |
+|---|---|---|
+| Stars | `int` 1–5 | Required; Next waits for it. |
+| Liked | `Aspect[]` | Optional. |
+| Didn't like | `Aspect[]` | Optional; never an aspect that is in Liked. |
+
+### Screens 3–4 · One video, optional (`VR3-add-video`, `VR4-video-added`)
+
+**Inputs:** one clip from the phone, up to 100 MB (optional). Change replaces it, Remove drops it.
+
+**Actions:**
+- **Post review** / **Post without video** → `ReviewCreateRequest{ reservationId, stars, liked, disliked }` → VR6;
+- **Next** (with a video) → VR5.
+
+### Screen 5 · On the video (`VR5-on-video`)
+
+**Inputs**
+
+| Input | Type | Rules |
+|---|---|---|
+| Title | `string` | Optional, 0–30 characters (only with a video). |
+| Description | `string` | Optional, 0–100 characters (only with a video). |
+
+**Actions:** **Publish** → upload the clip (as New post, A20), then `ReviewCreateRequest{ …, videoUploadId, title?, description? }` → VR6.
+
+### Screen 6 · Posted (`VR6-posted`)
+
+**Elements displayed:** MA3 with `Reservation.myRating` on the visit (★ 4) and "Review posted".
+
+---
+
 ## Page: Website · Landing page
 
 The MVP website: one static page (1440 × 900 on a computer, full scroll on a phone) that sends people to the stores. **It reads no data and sends nothing to the app's API.** See `docs/22-landing-page.md`.
@@ -1931,6 +1990,7 @@ The MVP website: one static page (1440 × 900 on a computer, full scroll on a ph
 | A23 | **Create offers** | `OfferCreateRequest` creates an `Offer` for the host's business. **Checks:** title 1–100 and description 10–500 characters; a coupon needs a `discount` (above 0, PERCENT at most 100), an event a `bookingChannel`; `usageLimit` / `capacity` null (unlimited) or 1 or more; `startDate` today or later, `endDate ≥ startDate`, `endTime > startTime`. **Schedule:** coupons get one `windows[]` entry per day from `startDate` to `endDate` (`startTime`–`endTime`); events get one `sittings[]` entry per day with `seatsLeft = capacity`; `startsAt` / `endsAt` come from the first and last day. **Limits:** `quantityLeft` starts at the limit (null = ∞); the offer stops at the end or when the limit is reached. **Booking channel:** IN_APP bookings arrive in Reservations; PHONE shows the business phone. **Visibility:** listed in the business's Coupons & Events tab and in Search Deals (A19). | OF1–OF13, CE1, SR6 |
 | A24 | **Host application** | `BusinessApplicationRequest` creates a `HostApplication` (`PENDING`) with `business { name, category, type = placeType, city, address }`, `owner` from the account + `phone`, `documents` = the certificate. **Checks:** every required field (`phone` too when `bookingChannel = PHONE`), `servicesOffered` 10–1000, capacities whole numbers ≥ 1, `to > from` on open days, `termsAccepted`, one pending application per person. Counts in `hostApplicationsWaiting`. **Approve** (AD3) makes the account a host with a `BusinessProfile` (category, `subcategoryLabel` = place type, phone, address, `openingHours`, `priceLevel`, booking default); **Reject** tells the person the reason. | BC1–BC7, AD3 |
 | A25 | **Download link** | `GET /get` is a server redirect (no page, no cookies): iPhone / iPad user agents → `appStoreUrl`, Android → `playStoreUrl`, anything else → the landing page at `#download`. Keeps the query (`?for=business`, campaign values) and counts each redirect by target store and source (QR, button, business link) for the store-click numbers. Cacheable per user-agent class at the CDN edge. | LP1, LP2 |
+| A26 | **Reviews** | `ReviewCreateRequest` creates a review of a DONE reservation. **Checks:** the reservation is the author's, DONE and not reviewed yet (one review per visit); `stars` 1–5 is required; `liked` / `disliked` are aspects of the place's category, never the same aspect in both; `title` (0–30) and `description` (0–100) only with a video; the video is one clip up to 100 MB, uploaded as in A20. **After:** `Reservation.myRating = stars` (MA3 shows ★ N instead of Rate). | VR1–VR6, MA3 |
 
 ---
 
@@ -1964,7 +2024,7 @@ The MVP website: one static page (1440 × 900 on a computer, full scroll on a ph
 | B24 | "Idea to start" templates: fixed in the app or from the backend | CR4 | |
 | B25 | Rule send time, earliest first send, rewards history beyond this month | CR4, CR5 | 10:00 business time (#33). |
 | B26 | Reservation: no-show display, later days on RV1, cancel confirmation and reason, auto-accept, the answer deadline for requests that start soon, holding the time while WAITING | RV1–RV6 | Open questions #34–#42. |
-| B27 | My activity: empty states, the Rate target (existing review flow), picking a reward at booking (`rewardGrantId` on the booking request), cancel rules, no-show visibility, the entry point | MA1–MA6 | Open questions #43–#49. |
+| B27 | My activity: empty states, picking a reward at booking (`rewardGrantId` on the booking request), cancel rules, no-show visibility, the entry point | MA1–MA6 | Open questions #43–#49. |
 | B28 | Avatar fallback colour: stored or derived | all people / places | Derive in the app from the id. |
 | B29 | Search: when the request is sent, ranking, location / distance, page size and the end of a list, where recent searches are kept (and how many, signed-out people), one tab empty, matching (diacritics, typos), deals at accommodation places, query max length | SR1–SR6 | Open questions #50–#60; query max 100 (proposal). |
 | B30 | A deal opens F4C / F4E, which also need a **service**: an offer's `appliesTo.serviceIds` can list several | SR3, SR6 | Open question #61. Proposal: `DealResult.serviceIds`; with one service open on it, with several open the services list (F1) showing only those. |
@@ -1999,6 +2059,7 @@ The MVP website: one static page (1440 × 900 on a computer, full scroll on a ph
 | **Search** | `SearchRequest { q, tab ALL\|VIDEOS\|PLACES\|DEALS, dealType? ALL\|EVENT\|COUPON, cursor? }` → `SearchPage { blocks[], nextCursor }`; `SearchBlock { type PLACE\|VIDEOS\|DEALS, place \| items[] }`; `PlaceResult { businessId, name, verified, category, subcategoryLabel, city, avatarUrl?, openingHours?, checkIn?, checkOut? }`; `VideoResult { itemId, itemType SERVICE\|ROOM, title, businessId, businessName, price { amount, currency, from? }, priceUnit?, people, durationMin?, thumbnailUrl }`; `DealResult { offerId, type, title, discount?, businessId, businessName, businessCategory, endsAt, quantityLeft, thumbnailUrl?, firstDate, serviceIds⚠ }` | SR1–SR6 |
 | **RecentSearch** | `query`, `searchedAt` (this person's, newest first; storage⚠) | SR1 |
 | **Post** | `id`, `authorUserId`, `publishedAt`, `video { url, thumbnailUrl }`, `title` (1–30), `description?` (0–100), `tag? { businessId, itemType? SERVICE\|ROOM, itemId? }` (one per post); create: `CreatePostRequest { videoUploadId, title, description?, tag? }`; update: `UpdatePostRequest { title, description?, tag? \| null }`; delete: `DeletePost { postId }` | NP1–NP4, EP1, EP2 |
+| **Review** | `ReviewCreateRequest { reservationId, stars (1–5), liked[], disliked[], videoUploadId?, title? (0–30), description? (0–100) }`; `Aspect` per category (FOOD_BEVERAGE: FOOD, SERVICE, PRICE, ATMOSPHERE, CLEAN_PLACE, WAITING_TIME · SERVICES: RESULT, STAFF, PRICE, CLEAN_PLACE, ON_TIME, ATMOSPHERE · ACCOMMODATION: ROOM, CLEAN_PLACE, STAFF, LOCATION, PRICE, QUIET); sets `Reservation.myRating` | VR1–VR6, MA3 |
 | **Account** | `EmailCheck { email } → { exists }`; `UsernameCheck { username } → { available }`; `SignUpRequest { email, firstName, lastName, username, dateOfBirth, password }`; `MIN_AGE` (16) | AU2–AU5 |
 | **BusinessApplicationRequest** | `cui`, `certificateUploadId`, `category`, `placeType`, `offers[]` (0–6), `name`, `phone? { countryCode, number }`, `bookingChannel` IN_APP\|PHONE, `priceLevel` 1–4, `address { line, city, lat, lng }`, `maxPartySize`, `venueCapacity`, `servicesOffered` (10–1000), `openingHours` (7 days `{ open, from, to }`), `notifyWhenProcessed`, `termsAccepted`, `termsVersion` | BC1–BC7 |
 | **HostApplication** (from a person) | `business { name, category, type, city, address }`, `owner { name, email, phone }`, `documents`, `appliedAt`, `state` (see Admin) | BC7 → AD3 |

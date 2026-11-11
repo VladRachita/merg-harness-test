@@ -29,7 +29,7 @@ References for every screen at three sizes:
 
 Decisions, so they are not added back:
 - **No Add to calendar.** The feature is not developed, so it was removed from MA5.
-- **No review sheet.** **Rate** opens the app's existing review flow (see open questions).
+- **No review sheet.** **Rate** opens the video review, full screen (VR1, see `23-video-review.md`).
 - **No Directions button** (principle 10). The address is copy-to-clipboard.
 
 ---
@@ -50,7 +50,7 @@ flowchart LR
   MA2 -- a ready reward --> MA6[MA6 Reward]
   MA6 -- Book with place --> PROF
   MA3 -- Book again --> PROF
-  MA3 -- Rate --> REV((existing review flow))
+  MA3 -- Rate --> VR1[VR1 Video review]
 ```
 
 Rules:
@@ -119,7 +119,7 @@ Rules:
   - a done visit: "what · `users` N people";
   - declined or cancelled: a status chip + the reason 12.5 secondary. **Declined** `action.danger` on `bg.soft`; **Cancelled** `text.secondary` on `bg.soft`. The reason wraps under the chip when the row is narrow (small phones, long translations); it is never cut.
 - **Action** on the right, one per row:
-  - **Rate**: outline pill 36, radius 12, 1px `line.outline`, white, filled `star` 16 `status.warning` + 14/500 → the existing review flow;
+  - **Rate**: outline pill 36, radius 12, 1px `line.outline`, white, filled `star` 16 `status.warning` + 14/500 → VR1, the video review (`23-video-review.md`);
   - **★ N** (already rated): filled star 16 `status.warning` + 14/600, not tappable, label "You rated N of 5";
   - **Book again**: pill 36, radius 12, `action.secondary`, `repeat` 16 + 14/500 → the place's booking start (services → PS1 Book now; food & beverage → PF1 → TB1).
 

@@ -272,3 +272,24 @@ Rules (details in `22-landing-page.md` §3):
 - the page has no sign-in and no app content; every action leads to a store;
 - `/get` is a server redirect by the phone's system and keeps `?for=business` for counting;
 - a person becomes a business in the app (Profile → Convert to Business, BC1), not on the website.
+
+## R. Customer — video review
+
+```mermaid
+flowchart LR
+  MA3[MA3 History · Rate] --> VR1[VR1 Stars]
+  VR1 -- a star --> VR2[VR2 Liked / didn't like]
+  VR2 -- Next --> VR3[VR3 Add a video? optional]
+  VR3 -- Post review --> VR6[VR6 Posted]
+  VR3 -- one video --> VR4[VR4 Video added]
+  VR4 -- Remove --> VR3
+  VR4 -- Post without video --> VR6
+  VR4 -- Next --> VR5[VR5 On the video]
+  VR5 -- Publish --> VR6
+```
+Rules (details in `23-video-review.md` §1):
+- Rate on an unrated done visit opens VR1; only the stars are required;
+- the liked / didn't like chips are optional, and an aspect is never in both groups;
+- one video at most, optional and not pushed: **Post review** is the main button until a video is added;
+- with a video, the title and description on it are optional;
+- posting sets the visit's rating (★ N in History); a visit is reviewed once.

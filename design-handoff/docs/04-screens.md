@@ -201,6 +201,30 @@ Ticket 15% OFF · Thanks for coming back → From Maestro Host · 30 days left (
 
 ---
 
+## Customer — video review
+
+Full spec, sizes and states: [`23-video-review.md`](23-video-review.md). Full screens; the place card stays at the top, the other cards are centred below it. Summary:
+
+### VR1-stars · How many stars
+"Review" (X) → Maestro Bistro · Table · 20 Oct → "How was it?" five empty stars · "Tap a star" → **Next** (disabled).
+
+### VR2-details · What you liked / didn't like
+VR1 after a star: ★★★★☆ **Good** → What you liked: **Food** ✓ · **Service** ✓ · Price · Atmosphere · Clean place · Waiting time (taken) → What you didn't like: Food · Service (taken) · Price · Atmosphere · Clean place · **Waiting time** ✓ → "Optional. Then you add a video." → **Next**.
+
+### VR3-add-video · Add a video? (optional)
+Place card + ★★★★☆ · Food · Service · Waiting time · **Change** → "Add a video?" **Optional** · "People see it with your stars." · the empty slot "Add a video · One video · up to 100 MB" → **Post review**.
+
+### VR4-video-added · One video added
+VR3 with the one video (poster 150 × 266, play) · **Change** · **Remove** → **Post without video** · **Next**.
+
+### VR5-on-video · On the video
+The New post editor: back · Change video → the Rate tool "4 / 5" on the rail → Ana Ionescu · Review · Maestro Bistro · Table → ★★★★☆ Good · Food · Service · Waiting time → "Add a title (optional)" 0 / 30 · "Add a description (optional)" 0 / 100 → "Title and description are optional" · **Publish**.
+
+### VR6-posted · Posted
+MA3 with ★ 4 on the Maestro Bistro row (was **Rate**) and "Review posted".
+
+---
+
 ## Admin — web dashboard (desktop)
 
 Full spec: [`19-admin.md`](19-admin.md). A separate web app at 1440 × 900. Summary:
