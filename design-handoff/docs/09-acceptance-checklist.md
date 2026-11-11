@@ -94,3 +94,7 @@ Use this for every screen before calling it done.
 - [ ] **LP2** (website, phone): headline and both store buttons in the first screen at 360, 390 and 430; the phone picture full width under them; no QR.
 - [ ] The website makes no API calls; `/get` sends iPhones to the App Store and Android phones to Google Play; the QR opens it.
 - [ ] Everything in `22-landing-page.md` §12 (definition of done).
+- [ ] **VR1–VR2**: Rate opens the full-screen review; stars with their word (Next waits for a star); the liked / didn't like chips are optional and never both.
+- [ ] **VR3–VR4**: one video slot (never a list), optional; Post review without a video; Change / Remove, Next and Post without video with one; the card keeps its size.
+- [ ] **VR5–VR6**: the stars and +/- on the video, title and description optional, Publish; History shows ★ N and "Review posted".
+- [ ] Everything in `23-video-review.md` §12 (definition of done).

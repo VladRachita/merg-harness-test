@@ -352,6 +352,29 @@ BusinessApplicationRequest {
   - `termsAccepted`;
   - one pending application per person.
 
+## Review (video review)
+```ts
+ReviewCreateRequest {
+  reservationId,                          // the DONE visit (My activity › History › Rate); one review per visit
+  stars: 1 | 2 | 3 | 4 | 5,               // required; words: Bad, Not great, OK, Good, Great
+  liked: Aspect[],                        // optional
+  disliked: Aspect[],                     // optional; never an aspect that is also in liked
+  videoUploadId?,                         // optional; one video, up to 100 MB (the New post upload)
+  title?: string,                         // only with a video, 0–30 characters
+  description?: string                    // only with a video, 0–100 characters
+}
+Aspect =                                  // six per category, in this order
+  | FOOD | SERVICE | PRICE | ATMOSPHERE | CLEAN_PLACE | WAITING_TIME     // FOOD_BEVERAGE
+  | RESULT | STAFF | PRICE | CLEAN_PLACE | ON_TIME | ATMOSPHERE         // SERVICES
+  | ROOM | CLEAN_PLACE | STAFF | LOCATION | PRICE | QUIET              // ACCOMMODATION
+```
+- **Checks on the server, as in the app:**
+  - the reservation is the author's, DONE and not reviewed yet;
+  - `stars` is required;
+  - the aspects belong to the place's category, with none in both lists;
+  - a title or description only comes with a video.
+- **After posting**, `Reservation.myRating = stars`: History shows **★ N** instead of **Rate**.
+
 ## Account (create or sign in)
 ```ts
 EmailCheck { email } → { exists: boolean }                   // AU2: false → AU3 (create), true → sign in with the password

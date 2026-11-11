@@ -49,6 +49,8 @@ Build these once and reuse them. Values are for the **medium** phone (390 × 844
 | Date of birth | `cake` | Pick / change a date | `calendar` |
 | Password / show | `lock` / `eye` | Privacy & data | `shield` |
 | Too young (alert) | `circle-alert` | Signed-out avatar | `user` |
+| Review stars (picked / not) | `star` filled `status.warning` / `text.tertiary` stroke | What you liked / didn't like | `thumbs-up` / `thumbs-down` |
+| Add a video (review) | `video` | Remove the video (review) | `trash-2` |
 | Value (coupon) | `percent` | Usage Limit | `ticket` |
 | Capacity (event) | `users` | Unlimited | `infinity` |
 | Booking channel · In-app | `smartphone` | Booking channel · Phone | `phone` |
@@ -544,3 +546,24 @@ Optional "Brand" tone: tile `#EEEAFD`, icon `#5B3FD6`. Default is Mono.
 - An image, not markup: `assets/landing/hero-desktop*.webp` (750 × 800 on LP1) and `hero-phone*.webp` (393 × 660, full width on LP2), transparent. It shows the app's feed with the deal post, the white offer card popping out and a reward ticket.
 - `<img>` with `srcset`, `width` and `height`, `fetchpriority="high"`, the alt text from `22-landing-page.md` §4.
 - Seen in: LP1, LP2. Rules: `assets/landing/README.md`.
+
+## 89. Review place card
+- White card, radius 18, 1px `line.card`, padding `14 16`: avatar 44 (initial on `avatarColor`) · place 15/600 · "<what> · <date>" 12.5 secondary. Pinned at the top of VR1–VR4, at the same position on every step.
+- On VR3 / VR4 it adds the summary of what will be posted: a `bg.page` link (min 44, radius 14) with the stars 14, `thumbs-up` / `thumbs-down` 13 + the aspects (each group on one line, the groups wrap), and **Change** (→ VR2).
+- Seen in: VR1–VR4. Full spec: `23-video-review.md` §2, §4.
+
+## 90. Star picker
+- White card: "How was it?" 21/600 centred · five `star` 42 in buttons of 48 (radio group "Stars"), picked filled `status.warning`, others `text.tertiary` stroke · the word 15/600 (Bad · Not great · OK · Good · Great; "Tap a star" while empty).
+- Seen in: VR1, VR2. Full spec: `23-video-review.md` §3.
+
+## 91. Liked / didn't like chips
+- Two groups (`thumbs-up` 18 `status.success` "What you liked", `thumbs-down` 18 `action.danger` "What you didn't like") of six aspect chips (38, radius 19, 14). Liked: `status.successBg`, 1.5 `status.success`, `status.successText` + `check`. Didn't like: white, 1.5 `action.danger`, `action.danger` + `check`. An aspect picked in one group is at 0.4 in the other.
+- Seen in: VR2. Full spec: `23-video-review.md` §3, §7.
+
+## 92. One-video slot
+- Empty: dashed box (1.5 `text.tertiary`, radius 16, `bg.page`) as tall as the added state (preview + 52): circle 48 with `video` 24, "Add a video", "One video · up to 100 MB". Added: the clip's portrait poster 150 × 266 (radius 12, play 34), then **Change** (`bg.soft`) and **Remove** (outline), 40 tall. One video only, never a list.
+- Seen in: VR3, VR4. Full spec: `23-video-review.md` §4.
+
+## 93. Rating on the video
+- Over the video, above the C58 caption panel: the stars pill (30, radius 15, glass, stars 16 + the word) and the opinion pills (28, radius 14, glass, `thumbs-up` `status.successOnDark` / `thumbs-down` `status.dangerOnDark` + the aspects). On the side rail, the **Rate** tool: white circle 44 with a filled star, label "N / 5" (→ VR2).
+- Seen in: VR5. Full spec: `23-video-review.md` §5.

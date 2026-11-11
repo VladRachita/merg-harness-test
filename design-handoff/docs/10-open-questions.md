@@ -45,7 +45,6 @@
 | 41 | Days after tomorrow, empty states | RV1 | The tab shows Today and Tomorrow only (no calendar, by decision). Where later reservations are seen (proposal: the Quick Actions **Calendar** / **Bookings** tiles) and the empty states ("No reservations today", no banner) are not designed. |
 | 42 | Who / which table | RV3 | Changing the team member on a request, or assigning a restaurant table, is not designed. "With <name>" is read-only. |
 | 43 | Empty states | MA1–MA3 | No upcoming reservations, no rewards, no history: not designed. Proposal: an icon, one line ("Nothing booked") and a **Find a place** button, as the current app does. |
-| 44 | **Rate** target | MA3 | The review sheet was removed by decision; Rate opens the app's existing review flow. Its design (stars, text, where reviews show) is not part of this handoff. |
 | 45 | **Pick a reward when booking** | TB3, F4 / R3 confirm | MA2 / MA6 say "pick it at the last step". That step has no reward picker yet (and whether a reward can be combined with a coupon is #27). |
 | 46 | Cancel rules | MA4, MA5 | Confirmation dialog and how late a customer can cancel are not designed. |
 | 47 | No-show in History | MA3 | Whether the customer sees a NO_SHOW visit, and how, is not decided. Not shown in the designs. |

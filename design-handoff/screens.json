@@ -998,7 +998,8 @@
         "ma1-upcoming",
         "ma2-rewards",
         "ma3-history",
-        "pf1-profile-fnb"
+        "pf1-profile-fnb",
+        "vr1-stars"
       ]
     },
     {
@@ -3382,6 +3383,199 @@
         }
       },
       "links_to": []
+    },
+    {
+      "id": "VR1-stars",
+      "area": "customer-review",
+      "title": "Video review · How many stars",
+      "purpose": "Rate on a done visit in My activity opens it: the place card, \"How was it?\" and five stars. Next waits for a star.",
+      "source": "RV-AA1-Stars.dc.html",
+      "files": {
+        "small": {
+          "html": "screens/small/vr1-stars.html",
+          "png": "screenshots/small/vr1-stars.png",
+          "width": 360,
+          "height": 640
+        },
+        "medium": {
+          "html": "screens/medium/vr1-stars.html",
+          "png": "screenshots/medium/vr1-stars.png",
+          "width": 390,
+          "height": 844
+        },
+        "large": {
+          "html": "screens/large/vr1-stars.html",
+          "png": "screenshots/large/vr1-stars.png",
+          "width": 430,
+          "height": 932
+        }
+      },
+      "links_to": [
+        "ma3-history"
+      ]
+    },
+    {
+      "id": "VR2-details",
+      "area": "customer-review",
+      "title": "Video review · What you liked / didn't like",
+      "purpose": "The same screen after a star: the stars with their word, then What you liked and What you didn't like (optional chips).",
+      "source": "RV-AA2-Details.dc.html",
+      "files": {
+        "small": {
+          "html": "screens/small/vr2-details.html",
+          "png": "screenshots/small/vr2-details.png",
+          "width": 360,
+          "height": 640
+        },
+        "medium": {
+          "html": "screens/medium/vr2-details.html",
+          "png": "screenshots/medium/vr2-details.png",
+          "width": 390,
+          "height": 844
+        },
+        "large": {
+          "html": "screens/large/vr2-details.html",
+          "png": "screenshots/large/vr2-details.png",
+          "width": 430,
+          "height": 932
+        }
+      },
+      "links_to": [
+        "ma3-history",
+        "vr3-add-video"
+      ]
+    },
+    {
+      "id": "VR3-add-video",
+      "area": "customer-review",
+      "title": "Video review · Add a video? (optional)",
+      "purpose": "The place card with what will be posted (Change), one empty video slot. Post review posts the stars and +/- without a video.",
+      "source": "RV-AA3-Video.dc.html",
+      "files": {
+        "small": {
+          "html": "screens/small/vr3-add-video.html",
+          "png": "screenshots/small/vr3-add-video.png",
+          "width": 360,
+          "height": 640
+        },
+        "medium": {
+          "html": "screens/medium/vr3-add-video.html",
+          "png": "screenshots/medium/vr3-add-video.png",
+          "width": 390,
+          "height": 844
+        },
+        "large": {
+          "html": "screens/large/vr3-add-video.html",
+          "png": "screenshots/large/vr3-add-video.png",
+          "width": 430,
+          "height": 932
+        }
+      },
+      "links_to": [
+        "vr2-details",
+        "vr4-video-added",
+        "vr6-posted"
+      ]
+    },
+    {
+      "id": "VR4-video-added",
+      "area": "customer-review",
+      "title": "Video review · One video added",
+      "purpose": "The one video, with Change and Remove. Next goes to the video; Post without video posts now.",
+      "source": "RV-AA3-Picked.dc.html",
+      "files": {
+        "small": {
+          "html": "screens/small/vr4-video-added.html",
+          "png": "screenshots/small/vr4-video-added.png",
+          "width": 360,
+          "height": 640
+        },
+        "medium": {
+          "html": "screens/medium/vr4-video-added.html",
+          "png": "screenshots/medium/vr4-video-added.png",
+          "width": 390,
+          "height": 844
+        },
+        "large": {
+          "html": "screens/large/vr4-video-added.html",
+          "png": "screenshots/large/vr4-video-added.png",
+          "width": 430,
+          "height": 932
+        }
+      },
+      "links_to": [
+        "np1-pick-video",
+        "vr2-details",
+        "vr3-add-video",
+        "vr5-on-video",
+        "vr6-posted"
+      ]
+    },
+    {
+      "id": "VR5-on-video",
+      "area": "customer-review",
+      "title": "Video review · On the video",
+      "purpose": "The New post editor: the stars and +/- on the video, title and description optional, the Rate tool on the rail, Publish.",
+      "source": "RV-AA4-Publish.dc.html",
+      "files": {
+        "small": {
+          "html": "screens/small/vr5-on-video.html",
+          "png": "screenshots/small/vr5-on-video.png",
+          "width": 360,
+          "height": 640
+        },
+        "medium": {
+          "html": "screens/medium/vr5-on-video.html",
+          "png": "screenshots/medium/vr5-on-video.png",
+          "width": 390,
+          "height": 844
+        },
+        "large": {
+          "html": "screens/large/vr5-on-video.html",
+          "png": "screenshots/large/vr5-on-video.png",
+          "width": 430,
+          "height": 932
+        }
+      },
+      "links_to": [
+        "vr2-details",
+        "vr4-video-added",
+        "vr6-posted"
+      ]
+    },
+    {
+      "id": "VR6-posted",
+      "area": "customer-review",
+      "title": "Video review · Posted",
+      "purpose": "Back in My activity › History: the visit shows ★ 4 instead of Rate, and \"Review posted\".",
+      "source": "RV-Posted.dc.html",
+      "files": {
+        "small": {
+          "html": "screens/small/vr6-posted.html",
+          "png": "screenshots/small/vr6-posted.png",
+          "width": 360,
+          "height": 640
+        },
+        "medium": {
+          "html": "screens/medium/vr6-posted.html",
+          "png": "screenshots/medium/vr6-posted.png",
+          "width": 390,
+          "height": 844
+        },
+        "large": {
+          "html": "screens/large/vr6-posted.html",
+          "png": "screenshots/large/vr6-posted.png",
+          "width": 430,
+          "height": 932
+        }
+      },
+      "links_to": [
+        "hp-profile",
+        "ma1-upcoming",
+        "ma2-rewards",
+        "ma3-history",
+        "pf1-profile-fnb"
+      ]
     }
   ],
   "reference": {
