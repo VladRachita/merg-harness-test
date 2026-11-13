@@ -225,6 +225,30 @@ MA3 with ★ 4 on the Maestro Bistro row (was **Rate**) and "Review posted".
 
 ---
 
+## Public — profile reviews
+
+Full spec, sizes and states: [`24-profile-reviews.md`](24-profile-reviews.md). The rating shows once, in the profile header; any review opens full screen. Summary:
+
+### RP1-reviews-tab · Reviews tab
+PF1 with ★ 4.6 · 38 reviews → tabs Videos · Coupons · **Reviews** → ↑↓ **Newest** ▾ | With video · ★ 5 ★ 4 … → two per row, newest first: Ana Ionescu (video, ★★★★☆, "Great dinner for two") · Mihai Popa (no video, ★★★★★ Great: Food, Atmosphere, Service) · Radu Ene (video) · Elena Dumitru (★★★☆☆ OK) · Ioana Marin (★★★★☆ Good) · Sorin Lazăr (video).
+
+### RP1S-sort · Sort reviews (sheet)
+"Sort reviews" · **Newest first** (picked) · Oldest first · Highest score first · Lowest score first.
+
+### RP1F-filtered · Filtered
+**Highest score** · **With video** (on) → "12 reviews with a video" · Clear all → Radu Ene ★5 · Sorin Lazăr ★5 · Ana Ionescu ★4.
+
+### RP1N-no-match · No reviews match
+Newest · **With video** · **★ 1** (on, moved to the front) → "0 reviews" · Clear all → "No reviews match" · "Try another score, or show all reviews." · **Clear filters**.
+
+### RP2-video-review · Review with a video
+Back · "Maestro Bistro · Reviews" → the video → Ana Ionescu · Review · Table · 20 Oct · ★★★★☆ Good · Food · Service · Waiting time · "Great dinner for two" + description → **Book** · **Report** on the side → "Swipe up for the next review".
+
+### RP3-review-no-video · Review without a video
+The same viewer with the card: Mihai Popa · Table · 18 Oct · ★★★★★ **Great** · Food · Atmosphere · Service → **Book** · **Report**.
+
+---
+
 ## Admin — web dashboard (desktop)
 
 Full spec: [`19-admin.md`](19-admin.md). A separate web app at 1440 × 900. Summary:

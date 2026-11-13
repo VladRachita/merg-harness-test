@@ -98,3 +98,7 @@ Use this for every screen before calling it done.
 - [ ] **VR3–VR4**: one video slot (never a list), optional; Post review without a video; Change / Remove, Next and Post without video with one; the card keeps its size.
 - [ ] **VR5–VR6**: the stars and +/- on the video, title and description optional, Publish; History shows ★ N and "Review posted".
 - [ ] Everything in `23-video-review.md` §12 (definition of done).
+- [ ] **Profile header**: ★ <average> · <n> reviews (or No reviews yet) opens the Reviews tab; the tab has no score card.
+- [ ] **RP1–RP1N**: Sort chip (four orders in a sheet), With video, one score at a time (the active one first), the count line and Clear all, the no-match card; every review card the same size with or without a video.
+- [ ] **RP2–RP3**: any card opens the full-screen viewer, swiping through the same list; Book and Report (three vertical dots) on the side.
+- [ ] Everything in `24-profile-reviews.md` §10 (definition of done).

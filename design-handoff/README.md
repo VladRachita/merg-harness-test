@@ -32,7 +32,8 @@ Read in this order, then build:
 20. [`docs/21-business-conversion.md`](docs/21-business-conversion.md) — the full spec of **Convert to Business** (a person becomes a host: an overview with three steps → Legal Documents → Business Category, Kind of place, Business details → Operating hours → Create Business Account), with its own definition of done.
 21. [`docs/22-landing-page.md`](docs/22-landing-page.md) — the full spec of the **website** for the MVP: one static page (computer and phone) that shows what Merg is and sends people to the App Store or Google Play, with its pictures, copy in RO and EN, links and its own definition of done.
 22. [`docs/23-video-review.md`](docs/23-video-review.md) — the full spec of the customer's **Video review** (Rate in My activity → how many stars → what you liked / didn't like → one video, optional → a title on the video, optional → posted), with its own definition of done.
-23. [`docs/10-open-questions.md`](docs/10-open-questions.md) — what is **not** designed yet. Do not invent these; ask.
+23. [`docs/24-profile-reviews.md`](docs/24-profile-reviews.md) — the full spec of the **Profile reviews** (the rating in the profile header, the Reviews tab with sort and filters, every review as a card with or without a video, the full-screen viewer with Book and Report), with its own definition of done.
+24. [`docs/10-open-questions.md`](docs/10-open-questions.md) — what is **not** designed yet. Do not invent these; ask.
 
 ## What is in this folder
 
@@ -53,6 +54,16 @@ Read in this order, then build:
 
 ## What's new in this update
 
+- **Profile reviews (public)** — how a place's reviews show on its profile, with and without a video:
+  - **The rating shows once**, in the profile header: ★ 4.6 · 38 reviews (or "No reviews yet"). Tapping it opens the Reviews tab. The tab has no score card.
+  - `RP1` **Reviews tab**: one row of chips, the **Sort** chip (Newest ▾) · **With video** · **★ 5 … ★ 1** (one score at a time, the active one first), then every review as a card of the same size, two per row, like the Videos tab. With a video: the poster, stars, reviewer, title and +/-. Without: the stars and word, the +/- rows, what · date.
+  - `RP1S` **Sort reviews**: Newest first · Oldest first · Highest score first · Lowest score first. `RP1F` filtered with the count line and **Clear all**; `RP1N` **No reviews match** with **Clear filters**.
+  - `RP2` / `RP3` **any review opens full screen** and swipes through the same list: the video with the rating on it, or the review as a card. **Book** and **Report** (three vertical dots, confirm first) on the side.
+
+  Spec: [`docs/24-profile-reviews.md`](docs/24-profile-reviews.md). Small / medium / large references; components C94–C98; *Reviews on a profile* data in `docs/06`; rule A27 in the backend contract.
+
+### Earlier updates
+
 - **Video review (customer)** — **Rate** on a done visit in My activity › History now opens a full-screen review, in this order:
   - `VR1` **how many stars**: five stars with their word (Bad · Not great · OK · Good · Great); Next waits for a star.
   - `VR2` **what you liked / didn't like**: two optional groups of six aspect chips (per category); an aspect is never in both.
@@ -63,8 +74,6 @@ Read in this order, then build:
   - On VR1–VR4 the place card stays at the top, at the same position; the other cards are centred below it.
 
   Spec: [`docs/23-video-review.md`](docs/23-video-review.md). Small / medium / large references; components C89–C93; *Review* data in `docs/06`; rule A26 in the backend contract.
-
-### Earlier updates
 
 - **Convert to Business · How do you take bookings?** is now its own step, `BC5B`, right after the business details. It shows what each option covers before the person picks, as two cards (C87) with covered and not-covered rows (C88):
   - **In-app**: "People book in Merg. You answer in Reservations." Merg does it for you:
@@ -189,7 +198,7 @@ Read in this order, then build:
 - Small / medium / large references for all of the above; new tokens `color.calendar.*`, `color.offer.*` and radii for calendar cells, day tile and offer cards.
 - Booking form: **First name and Last name are two fields** on one row (never "Full name").
 
-## Screen inventory (105 phone screens × 3 sizes + 3 desktop screens)
+## Screen inventory (111 phone screens × 3 sizes + 3 desktop screens)
 
 | Area | Screens |
 |---|---|
@@ -208,13 +217,14 @@ Read in this order, then build:
 | Public — search | `SR1-start`, `SR2-no-results`, `SR3-all`, `SR4-videos`, `SR5-places`, `SR6-deals` |
 | Public — accommodation | `PA1-profile-rooms`, `PA2-room-video`, `PA3-room-included` |
 | Public — services & F&B profiles | `PS1-profile-services`, `PF1-profile-fnb` |
+| Public — profile reviews | `RP1-reviews-tab` (+ `RP1S-sort`, `RP1F-filtered`, `RP1N-no-match`), `RP2-video-review`, `RP3-review-no-video` |
 | Salon booking — regular customer | `R1-services-stylist-picked`, `R2-video`, `R3-pick-time`, `SV-included` |
 | Salon booking — first visit | `F1-services-everyone`, `F2-video`, `F3-choose-stylist`, `F4-pick-time` (+ offer states `F4C-pick-time-coupon`, `F4E-pick-time-event`) |
 | Coupons & Events tab | `CE1-coupons-events` |
 | Table booking — Food & Beverage | `TB1-pick-date`, `TB2-guests-time-any` (+ `TB2C-guests-time-coupon`, `TB2E-guests-time-event`), `TB3-details-any` (+ `TB3C-details-coupon`, `TB3E-details-event`), `TB4-booked` |
 | Account — convert to business | `BC1-overview`, `BC2-legal`, `BC3-category` (+ `BC3F-category-fnb`, `BC3S-category-entertainment`), `BC4-place-type` (+ `BC4F-place-type-fnb`, `BC4S-place-type-entertainment`), `BC5-details`, `BC6-hours`, `BC7-ready` |
 
-Ids with a `C` or `E` suffix are **states** of the screen before them (coupon or event chosen), not separate screens. In Convert to Business, `BC3` / `BC4` ids with an `F` or `S` suffix are the Food & Beverage or Entertainment (`SERVICES`) states.
+Ids with a `C` or `E` suffix are **states** of the screen before them (coupon or event chosen), not separate screens. In Convert to Business, `BC3` / `BC4` ids with an `F` or `S` suffix are the Food & Beverage or Entertainment (`SERVICES`) states. In Profile reviews, `RP1S`, `RP1F` and `RP1N` are states of `RP1` (the sort sheet, filters on, nothing matches).
 
 ## How to use the references
 
@@ -231,14 +241,15 @@ Copy this as the first message, adjusted for your app's repository:
 You are implementing new screens in our mobile app (Android + iOS). The complete design
 handoff is in design-handoff/ (README.md first). Follow it exactly:
 
-1. Read design-handoff/README.md and every file in design-handoff/docs/ (01–23) before writing code.
+1. Read design-handoff/README.md and every file in design-handoff/docs/ (01–24) before writing code.
 2. Map tokens.json into the app's theme (colours, type, radii, spacing). Do not add new values.
    Copy the images in design-handoff/assets/ into the app as they are (assets/tiles/README.md says
    where each file goes). Do not redraw, recolour or replace them.
-3. Build the shared components from docs/03-components.md first (C1–C93), then the screens from
+3. Build the shared components from docs/03-components.md first (C1–C98), then the screens from
    docs/04-screens.md, in the order: host services → host rooms → host team (TM1 → TM3, see
    docs/12-team.md) → host customers & rewards (CR1 → CR10, see docs/13-customers-rewards.md) →
-   host reservations (RV1 → RV6, see docs/14-reservations.md) → public profiles →
+   host reservations (RV1 → RV6, see docs/14-reservations.md) → public profiles (with their reviews,
+   RP1 → RP3, see docs/24-profile-reviews.md) →
    salon booking (regular, then first visit incl. the F4 offer states) →
    table booking (TB1 → TB4, see docs/11-table-booking.md) → coupons & events (CE1, then the
    host's create flow OF1 → OF13, see docs/20-coupons-events.md) →
@@ -256,7 +267,7 @@ handoff is in design-handoff/ (README.md first). Follow it exactly:
 7. When a screen is done, compare it to the screenshots at all three sizes and go through
    docs/09-acceptance-checklist.md (and docs/11 §12 for table booking, docs/12 §8 for team,
    docs/13 §13 for customers & rewards, docs/14 §13 for reservations, docs/15 §13 for my
-   activity, docs/16 §14 for search, docs/17 §12 for new post, docs/18 §11 for account, docs/19 §11 for the admin, docs/20 §11 for coupons & events, docs/21 §13 for convert to business, docs/23 §12 for the video review). Report any deviation
+   activity, docs/16 §14 for search, docs/17 §12 for new post, docs/18 §11 for account, docs/19 §11 for the admin, docs/20 §11 for coupons & events, docs/21 §13 for convert to business, docs/23 §12 for the video review, docs/24 §10 for the profile reviews). Report any deviation
    instead of silently changing the design.
 ```
 
@@ -264,12 +275,12 @@ handoff is in design-handoff/ (README.md first). Follow it exactly:
 
 1. **Put the handoff next to the code.** Copy `design-handoff/` into the root of the mobile app repository (or add this repository as a git submodule) so the agent can read the docs and open the screenshots.
 2. **Start Claude Code in the app repository** (`claude` in a terminal at the repo root, or a Claude Code session on claude.ai/code with the app repo attached).
-3. **Plan first.** Paste the prompt above and ask for a plan before code: theme mapping (tokens → theme), the component list C1–C93 with where each will live, and the screen order. Review the plan, then let it implement.
+3. **Plan first.** Paste the prompt above and ask for a plan before code: theme mapping (tokens → theme), the component list C1–C98 with where each will live, and the screen order. Review the plan, then let it implement.
 4. **One phase per session / pull request.** Use these follow-up prompts in order and review each PR against the screenshots before starting the next:
 
    | Phase | Prompt to paste |
    |---|---|
-   | 1 · Theme + components | "Phase 1: map tokens.json into the theme and build components C1–C93 from docs/03 with previews at 360, 390 and 430 width. No screens yet." |
+   | 1 · Theme + components | "Phase 1: map tokens.json into the theme and build components C1–C98 from docs/03 with previews at 360, 390 and 430 width. No screens yet." |
    | 2 · Host tools | "Phase 2: build HS1–HS4 and HR1–HR4 (docs/04, flow C in docs/05). Match screenshots/*/hs*.png and hr*.png." |
    | 2b · Team | "Phase 2b: build the Team page exactly as docs/12-team.md: TM1 team list grouped Active / Paused / Invites with one pinned Invite to team, TM2 invite-by-username sheet, TM3 team member (Active / Paused, services checklist = Who does it, Remove, Save changes). Replace the existing Team screen. Wire HP Team tile → TM1. Data per docs/06 (Team member, Team invite). Done = docs/12 §8 at small, medium and large." |
    | 2c · Customers & rewards | "Phase 2c: build the Customers & rewards page exactly as docs/13-customers-rewards.md: CR1 People tab (group tiles, pick people, Send reward), CR2 New reward (live ticket, 40-char message, duration chips), CR3 sent, CR4 Rewards tab (automatic rules with switches, sent rewards with Used by), CR5–CR8 the 4-step monthly rule (When on the F4 week strip, Who from visits in the month before the send, Reward, Check and turn on), CR9 edit, CR10 details. Replace the existing Customers and Send Loyalty Reward screens. Wire HP Customers tile → CR1. Data and the monthly send logic per docs/06 (Customer, Reward, Automatic reward rule). Done = docs/13 §13 at small, medium and large." |
@@ -286,6 +297,7 @@ handoff is in design-handoff/ (README.md first). Follow it exactly:
    | 12 · Coupons & events (host) | "Phase 12: build the host's create flow exactly as docs/20-coupons-events.md. Quick Actions → Coupons opens OF1 Upload Video Promo (one clip). OF2 / OF8 are the video with the Coupon \| Event switch (keeps the video, title, description and schedule), the checklist card "To create the coupon / event · n of 6 done" (done items green, to-do items with an amber ring, each opens its field or sheet; when done it becomes the green "Checklist: all 6 done" pill), the side rail (Value, Usage Limit, Schedule or Capacity, Booking channel, Schedule: white with the value when set, dark with an amber dot when missing), Title 1–100 and Description 10–500 written on the video, and Create Coupon / Create Event 44 tall, disabled until the checklist is done. One sheet per setting with one explaining line; Done opens the next; Usage Limit and Capacity default to Unlimited; Value, Booking channel and Active Schedule have no default. Create opens the check sheet (OF7 / OF13); its Create sends OfferCreateRequest and opens CE1. Data per docs/06 (Create a coupon or an event) and A23. Done = docs/20 §11 at small, medium and large." |
    | 13 · Convert to Business | "Phase 13: build the Convert to Business page exactly as docs/21-business-conversion.md. The person's own profile opens BC1, the overview: three C74 step cards (the next step with the ink border and tile, a done step with the green check), the C75 agreements card and Create Business Account, disabled at 0.4 until the three steps are done and both boxes are ticked. Every step has the C1 top bar 'Convert to Business' with the n/3 counter, the C32 progress bar with three segments and a pinned C17 button. BC2 Legal Documents: CUI (numeric, RO allowed) and the certificate photo (C80) under 'Before you upload'; Continue to Business Info opens BC3. BC3 Business Category with C71 cards (the others at 0.4). BC4 Kind of place: the category's place types as C77 tiles, 3 per row, and for Food & Beverage and Accommodation 'What do you offer?' as C78 tiles, 5 per row, up to 6. Changing the category clears both. BC5 Business details is one form in the order of docs/21 §6, with How do you take bookings? (C71 In-app / By phone), the C81 map picker and the n / 1000 counter. BC6 has seven C82 rows with 24-hour pickers and a C30 switch. Create Business Account sends BusinessApplicationRequest, which shows as a Pending HostApplication in Host Approval. Keep every owner's text exactly. Place type names must never overflow: 'Mediterranean' fits at 360. Data per docs/06 (Convert to Business) and A24. Done = docs/21 §13 at small, medium and large." |
    | 14 · Video review | "Phase 14: build the customer's video review exactly as docs/23-video-review.md. Rate on an unrated done visit in My activity › History (MA3) opens VR1, full screen: the place card pinned at the top, the other cards centred below it, the button pinned at the bottom. VR1 five stars with their word (Next waits for a star); VR2 the same screen after a star with What you liked / What you didn't like (six aspect chips per category, optional, never both). VR3 Add a video? (optional): one slot for one video, never a list; Post review without a video. VR4 the one video with Change / Remove; Next or Post without video; the card keeps its size. VR5 the New post editor with the stars and +/- on the video, the Rate tool 'N / 5' on the side rail, title (0–30) and description (0–100) optional, Publish. Posting sends ReviewCreateRequest, sets myRating and returns to MA3 with ★ N and 'Review posted' (VR6). Data per docs/06 (Review) and A26. Done = docs/23 §12 at small, medium and large." |
+   | 15 · Profile reviews | "Phase 15: build the reviews on a profile exactly as docs/24-profile-reviews.md. The profile header shows the rating once (★ average with one decimal · n reviews, or No reviews yet) and opens the Reviews tab. RP1: one sideways row of chips, the Sort chip (Newest by default; RP1S sheet with Newest / Oldest / Highest score / Lowest score, picking applies), With video, and ★ 5–★ 1 (one at a time, the active one moved to the front); with a filter on, the count line and Clear all; RP1N No reviews match with Clear filters. Every review is a card of the public video card size, two per row: with a video the poster, stars pill, reviewer, title and +/-; without, the stars and word, +/- rows, what · date. Any card opens the full-screen viewer (RP2 video / RP3 card) that swipes through the same filtered list, with Book (the profile's main action, Call for accommodation) and Report (three vertical dots, confirm, ReportReview). Data per docs/06 (Reviews on a profile) and A27. Done = docs/24 §10 at small, medium and large." |
 
 5. **Verify every phase visually.** Run on an iPhone SE / 15 / 15 Pro Max simulator and 360 / ~393 / ~430-wide Android emulators, take screenshots, put them next to `screenshots/<size>/<id>.png` (overlay at 50 %), and go through `docs/09-acceptance-checklist.md`. Ask the agent to attach the screenshots and list any deviation in the PR description.
 6. **Keep open questions open.** If the agent hits anything in `docs/10-open-questions.md` (for example validation errors on TB3 or R3 offers), it adds a TODO and asks; it does not design it.

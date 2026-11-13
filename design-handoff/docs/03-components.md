@@ -51,6 +51,7 @@ Build these once and reuse them. Values are for the **medium** phone (390 × 844
 | Too young (alert) | `circle-alert` | Signed-out avatar | `user` |
 | Review stars (picked / not) | `star` filled `status.warning` / `text.tertiary` stroke | What you liked / didn't like | `thumbs-up` / `thumbs-down` |
 | Add a video (review) | `video` | Remove the video (review) | `trash-2` |
+| Sort (reviews) | `arrow-up-down` + `chevron-down` | Report a review | `more-vertical` |
 | Value (coupon) | `percent` | Usage Limit | `ticket` |
 | Capacity (event) | `users` | Unlimited | `infinity` |
 | Booking channel · In-app | `smartphone` | Booking channel · Phone | `phone` |
@@ -567,3 +568,23 @@ Optional "Brand" tone: tile `#EEEAFD`, icon `#5B3FD6`. Default is Mono.
 ## 93. Rating on the video
 - Over the video, above the C58 caption panel: the stars pill (30, radius 15, glass, stars 16 + the word) and the opinion pills (28, radius 14, glass, `thumbs-up` `status.successOnDark` / `thumbs-down` `status.dangerOnDark` + the aspects). On the side rail, the **Rate** tool: white circle 44 with a filled star, label "N / 5" (→ VR2).
 - Seen in: VR5. Full spec: `23-video-review.md` §5.
+
+## 94. Rating stat
+- The third profile stat: `star` 16 `status.warning` + the average (one decimal) 17/500 over "<n> reviews" 12 secondary; "–" + "No reviews yet" without reviews. A link to the Reviews tab.
+- Seen in: RP1 (and every public profile header). Full spec: `24-profile-reviews.md` §2.
+
+## 95. Review filter row
+- One sideways-scrolling row, gap 8: the **Sort chip** (36, radius 18, outline, `arrow-up-down` + the order 14/600 + `chevron-down`) · a 1 × 24 `line.divider` · toggle chips 36 (**With video** with `video`; **★ 5 … ★ 1**, one at a time). Off white with `line.outline`, on ink. An active score moves to the front. With a filter on, the count line ("<n> reviews") and **Clear all**.
+- Seen in: RP1, RP1F, RP1N. Full spec: `24-profile-reviews.md` §2.
+
+## 96. Sort sheet
+- The C42 sheet: "Sort reviews" + four radio rows (Newest first · Oldest first · Highest score first · Lowest score first). Picking applies and closes.
+- Seen in: RP1S.
+
+## 97. Review card
+- The public video card size (265 / 290 / 324, radius 22), 2 per row. **With a video:** the poster with scrims, the stars pill + reviewer top-left, play 44, the title (2 lines) and the +/- lines at the bottom. **Without:** white with `line.card`, the reviewer, stars 22 + the word 17/700, one row per aspect (thumbs icon + name), "<what> · <date>".
+- Seen in: RP1, RP1F. Full spec: `24-profile-reviews.md` §2.
+
+## 98. Review viewer
+- Full screen, swipes through the list in its order and filters. With a video: the video with the reviewer, C93 pills, title and description on it. Without: the review as a white card (stars 34 + the word, the chips). Side rail: **Book** (white 48; the profile's main action, Call for accommodation) and **Report** (dark 44, `more-vertical`, confirm first).
+- Seen in: RP2, RP3. Full spec: `24-profile-reviews.md` §5.
