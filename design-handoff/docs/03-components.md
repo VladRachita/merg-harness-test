@@ -61,6 +61,8 @@ Build these once and reuse them. Values are for the **medium** phone (390 × 844
 | Business Hours | `clock` | Upload a certificate photo | `camera` |
 | Rule before you upload | `circle-check` | Business Address / pick on the map | `map-pin` / `map` |
 | Booking · In-app / By phone | `smartphone` / `phone` | Step done (overview) | `check` on `status.success` |
+| Map label · Food & Drinks | `utensils` | Map label · Accommodations | `bed-double` |
+| Map label · Entertainment | `sparkles` | Close the pulled-up places list | `x` |
 
 Stroke 1.8 at 20–26 px, 2–2.4 at 12–16 px. Filled: play, phone, star, more dots.
 
@@ -588,3 +590,15 @@ Optional "Brand" tone: tile `#EEEAFD`, icon `#5B3FD6`. Default is Mono.
 ## 98. Review viewer
 - Full screen, swipes through the list in its order and filters. With a video: the video with the reviewer, C93 pills, title and description on it. Without: the review as a white card (stars 34 + the word, the chips). Side rail: **Book** (white 48; the profile's main action, Call for accommodation) and **Report** (dark 44, `more-vertical`, confirm first).
 - Seen in: RP2, RP3. Full spec: `24-profile-reviews.md` §5.
+
+## 99. Labels pill (map)
+- Floats over the map, centred, 24 above the bottom nav: 72 tall, radius 36, white, shadow `0 6 22 rgba(29,27,34,.2)`, padding `0 6`. Only the labels with places in view, in the order Food & Drinks · Accommodations · Entertainment; each 104 wide: icon 24 (stroke 2, `category.*`) over the name 12/500; the count (18, radius 9, ink, white 10.5/700, "99+" from 100) at the icon's top-right corner (top −12, right −25), clear of the icon; a 1 `line.card` divider between labels. Hidden with no places in view.
+- Seen in: MP1, MP1O, MP1T. Full spec: `25-map.md` §2.
+
+## 100. Places sheet (map)
+- The C42 sheet shell on the bottom nav: handle 40 × 5 · header 56 (← 44 · the label in a 36 `category.*Tint` circle · the name 17/600 · **×** 44 at the top right when pulled up) · a 3-column grid (padding `10 16 24`, gaps 22 / 8) that scrolls and keeps loading. Opens at a fixed height (368; 392 with a row peeking); dragged up it stops 44 below the top; × or dragging down brings it back; ← shows the pill again.
+- Seen in: MP2, MP2L, MP2U. Full spec: `25-map.md` §3.
+
+## 101. Place avatar (map)
+- Round avatar 72 (photo or initials 26/700 on `avatarColor`) with a 2.5 white and a 2 `category.*` ring; one sticker over its top edge (coupon "<n>% OFF" `offer.coupon` or event `offer.event` + `ticket`, 20 tall, 10.5); the name 13.5/600 (one line), ★ rating 12/600 and the distance 12 secondary. Opens the place's profile.
+- Seen in: MP2, MP2L, MP2U. Full spec: `25-map.md` §3.
