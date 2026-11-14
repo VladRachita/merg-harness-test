@@ -57,6 +57,7 @@ Types: `string`, `int`, `bool`, `money` = `{ amount: number, currency: "RON" }`,
 | Customer · My activity | `MA1-upcoming` … `MA6-reward` |
 | Customer · Video review | `VR1-stars`, `VR2-details`, `VR3-add-video`, `VR4-video-added`, `VR5-on-video`, `VR6-posted` |
 | Public · Profile reviews | `RP1-reviews-tab` (+ `RP1S-sort`, `RP1F-filtered`, `RP1N-no-match`), `RP2-video-review`, `RP3-review-no-video` |
+| Public · Map (components only) | `MP1-pill` (+ `MP1O-pill-one`, `MP1T-pill-two`), `MP2-places` (+ `MP2L-places-20`, `MP2U-places-up`) |
 | Public · Search | `SR1-start`, `SR2-no-results`, `SR3-all`, `SR4-videos`, `SR5-places`, `SR6-deals` |
 | Profile · New post | `NP1-pick-video`, `NP2-empty`, `NP3-written`, `NP4-tag-place`, `EP1-edit-post`, `EP2-delete-video` |
 | Account · Create or sign in | `AU1-profile-signed-out`, `AU2-email`, `AU3-create-account`, `AU4-date-of-birth`, `AU5-too-young` |
@@ -204,6 +205,13 @@ Full detail per screen is in the page sections below. ⚠ = a gap listed in §B.
 | `RP1S-sort` | — | a new `ReviewsQuery` with `sort` |
 | `RP1F-filtered`, `RP1N-no-match` | `ReviewsQuery{…, withVideo?, stars?}` → `total` for the count line | — |
 | `RP2-video-review`, `RP3-review-no-video` | the same `ReviewsPage` (swipe = next item, then `nextCursor`) · `ReviewView{author, stars, liked, disliked, visit, video?, title?, description?}` | **Report** → `ReportReview{reviewId}` (after the confirm) |
+
+**Public · Map** (components only)
+
+| Screen | Reads | Sends |
+|---|---|---|
+| `MP1-pill`, `MP1O-pill-one`, `MP1T-pill-two` | `MapLabelsQuery{bounds}` → `MapLabel[]{category, count}` (only the categories with places in view) | a label → `MapPlacesQuery` |
+| `MP2-places`, `MP2L-places-20`, `MP2U-places-up` | `MapPlacesQuery{bounds, category, from, cursor?}` → `MapPlacesPage{items: MapPlace[], nextCursor}` · `MapPlace{name, avatarUrl?, initials, avatarColor, rating?, distanceMeters, offer?}` | — (a place opens its profile) |
 
 **Public · Search**
 
@@ -1987,6 +1995,42 @@ The reviews a place received, on its profile (the Reviews tab), for everyone and
 
 ---
 
+## Page: Public · Map
+
+The labels pill over the map and the places sheet of one label. Only these two components are designed; the map, its pins and the bottom nav are the app's existing Map tab. Two requests feed them, `MapLabelsQuery` and `MapPlacesQuery` (see `docs/06-data-model.md` → *Map: labels and places*).
+
+### Screen 1 · Labels pill (`MP1-pill`, board *B1 · The pill*), with its states `MP1O-pill-one`, `MP1T-pill-two`
+
+**Opens with:** the visible part of the map (`MapBounds`).
+
+**Elements displayed**
+
+| Element | Field | Type | Notes |
+|---|---|---|---|
+| Label | `MapLabel.category` | `FOOD_BEVERAGE \| ACCOMMODATION \| SERVICES` | Shown as Food & Drinks · Accommodations · Entertainment, in that order; only the ones returned. |
+| Count | `MapLabel.count` | `int` | Places of that label in view; "99+" from 100. |
+
+**Actions:** a label → MP2 for that category. With no labels returned, the pill is hidden. It reloads when the map stops moving.
+
+### Screen 2 · Places sheet (`MP2-places`, board *B2 · Food & Drinks*), with its states `MP2L-places-20`, `MP2U-places-up`
+
+**Opens with:** `category`, the visible map (`bounds`) and `from` (the person's location, or the map centre when it is off).
+
+**Elements displayed**
+
+| Element | Field | Type | Notes |
+|---|---|---|---|
+| Header | the label of `category` | | Its icon, tinted circle and name. |
+| Avatar | `MapPlace.avatarUrl?`, `.initials`, `.avatarColor` | | The photo, or else the initials on the colour; ring in the label's colour. |
+| Sticker | `MapPlace.offer?{kind, label}` | | One at most: the biggest active coupon ("20% OFF"), else an event ("Event"). |
+| Name | `MapPlace.name` | `string` | One line, ellipsis. |
+| Rating | `MapPlace.rating?` | `number?` | One decimal; hidden without reviews. |
+| Distance | `MapPlace.distanceMeters` | `int` | "350 m" up to 999 m, then "1.2 km". |
+
+**Actions:** a place → its profile (PF1 / PS1 / PA1 by `category`); scrolling loads the next page (`nextCursor`); dragging up → MP2U; × or dragging down → back to the first height; ← → MP1.
+
+---
+
 ## Page: Website · Landing page
 
 The MVP website: one static page (1440 × 900 on a computer, full scroll on a phone) that sends people to the stores. **It reads no data and sends nothing to the app's API.** See `docs/22-landing-page.md`.
@@ -2039,6 +2083,7 @@ The MVP website: one static page (1440 × 900 on a computer, full scroll on a ph
 | A25 | **Download link** | `GET /get` is a server redirect (no page, no cookies): iPhone / iPad user agents → `appStoreUrl`, Android → `playStoreUrl`, anything else → the landing page at `#download`. Keeps the query (`?for=business`, campaign values) and counts each redirect by target store and source (QR, button, business link) for the store-click numbers. Cacheable per user-agent class at the CDN edge. | LP1, LP2 |
 | A26 | **Reviews** | `ReviewCreateRequest` creates a review of a DONE reservation. **Checks:** the reservation is the author's, DONE and not reviewed yet (one review per visit); `stars` 1–5 is required; `liked` / `disliked` are aspects of the place's category, never the same aspect in both; `title` (0–30) and `description` (0–100) only with a video; the video is one clip up to 100 MB, uploaded as in A20. **After:** `Reservation.myRating = stars` (MA3 shows ★ N instead of Rate). | VR1–VR6, MA3 |
 | A27 | **Reviews on a profile** | `ReviewsQuery` lists a business's reviews. **Sort:** NEWEST = `createdAt` newest first (the default), OLDEST, HIGHEST = `stars` high to low then newest, LOWEST = low to high then newest. **Filters:** `withVideo`, `stars` (one value); they combine with the sort. **Paging:** cursor, `total` = how many match. **Rating:** `stats.rating` = the average of `stars`, one decimal; `stats.reviewsCount` = the number of reviews. **Report:** `ReportReview` records the report for the platform team; the review stays visible. | RP1–RP3, PF1, PS1, PA1 |
+| A28 | **Map labels and places** | `MapLabelsQuery` counts the approved businesses whose location is inside `bounds`, per category, and returns only the categories with at least one. `MapPlacesQuery` lists the approved businesses of one category inside `bounds`, nearest to `from` first (then by name), with a cursor. **Offer on a place:** its active coupon with the biggest discount, else its next active event, else none. **Rating:** as A27. The client runs both again when the map stops moving. | MP1–MP2U |
 
 ---
 
@@ -2109,6 +2154,7 @@ The MVP website: one static page (1440 × 900 on a computer, full scroll on a ph
 | **Post** | `id`, `authorUserId`, `publishedAt`, `video { url, thumbnailUrl }`, `title` (1–30), `description?` (0–100), `tag? { businessId, itemType? SERVICE\|ROOM, itemId? }` (one per post); create: `CreatePostRequest { videoUploadId, title, description?, tag? }`; update: `UpdatePostRequest { title, description?, tag? \| null }`; delete: `DeletePost { postId }` | NP1–NP4, EP1, EP2 |
 | **Review** | `ReviewCreateRequest { reservationId, stars (1–5), liked[], disliked[], videoUploadId?, title? (0–30), description? (0–100) }`; `Aspect` per category (FOOD_BEVERAGE: FOOD, SERVICE, PRICE, ATMOSPHERE, CLEAN_PLACE, WAITING_TIME · SERVICES: RESULT, STAFF, PRICE, CLEAN_PLACE, ON_TIME, ATMOSPHERE · ACCOMMODATION: ROOM, CLEAN_PLACE, STAFF, LOCATION, PRICE, QUIET); sets `Reservation.myRating` | VR1–VR6, MA3 |
 | **ReviewView** (on a profile) | `id`, `createdAt`, `stars`, `liked[]`, `disliked[]`, `author { name, avatarUrl?, avatarColor }`, `visit { what, date }`, `video? { url, thumbnailUrl }`, `title?`, `description?`; listed by `ReviewsQuery { businessId, sort NEWEST\|OLDEST\|HIGHEST\|LOWEST, withVideo?, stars?, cursor? }` → `{ items, total, nextCursor }`; `ReportReview { reviewId }` | RP1–RP3 |
+| **MapPlace** (map) | `businessId`, `name`, `avatarUrl?`, `initials`, `avatarColor`, `category`, `placeType`, `location { lat, lng }`, `distanceMeters`, `rating?`, `reviewsCount`, `offer? { kind COUPON\|EVENT, label }`; listed by `MapPlacesQuery { bounds, category, from, cursor? }`; counted by `MapLabelsQuery { bounds } → MapLabel { category, count }[]` | MP1–MP2U |
 | **Account** | `EmailCheck { email } → { exists }`; `UsernameCheck { username } → { available }`; `SignUpRequest { email, firstName, lastName, username, dateOfBirth, password }`; `MIN_AGE` (16) | AU2–AU5 |
 | **BusinessApplicationRequest** | `cui`, `certificateUploadId`, `category`, `placeType`, `offers[]` (0–6), `name`, `phone? { countryCode, number }`, `bookingChannel` IN_APP\|PHONE, `priceLevel` 1–4, `address { line, city, lat, lng }`, `maxPartySize`, `venueCapacity`, `servicesOffered` (10–1000), `openingHours` (7 days `{ open, from, to }`), `notifyWhenProcessed`, `termsAccepted`, `termsVersion` | BC1–BC7 |
 | **HostApplication** (from a person) | `business { name, category, type, city, address }`, `owner { name, email, phone }`, `documents`, `appliedAt`, `state` (see Admin) | BC7 → AD3 |

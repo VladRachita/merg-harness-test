@@ -249,6 +249,30 @@ The same viewer with the card: Mihai Popa · Table · 18 Oct · ★★★★★ 
 
 ---
 
+## Public — map: labels and places
+
+Full spec, sizes and states: [`25-map.md`](25-map.md). Only the two components are designed: the labels pill and the places sheet. The map, its pins, the location button and the bottom nav are the app's existing Map tab. Summary:
+
+### MP1-pill · Labels pill
+Food & Drinks 6 · Accommodations 5 · Entertainment 5: each label with its icon, its name and the count at the icon's corner.
+
+### MP1O-pill-one · One label
+Only Food & Drinks 6 has places in view: one label, the pill hugs it.
+
+### MP1T-pill-two · Two labels
+Food & Drinks 6 · Entertainment 5, in the fixed order, with one divider.
+
+### MP2-places · Places sheet
+← · Food & Drinks → Maestro Bistro (20% OFF, ★ 4.6, 350 m) · Café Central (15% OFF, ★ 4.7, 450 m) · Bella Pizza (★ 4.4, 600 m) · Wine Bar Nº 5 (Event, ★ 4.5, 900 m) · Old Town Bakery (★ 4.8, 1.1 km) · Brunch Club (★ 4.3, 1.4 km).
+
+### MP2L-places-20 · 20 places
+The same sheet and height, nearest first (Coffee Lab 150 m, Casa Mia 200 m, Maestro Bistro 350 m…); the third row peeks under the second; it scrolls.
+
+### MP2U-places-up · Pulled up
+The sheet covers the map up to 44 below the top: ← · Food & Drinks · **×** (top right); 4 full rows on medium, with the next one peeking.
+
+---
+
 ## Admin — web dashboard (desktop)
 
 Full spec: [`19-admin.md`](19-admin.md). A separate web app at 1440 × 900. Summary:
