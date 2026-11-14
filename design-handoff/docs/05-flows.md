@@ -293,3 +293,21 @@ Rules (details in `23-video-review.md` §1):
 - one video at most, optional and not pushed: **Post review** is the main button until a video is added;
 - with a video, the title and description on it are optional;
 - posting sets the visit's rating (★ N in History); a visit is reviewed once.
+
+## S. Public — profile reviews
+
+```mermaid
+flowchart LR
+  PF[Profile · ★ rating or Reviews tab] --> RP1[RP1 Reviews tab]
+  RP1 -- Sort --> RP1S[RP1S Sort reviews] --> RP1
+  RP1 -- With video / a score --> RP1F[RP1F Filtered]
+  RP1F -- nothing matches --> RP1N[RP1N No reviews match]
+  RP1N -- Clear filters --> RP1
+  RP1 -- a card --> V[RP2 / RP3 Review viewer]
+  V -- Book --> BOOK[The place's booking start]
+```
+Rules (details in `24-profile-reviews.md` §1):
+- the rating shows once, in the header; tapping it opens the Reviews tab;
+- one order at a time (Newest by default) and the filters With video and one score combine;
+- any review opens the full-screen viewer, which swipes through the same filtered list;
+- Book is the profile's main action, and Report asks to confirm first.

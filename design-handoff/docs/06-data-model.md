@@ -375,6 +375,26 @@ Aspect =                                  // six per category, in this order
   - a title or description only comes with a video.
 - **After posting**, `Reservation.myRating = stars`: History shows **★ N** instead of **Rate**.
 
+## Reviews on a profile
+```ts
+ReviewsQuery {
+  businessId,
+  sort: "NEWEST" | "OLDEST" | "HIGHEST" | "LOWEST",   // NEWEST by default; equal scores keep the newest first
+  withVideo?: boolean,                               // With video
+  stars?: 1 | 2 | 3 | 4 | 5,                         // one score at a time
+  cursor?                                            // keeps loading, as Search
+} → ReviewsPage { items: ReviewView[], total: number, nextCursor? }   // total feeds "<n> reviews"
+ReviewView {
+  id, createdAt, stars, liked: Aspect[], disliked: Aspect[],
+  author: { name, avatarUrl?, avatarColor },
+  visit: { what: "Table", date: "2026-10-20" },       // "Table · 20 Oct"
+  video?: { url, thumbnailUrl }, title?, description?
+}
+ReportReview { reviewId }                             // after the confirm dialog; the review stays visible
+```
+- `BusinessProfile.stats.rating` is the average of `stars` (one decimal) and `stats.reviewsCount` the number of reviews. Both show in the profile header ("★ 4.6 · 38 reviews"). Without reviews, `rating` is empty and the header shows "No reviews yet".
+- The viewer (RP2 / RP3) swipes through the same `ReviewsQuery` results, in order.
+
 ## Account (create or sign in)
 ```ts
 EmailCheck { email } → { exists: boolean }                   // AU2: false → AU3 (create), true → sign in with the password

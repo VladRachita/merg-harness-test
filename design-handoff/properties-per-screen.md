@@ -41,7 +41,7 @@ Types: `string`, `int`, `bool`, `money` = `{ amount: number, currency: "RON" }`,
 
 ---
 
-## Contents — 18 pages, 112 screens
+## Contents — 19 pages, 118 screens
 
 | Page | Screens |
 |---|---|
@@ -56,6 +56,7 @@ Types: `string`, `int`, `bool`, `money` = `{ amount: number, currency: "RON" }`,
 | Host · Reservations | `RV1-reservations` … `RV6-after-visit` |
 | Customer · My activity | `MA1-upcoming` … `MA6-reward` |
 | Customer · Video review | `VR1-stars`, `VR2-details`, `VR3-add-video`, `VR4-video-added`, `VR5-on-video`, `VR6-posted` |
+| Public · Profile reviews | `RP1-reviews-tab` (+ `RP1S-sort`, `RP1F-filtered`, `RP1N-no-match`), `RP2-video-review`, `RP3-review-no-video` |
 | Public · Search | `SR1-start`, `SR2-no-results`, `SR3-all`, `SR4-videos`, `SR5-places`, `SR6-deals` |
 | Profile · New post | `NP1-pick-video`, `NP2-empty`, `NP3-written`, `NP4-tag-place`, `EP1-edit-post`, `EP2-delete-video` |
 | Account · Create or sign in | `AU1-profile-signed-out`, `AU2-email`, `AU3-create-account`, `AU4-date-of-birth`, `AU5-too-young` |
@@ -194,6 +195,15 @@ Full detail per screen is in the page sections below. ⚠ = a gap listed in §B.
 | `VR4-video-added` | the picked clip (the device) | **Post without video** → as VR3 |
 | `VR5-on-video` | signed-in `User{name}` · as VR1 | **Publish** → `ReviewCreateRequest{…, videoUploadId, title?, description?}` |
 | `VR6-posted` | MA3 with `myRating` | — |
+
+**Public · Profile reviews**
+
+| Screen | Reads | Sends |
+|---|---|---|
+| `RP1-reviews-tab` | `BusinessProfile.stats{rating, reviewsCount}` · `ReviewsQuery{businessId, sort: NEWEST}` → `ReviewsPage{items: ReviewView[], total, nextCursor}` | — |
+| `RP1S-sort` | — | a new `ReviewsQuery` with `sort` |
+| `RP1F-filtered`, `RP1N-no-match` | `ReviewsQuery{…, withVideo?, stars?}` → `total` for the count line | — |
+| `RP2-video-review`, `RP3-review-no-video` | the same `ReviewsPage` (swipe = next item, then `nextCursor`) · `ReviewView{author, stars, liked, disliked, visit, video?, title?, description?}` | **Report** → `ReportReview{reviewId}` (after the confirm) |
 
 **Public · Search**
 
@@ -472,7 +482,7 @@ The profile header is the same on PA1, PS1 and PF1 and is described once, under 
 | Category line | `BusinessProfile.category` + `BusinessProfile.subcategoryLabel?` | `enum` + `string?` | *Accommodation*; *Services · Barber & salon*; *Food & Beverage · Restaurant* |
 | Posts | `BusinessProfile.stats.posts` | `int` | |
 | Followers | `BusinessProfile.stats.followers` | `int` | |
-| Rating | `BusinessProfile.stats.rating?`, `BusinessProfile.stats.reviewsCount` | `number?`, `int` | "–" and "No reviews yet" when there are no reviews. |
+| Rating | `BusinessProfile.stats.rating?`, `BusinessProfile.stats.reviewsCount` | `number?`, `int` | "★ 4.6 · 38 reviews" (the average, one decimal); "–" and "No reviews yet" when there are no reviews. Tap → the Reviews tab (RP1). |
 | Follow button state | `viewer.isFollowing` | `bool` | **⚠ gap:** not in `06` (Follow / Following). |
 | Map | `BusinessProfile.address.lat`, `BusinessProfile.address.lng` | `number` | OpenStreetMap tiles. The pin icon comes from `BusinessProfile.category`. |
 | Address | `BusinessProfile.address.line` (+ `.city`) | `string` | Tap = copy. |
@@ -496,7 +506,7 @@ The profile header is the same on PA1, PS1 and PF1 and is described once, under 
 - **Call** → the phone dialer with `phone`.
 - Copy the address (on the device).
 - A card, its play button or **Details** → PA2 with `roomId`.
-- The **Videos** and **Reviews** tabs and the **More (⋮)** menu are not designed. **Coupons** = CE1.
+- The **Videos** tab and the **More (⋮)** menu are not designed. **Coupons** = CE1. **Reviews** = RP1 (`docs/24-profile-reviews.md`).
 
 ### Screen 2 · Room video · Call on the side (`PA2-room-video`, board *Rooms video · Call on the side*)
 
@@ -1940,6 +1950,43 @@ A customer reviews a done visit from **Rate** in My activity › History: stars 
 
 ---
 
+## Page: Public · Profile reviews
+
+The reviews a place received, on its profile (the Reviews tab), for everyone and for the place itself. One request lists them, `ReviewsQuery`, and one reports a review, `ReportReview` (see `docs/06-data-model.md` → *Reviews on a profile*).
+
+### Screen 1 · Reviews tab (`RP1-reviews-tab`, board *1 · Reviews tab*), with its states `RP1S-sort`, `RP1F-filtered`, `RP1N-no-match`
+
+**Opens with:** `businessId` (the profile).
+
+**Elements displayed**
+
+| Element | Field | Type | Notes |
+|---|---|---|---|
+| Rating (header) | `BusinessProfile.stats.rating?`, `.reviewsCount` | `number?`, `int` | "★ 4.6 · 38 reviews"; the only place the rating shows. |
+| Count line | `ReviewsPage.total` | `int` | Only with a filter on: "<n> reviews" / "<n> reviews with a video". |
+| Review card | `ReviewView.author{name, avatarUrl?, avatarColor}`, `.stars`, `.liked[]`, `.disliked[]`, `.visit{what, date}`, `.video?{thumbnailUrl}`, `.title?` | | With a video: the poster, stars, name, title, +/-. Without: stars + word, +/- rows, what · date. |
+
+**Inputs**
+
+| Input | Type | Rules |
+|---|---|---|
+| Sort | `NEWEST \| OLDEST \| HIGHEST \| LOWEST` | One at a time; NEWEST by default; equal scores keep the newest first. |
+| With video | `bool` | Toggle. |
+| Score | `int` 1–5 or none | One at a time; tap again to clear. |
+
+**Actions:** a card → RP2 / RP3; **Clear all** / **Clear filters** → no filters (the sort stays); scrolling loads the next page (`nextCursor`).
+
+### Screens 2–3 · The review viewer (`RP2-video-review`, `RP3-review-no-video`)
+
+**Elements displayed:** one `ReviewView` at a time, in the list's order and filters; with a video, its `video.url` plays with the rating, +/-, title and description on it.
+
+**Actions:**
+- swipe up → the next review;
+- **Book** → the profile's main action (TB1 for Food & Beverage; the booking start for Services; Call for Accommodation);
+- **Report** → confirm → `ReportReview{ reviewId }`.
+
+---
+
 ## Page: Website · Landing page
 
 The MVP website: one static page (1440 × 900 on a computer, full scroll on a phone) that sends people to the stores. **It reads no data and sends nothing to the app's API.** See `docs/22-landing-page.md`.
@@ -1991,6 +2038,7 @@ The MVP website: one static page (1440 × 900 on a computer, full scroll on a ph
 | A24 | **Host application** | `BusinessApplicationRequest` creates a `HostApplication` (`PENDING`) with `business { name, category, type = placeType, city, address }`, `owner` from the account + `phone`, `documents` = the certificate. **Checks:** every required field (`phone` too when `bookingChannel = PHONE`), `servicesOffered` 10–1000, capacities whole numbers ≥ 1, `to > from` on open days, `termsAccepted`, one pending application per person. Counts in `hostApplicationsWaiting`. **Approve** (AD3) makes the account a host with a `BusinessProfile` (category, `subcategoryLabel` = place type, phone, address, `openingHours`, `priceLevel`, booking default); **Reject** tells the person the reason. | BC1–BC7, AD3 |
 | A25 | **Download link** | `GET /get` is a server redirect (no page, no cookies): iPhone / iPad user agents → `appStoreUrl`, Android → `playStoreUrl`, anything else → the landing page at `#download`. Keeps the query (`?for=business`, campaign values) and counts each redirect by target store and source (QR, button, business link) for the store-click numbers. Cacheable per user-agent class at the CDN edge. | LP1, LP2 |
 | A26 | **Reviews** | `ReviewCreateRequest` creates a review of a DONE reservation. **Checks:** the reservation is the author's, DONE and not reviewed yet (one review per visit); `stars` 1–5 is required; `liked` / `disliked` are aspects of the place's category, never the same aspect in both; `title` (0–30) and `description` (0–100) only with a video; the video is one clip up to 100 MB, uploaded as in A20. **After:** `Reservation.myRating = stars` (MA3 shows ★ N instead of Rate). | VR1–VR6, MA3 |
+| A27 | **Reviews on a profile** | `ReviewsQuery` lists a business's reviews. **Sort:** NEWEST = `createdAt` newest first (the default), OLDEST, HIGHEST = `stars` high to low then newest, LOWEST = low to high then newest. **Filters:** `withVideo`, `stars` (one value); they combine with the sort. **Paging:** cursor, `total` = how many match. **Rating:** `stats.rating` = the average of `stars`, one decimal; `stats.reviewsCount` = the number of reviews. **Report:** `ReportReview` records the report for the platform team; the review stays visible. | RP1–RP3, PF1, PS1, PA1 |
 
 ---
 
@@ -2060,6 +2108,7 @@ The MVP website: one static page (1440 × 900 on a computer, full scroll on a ph
 | **RecentSearch** | `query`, `searchedAt` (this person's, newest first; storage⚠) | SR1 |
 | **Post** | `id`, `authorUserId`, `publishedAt`, `video { url, thumbnailUrl }`, `title` (1–30), `description?` (0–100), `tag? { businessId, itemType? SERVICE\|ROOM, itemId? }` (one per post); create: `CreatePostRequest { videoUploadId, title, description?, tag? }`; update: `UpdatePostRequest { title, description?, tag? \| null }`; delete: `DeletePost { postId }` | NP1–NP4, EP1, EP2 |
 | **Review** | `ReviewCreateRequest { reservationId, stars (1–5), liked[], disliked[], videoUploadId?, title? (0–30), description? (0–100) }`; `Aspect` per category (FOOD_BEVERAGE: FOOD, SERVICE, PRICE, ATMOSPHERE, CLEAN_PLACE, WAITING_TIME · SERVICES: RESULT, STAFF, PRICE, CLEAN_PLACE, ON_TIME, ATMOSPHERE · ACCOMMODATION: ROOM, CLEAN_PLACE, STAFF, LOCATION, PRICE, QUIET); sets `Reservation.myRating` | VR1–VR6, MA3 |
+| **ReviewView** (on a profile) | `id`, `createdAt`, `stars`, `liked[]`, `disliked[]`, `author { name, avatarUrl?, avatarColor }`, `visit { what, date }`, `video? { url, thumbnailUrl }`, `title?`, `description?`; listed by `ReviewsQuery { businessId, sort NEWEST\|OLDEST\|HIGHEST\|LOWEST, withVideo?, stars?, cursor? }` → `{ items, total, nextCursor }`; `ReportReview { reviewId }` | RP1–RP3 |
 | **Account** | `EmailCheck { email } → { exists }`; `UsernameCheck { username } → { available }`; `SignUpRequest { email, firstName, lastName, username, dateOfBirth, password }`; `MIN_AGE` (16) | AU2–AU5 |
 | **BusinessApplicationRequest** | `cui`, `certificateUploadId`, `category`, `placeType`, `offers[]` (0–6), `name`, `phone? { countryCode, number }`, `bookingChannel` IN_APP\|PHONE, `priceLevel` 1–4, `address { line, city, lat, lng }`, `maxPartySize`, `venueCapacity`, `servicesOffered` (10–1000), `openingHours` (7 days `{ open, from, to }`), `notifyWhenProcessed`, `termsAccepted`, `termsVersion` | BC1–BC7 |
 | **HostApplication** (from a person) | `business { name, category, type, city, address }`, `owner { name, email, phone }`, `documents`, `appliedAt`, `state` (see Admin) | BC7 → AD3 |

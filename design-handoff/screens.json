@@ -3576,6 +3576,205 @@
         "ma3-history",
         "pf1-profile-fnb"
       ]
+    },
+    {
+      "id": "RP1-reviews-tab",
+      "area": "public-reviews",
+      "title": "Profile reviews · Reviews tab",
+      "purpose": "The profile (rating ★ 4.6 · 38 reviews in the header) with the Reviews tab: Sort (Newest) · With video · score chips, then every review as a card, 2 per row, with or without a video.",
+      "source": "RP-B-Tab.dc.html",
+      "files": {
+        "small": {
+          "html": "screens/small/rp1-reviews-tab.html",
+          "png": "screenshots/small/rp1-reviews-tab.png",
+          "width": 360,
+          "height": 1579
+        },
+        "medium": {
+          "html": "screens/medium/rp1-reviews-tab.html",
+          "png": "screenshots/medium/rp1-reviews-tab.png",
+          "width": 390,
+          "height": 1654
+        },
+        "large": {
+          "html": "screens/large/rp1-reviews-tab.html",
+          "png": "screenshots/large/rp1-reviews-tab.png",
+          "width": 430,
+          "height": 1756
+        }
+      },
+      "links_to": [
+        "pf1-profile-fnb",
+        "tb1-pick-date",
+        "rp1f-filtered",
+        "rp1n-no-match",
+        "rp1s-sort",
+        "rp2-video-review",
+        "rp3-review-no-video"
+      ]
+    },
+    {
+      "id": "RP1S-sort",
+      "area": "public-reviews",
+      "title": "Profile reviews · Sort reviews (sheet)",
+      "purpose": "Sort sheet over the tab: Newest first · Oldest first · Highest score first · Lowest score first; picking one applies it.",
+      "source": "RP-B-Sort.dc.html",
+      "files": {
+        "small": {
+          "html": "screens/small/rp1s-sort.html",
+          "png": "screenshots/small/rp1s-sort.png",
+          "width": 360,
+          "height": 640
+        },
+        "medium": {
+          "html": "screens/medium/rp1s-sort.html",
+          "png": "screenshots/medium/rp1s-sort.png",
+          "width": 390,
+          "height": 844
+        },
+        "large": {
+          "html": "screens/large/rp1s-sort.html",
+          "png": "screenshots/large/rp1s-sort.png",
+          "width": 430,
+          "height": 932
+        }
+      },
+      "links_to": [
+        "pf1-profile-fnb",
+        "rp1-reviews-tab",
+        "rp1f-filtered",
+        "rp2-video-review",
+        "rp3-review-no-video"
+      ]
+    },
+    {
+      "id": "RP1F-filtered",
+      "area": "public-reviews",
+      "title": "Profile reviews · Filtered",
+      "purpose": "Highest score + With video: the count line (\"12 reviews with a video\"), Clear all, the matching reviews.",
+      "source": "RP-B-Filtered.dc.html",
+      "files": {
+        "small": {
+          "html": "screens/small/rp1f-filtered.html",
+          "png": "screenshots/small/rp1f-filtered.png",
+          "width": 360,
+          "height": 640
+        },
+        "medium": {
+          "html": "screens/medium/rp1f-filtered.html",
+          "png": "screenshots/medium/rp1f-filtered.png",
+          "width": 390,
+          "height": 844
+        },
+        "large": {
+          "html": "screens/large/rp1f-filtered.html",
+          "png": "screenshots/large/rp1f-filtered.png",
+          "width": 430,
+          "height": 932
+        }
+      },
+      "links_to": [
+        "pf1-profile-fnb",
+        "rp1-reviews-tab",
+        "rp1n-no-match",
+        "rp1s-sort",
+        "rp2-video-review"
+      ]
+    },
+    {
+      "id": "RP1N-no-match",
+      "area": "public-reviews",
+      "title": "Profile reviews · No reviews match",
+      "purpose": "With video + 1 star: \"0 reviews\", the No reviews match card and Clear filters.",
+      "source": "RP-B-Empty.dc.html",
+      "files": {
+        "small": {
+          "html": "screens/small/rp1n-no-match.html",
+          "png": "screenshots/small/rp1n-no-match.png",
+          "width": 360,
+          "height": 640
+        },
+        "medium": {
+          "html": "screens/medium/rp1n-no-match.html",
+          "png": "screenshots/medium/rp1n-no-match.png",
+          "width": 390,
+          "height": 844
+        },
+        "large": {
+          "html": "screens/large/rp1n-no-match.html",
+          "png": "screenshots/large/rp1n-no-match.png",
+          "width": 430,
+          "height": 932
+        }
+      },
+      "links_to": [
+        "pf1-profile-fnb",
+        "rp1-reviews-tab",
+        "rp1f-filtered",
+        "rp1s-sort"
+      ]
+    },
+    {
+      "id": "RP2-video-review",
+      "area": "public-reviews",
+      "title": "Profile reviews · Review with a video",
+      "purpose": "Full screen: the video with the reviewer, stars, +/- and title on it; Book and Report on the side; swipe for the next review.",
+      "source": "RP-B-Video.dc.html",
+      "files": {
+        "small": {
+          "html": "screens/small/rp2-video-review.html",
+          "png": "screenshots/small/rp2-video-review.png",
+          "width": 360,
+          "height": 640
+        },
+        "medium": {
+          "html": "screens/medium/rp2-video-review.html",
+          "png": "screenshots/medium/rp2-video-review.png",
+          "width": 390,
+          "height": 844
+        },
+        "large": {
+          "html": "screens/large/rp2-video-review.html",
+          "png": "screenshots/large/rp2-video-review.png",
+          "width": 430,
+          "height": 932
+        }
+      },
+      "links_to": [
+        "tb1-pick-date",
+        "rp1-reviews-tab"
+      ]
+    },
+    {
+      "id": "RP3-review-no-video",
+      "area": "public-reviews",
+      "title": "Profile reviews · Review without a video",
+      "purpose": "The same viewer shows a review without a video as a card: reviewer, stars and word, liked / didn't like; Book and Report.",
+      "source": "RP-B-Text.dc.html",
+      "files": {
+        "small": {
+          "html": "screens/small/rp3-review-no-video.html",
+          "png": "screenshots/small/rp3-review-no-video.png",
+          "width": 360,
+          "height": 640
+        },
+        "medium": {
+          "html": "screens/medium/rp3-review-no-video.html",
+          "png": "screenshots/medium/rp3-review-no-video.png",
+          "width": 390,
+          "height": 844
+        },
+        "large": {
+          "html": "screens/large/rp3-review-no-video.html",
+          "png": "screenshots/large/rp3-review-no-video.png",
+          "width": 430,
+          "height": 932
+        }
+      },
+      "links_to": [
+        "tb1-pick-date",
+        "rp1-reviews-tab"
+      ]
     }
   ],
   "reference": {
