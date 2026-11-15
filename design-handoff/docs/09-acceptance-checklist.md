@@ -102,3 +102,6 @@ Use this for every screen before calling it done.
 - [ ] **RP1–RP1N**: Sort chip (four orders in a sheet), With video, one score at a time (the active one first), the count line and Clear all, the no-match card; every review card the same size with or without a video.
 - [ ] **RP2–RP3**: any card opens the full-screen viewer, swiping through the same list; Book and Report (three vertical dots) on the side.
 - [ ] Everything in `24-profile-reviews.md` §10 (definition of done).
+- [ ] **MP1**: the pill shows only the labels with places in view, in the fixed order, each with its icon, name and count (clear of the icon); hidden with none.
+- [ ] **MP2–MP2U**: a label opens its sheet (avatars 3 per row, nearest first, one sticker at most); the sheet keeps its height and scrolls; pulled up it stops 44 below the top; × brings it back, ← shows the pill; a place opens its profile.
+- [ ] Everything in `25-map.md` §8 (definition of done).

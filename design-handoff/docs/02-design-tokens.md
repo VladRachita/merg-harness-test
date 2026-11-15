@@ -42,6 +42,9 @@ Machine-readable values: [`../tokens.json`](../tokens.json). Map them once into 
 | `offer.coupon` / `couponTint` / `couponText` | `#1F8A55` / `#E7F4EC` / `#11673F` | Coupon badge and sticker / coupon strip in the booking summary |
 | `offer.event` / `eventTint` / `eventText` | `#7155E0` / `#EEEAFD` / `#5B3FD6` | Event badge and sticker / sitting buttons and event strip |
 | `offer.eventSubText` / `eventOnDark` | `#6A55C8` / `#C9BCFF` | "N seats left" on a sitting / event icon on the selected (ink) sitting |
+| `category.food` / `foodTint` | `#D9572B` / `#FBE7DE` | Map: Food & Drinks (`FOOD_BEVERAGE`) icon and place ring / its tinted circle |
+| `category.stay` / `stayTint` | `#2C6FD6` / `#E1ECFB` | Map: Accommodations (`ACCOMMODATION`) |
+| `category.fun` / `funTint` | `#7155E0` / `#ECE7FC` | Map: Entertainment (`SERVICES`); the colour is `brand.accent` |
 
 ## Typography
 - Family: **Roboto** on Android, **system (SF Pro)** on iOS. Weights 400 / 500 / 600 / 700 / 800.

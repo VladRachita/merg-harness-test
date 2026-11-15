@@ -311,3 +311,20 @@ Rules (details in `24-profile-reviews.md` §1):
 - one order at a time (Newest by default) and the filters With video and one score combine;
 - any review opens the full-screen viewer, which swipes through the same filtered list;
 - Book is the profile's main action, and Report asks to confirm first.
+
+## T. Public — map labels and places
+
+```mermaid
+flowchart LR
+  MAP[Map tab] --> MP1[MP1 Labels pill]
+  MP1 -- a label --> MP2[MP2 Places sheet]
+  MP2 -- drag up --> MP2U[MP2U Pulled up]
+  MP2U -- × or drag down --> MP2
+  MP2 -- ← --> MP1
+  MP2 -- a place --> P[Profile · PF1 / PS1 / PA1]
+```
+Rules (details in `25-map.md` §1):
+- the pill shows only the labels with places in view, in a fixed order, each with its count; with none in view it is hidden;
+- a label opens its sheet; the pill hides and the map keeps only that label's pins;
+- the sheet lists the places nearest first, keeps its height, scrolls and keeps loading; dragged up it covers the map, × brings it back, ← shows the pill again;
+- a place opens its profile.

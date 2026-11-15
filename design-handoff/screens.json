@@ -3775,6 +3775,190 @@
         "tb1-pick-date",
         "rp1-reviews-tab"
       ]
+    },
+    {
+      "id": "MP1-pill",
+      "area": "public-map",
+      "title": "Map · Labels pill",
+      "purpose": "Floating over the map: Food & Drinks · Accommodations · Entertainment, each with its icon, its name and how many places are in view. Picking a label opens its places sheet.",
+      "source": "MP-B-Pill.dc.html",
+      "files": {
+        "small": {
+          "html": "screens/small/mp1-pill.html",
+          "png": "screenshots/small/mp1-pill.png",
+          "width": 360,
+          "height": 128
+        },
+        "medium": {
+          "html": "screens/medium/mp1-pill.html",
+          "png": "screenshots/medium/mp1-pill.png",
+          "width": 390,
+          "height": 128
+        },
+        "large": {
+          "html": "screens/large/mp1-pill.html",
+          "png": "screenshots/large/mp1-pill.png",
+          "width": 430,
+          "height": 128
+        }
+      },
+      "links_to": [
+        "mp2-places"
+      ]
+    },
+    {
+      "id": "MP1O-pill-one",
+      "area": "public-map",
+      "title": "Map · Labels pill, one label",
+      "purpose": "Only Food & Drinks has places in view: the pill shows that label alone and hugs it.",
+      "source": "MP-B-Pill-One.dc.html",
+      "files": {
+        "small": {
+          "html": "screens/small/mp1o-pill-one.html",
+          "png": "screenshots/small/mp1o-pill-one.png",
+          "width": 360,
+          "height": 128
+        },
+        "medium": {
+          "html": "screens/medium/mp1o-pill-one.html",
+          "png": "screenshots/medium/mp1o-pill-one.png",
+          "width": 390,
+          "height": 128
+        },
+        "large": {
+          "html": "screens/large/mp1o-pill-one.html",
+          "png": "screenshots/large/mp1o-pill-one.png",
+          "width": 430,
+          "height": 128
+        }
+      },
+      "links_to": [
+        "mp2-places"
+      ]
+    },
+    {
+      "id": "MP1T-pill-two",
+      "area": "public-map",
+      "title": "Map · Labels pill, two labels",
+      "purpose": "Food & Drinks and Entertainment have places in view: two labels, in the fixed order, with a divider.",
+      "source": "MP-B-Pill-Two.dc.html",
+      "files": {
+        "small": {
+          "html": "screens/small/mp1t-pill-two.html",
+          "png": "screenshots/small/mp1t-pill-two.png",
+          "width": 360,
+          "height": 128
+        },
+        "medium": {
+          "html": "screens/medium/mp1t-pill-two.html",
+          "png": "screenshots/medium/mp1t-pill-two.png",
+          "width": 390,
+          "height": 128
+        },
+        "large": {
+          "html": "screens/large/mp1t-pill-two.html",
+          "png": "screenshots/large/mp1t-pill-two.png",
+          "width": 430,
+          "height": 128
+        }
+      },
+      "links_to": [
+        "mp2-places"
+      ]
+    },
+    {
+      "id": "MP2-places",
+      "area": "public-map",
+      "title": "Map · Places sheet",
+      "purpose": "Food & Drinks picked: the places in view as avatars, 3 per row, nearest first, with name, rating, distance and the deal or event sticker. A place opens its profile.",
+      "source": "MP-B-Food.dc.html",
+      "files": {
+        "small": {
+          "html": "screens/small/mp2-places.html",
+          "png": "screenshots/small/mp2-places.png",
+          "width": 360,
+          "height": 384
+        },
+        "medium": {
+          "html": "screens/medium/mp2-places.html",
+          "png": "screenshots/medium/mp2-places.png",
+          "width": 390,
+          "height": 384
+        },
+        "large": {
+          "html": "screens/large/mp2-places.html",
+          "png": "screenshots/large/mp2-places.png",
+          "width": 430,
+          "height": 384
+        }
+      },
+      "links_to": [
+        "pf1-profile-fnb",
+        "mp1-pill"
+      ]
+    },
+    {
+      "id": "MP2L-places-20",
+      "area": "public-map",
+      "title": "Map · Places sheet, 20 places",
+      "purpose": "The same sheet with 20 places: it keeps its height and scrolls; the next row peeks under the second.",
+      "source": "MP-B-Food-20.dc.html",
+      "files": {
+        "small": {
+          "html": "screens/small/mp2l-places-20.html",
+          "png": "screenshots/small/mp2l-places-20.png",
+          "width": 360,
+          "height": 408
+        },
+        "medium": {
+          "html": "screens/medium/mp2l-places-20.html",
+          "png": "screenshots/medium/mp2l-places-20.png",
+          "width": 390,
+          "height": 408
+        },
+        "large": {
+          "html": "screens/large/mp2l-places-20.html",
+          "png": "screenshots/large/mp2l-places-20.png",
+          "width": 430,
+          "height": 408
+        }
+      },
+      "links_to": [
+        "pf1-profile-fnb",
+        "mp1-pill"
+      ]
+    },
+    {
+      "id": "MP2U-places-up",
+      "area": "public-map",
+      "title": "Map · Places sheet, pulled up",
+      "purpose": "Dragged up, the sheet covers the map up to 44 px from the top; × (top right) drops it back to its first height, ← goes back to the pill.",
+      "source": "MP-B-Food-20-Up.dc.html",
+      "files": {
+        "small": {
+          "html": "screens/small/mp2u-places-up.html",
+          "png": "screenshots/small/mp2u-places-up.png",
+          "width": 360,
+          "height": 540
+        },
+        "medium": {
+          "html": "screens/medium/mp2u-places-up.html",
+          "png": "screenshots/medium/mp2u-places-up.png",
+          "width": 390,
+          "height": 744
+        },
+        "large": {
+          "html": "screens/large/mp2u-places-up.html",
+          "png": "screenshots/large/mp2u-places-up.png",
+          "width": 430,
+          "height": 832
+        }
+      },
+      "links_to": [
+        "pf1-profile-fnb",
+        "mp1-pill",
+        "mp2l-places-20"
+      ]
     }
   ],
   "reference": {

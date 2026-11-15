@@ -395,6 +395,28 @@ ReportReview { reviewId }                             // after the confirm dialo
 - `BusinessProfile.stats.rating` is the average of `stars` (one decimal) and `stats.reviewsCount` the number of reviews. Both show in the profile header ("★ 4.6 · 38 reviews"). Without reviews, `rating` is empty and the header shows "No reviews yet".
 - The viewer (RP2 / RP3) swipes through the same `ReviewsQuery` results, in order.
 
+## Map: labels and places
+```ts
+MapBounds { north, south, east, west }                // the visible part of the map
+MapLabelsQuery { bounds } → MapLabel[]                 // only categories with at least one place in view
+MapLabel { category: "FOOD_BEVERAGE" | "ACCOMMODATION" | "SERVICES", count: number }
+                                                       // shown as Food & Drinks · Accommodations · Entertainment, in that order
+MapPlacesQuery {
+  bounds, category,
+  from: { lat, lng },                                  // the person's location, or the map centre when it is off
+  cursor?                                              // keeps loading, as Search
+} → MapPlacesPage { items: MapPlace[], nextCursor? }    // nearest first
+MapPlace {
+  businessId, name, avatarUrl?, initials, avatarColor,
+  category, placeType,                                 // "Cafe", "Hotel", "Salon"… (Convert to Business)
+  location: { lat, lng }, distanceMeters,
+  rating?, reviewsCount,
+  offer?: { kind: "COUPON" | "EVENT", label: "20% OFF" }   // one per place: the biggest active coupon, else an event
+}
+```
+- `MapLabelsQuery` and `MapPlacesQuery` run again when the map stops moving. Counts above 99 show "99+".
+- A place opens its profile by `category`: PF1 (FOOD_BEVERAGE), PS1 (SERVICES), PA1 (ACCOMMODATION).
+
 ## Account (create or sign in)
 ```ts
 EmailCheck { email } → { exists: boolean }                   // AU2: false → AU3 (create), true → sign in with the password
