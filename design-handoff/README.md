@@ -1,4 +1,4 @@
-# Design handoff — Video-first profiles, booking, table booking, team, customer rewards, reservations, my activity, search, the map, new post, account, host tools, the admin dashboard, Convert to Business and the website landing page
+# Design handoff — Video-first profiles, booking, table booking, team, customer rewards, reservations, my activity, search, areas, the map, new post, account, host tools, the admin dashboard, Convert to Business and the website landing page
 
 Everything an implementing agent needs to build the screens designed in the **Profile Quick Actions** design canvas, for **Android and iOS**, on **small, medium and large phones**, so the result looks exactly like the designs.
 
@@ -34,7 +34,8 @@ Read in this order, then build:
 22. [`docs/23-video-review.md`](docs/23-video-review.md) — the full spec of the customer's **Video review** (Rate in My activity → how many stars → what you liked / didn't like → one video, optional → a title on the video, optional → posted), with its own definition of done.
 23. [`docs/24-profile-reviews.md`](docs/24-profile-reviews.md) — the full spec of the **Profile reviews** (the rating in the profile header, the Reviews tab with sort and filters, every review as a card with or without a video, the full-screen viewer with Book and Report), with its own definition of done.
 24. [`docs/25-map.md`](docs/25-map.md) — the full spec of the **Map labels and places**: the pill over the map (Food & Drinks · Accommodations · Entertainment, only the ones with places in view, each with its count) and the sheet that lists the places of one label as avatars, nearest first. Only these two components are designed; the map itself is the app's existing Map tab.
-25. [`docs/10-open-questions.md`](docs/10-open-questions.md) — what is **not** designed yet. Do not invent these; ask.
+25. [`docs/26-areas.md`](docs/26-areas.md) — the full spec of **Areas in Search**: Near you (a picture of the map around you), areas in the search results (with the area they are part of, same names grouped), one profile for every area (county, city, town, commune, village) with Open map, and the two options for the bottom bar without Map.
+26. [`docs/10-open-questions.md`](docs/10-open-questions.md) — what is **not** designed yet. Do not invent these; ask.
 
 ## What is in this folder
 
@@ -55,14 +56,23 @@ Read in this order, then build:
 
 ## What's new in this update
 
+- **Areas in Search (public)** — people find a county, city, town, commune or village in Search, the same way as a place, and every area has one profile. The map opens from an area, so the bottom bar loses Map.
+  - `AR1` **Near you**: Search starts with the area you are in (Râșnov · Brașov County), a picture of the map around you (not a live map) and the three labels with counts. The area name opens its profile.
+  - `AR2` / `AR5` **areas in the results**, before places: the area with its kind and the area it is in, then "<area> is part of" the area above. Areas with the same name are grouped, the smaller first ("2 areas named Brașov").
+  - `AR3` / `AR4` / `AR6` **one area profile** at every level: the kind badge, "<Kind> · <area it is in>", the labels added up, **Open map** (black, no Follow). An area with areas inside opens on **Inside**: one section per kind (Cities · 4, Towns · 6, Communes · 48) with the two biggest and See all. The smallest areas open on their places.
+  - **Open map** opens the map of that exact area, fitted to its border, with the labels pill and places sheet (`docs/25-map.md`).
+  - `NB1` / `NB2` **the bottom bar without Map**: A · Home · Search · + · **Activity** · Profile, or B · Home · Search · + · **Reservations** · Profile; the + stays in the middle; a dot when something waits. Choose one.
+
+  Spec: [`docs/26-areas.md`](docs/26-areas.md). Small / medium / large references; components C102–C106; `area.*` colours in `docs/02` and `tokens.json`; *Areas* data in `docs/06`; rule A29 in the backend contract.
+
+### Earlier updates
+
 - **Map labels and places (public)** — the labels over the map and the list of places for each one. **Components only:** the map, its pins, the location button and the bottom nav are the app's existing Map tab and are not part of this export.
   - `MP1` **Labels pill**: **Food & Drinks · Accommodations · Entertainment**, each with its icon, its name and how many places are in view (the count at the icon's corner, clear of it). Only the labels with places in view show, in that order (`MP1O` one label, `MP1T` two); with none, the pill is hidden.
   - `MP2` **Places sheet**: a label opens it. The places as round avatars, 3 per row, nearest first, with one deal or event sticker at most, the name, the rating and the distance. A place opens its profile.
   - `MP2L` **20 places**: the sheet keeps its height and scrolls, the next row peeking; it keeps loading. `MP2U` **pulled up**: it covers the map up to 44 below the top; **×** (top right, on the same line as ←) brings it back; ← shows the pill again.
 
   Spec: [`docs/25-map.md`](docs/25-map.md). Small / medium / large references; components C99–C101; `category.*` colours in `docs/02` and `tokens.json`; *Map: labels and places* data in `docs/06`; rule A28 in the backend contract.
-
-### Earlier updates
 
 - **Profile reviews (public)** — how a place's reviews show on its profile, with and without a video:
   - **The rating shows once**, in the profile header: ★ 4.6 · 38 reviews (or "No reviews yet"). Tapping it opens the Reviews tab. The tab has no score card.
@@ -206,7 +216,7 @@ Read in this order, then build:
 - Small / medium / large references for all of the above; new tokens `color.calendar.*`, `color.offer.*` and radii for calendar cells, day tile and offer cards.
 - Booking form: **First name and Last name are two fields** on one row (never "Full name").
 
-## Screen inventory (117 phone screens × 3 sizes + 3 desktop screens)
+## Screen inventory (125 phone screens × 3 sizes + 3 desktop screens)
 
 | Area | Screens |
 |---|---|
@@ -227,13 +237,15 @@ Read in this order, then build:
 | Public — services & F&B profiles | `PS1-profile-services`, `PF1-profile-fnb` |
 | Public — profile reviews | `RP1-reviews-tab` (+ `RP1S-sort`, `RP1F-filtered`, `RP1N-no-match`), `RP2-video-review`, `RP3-review-no-video` |
 | Public — map labels and places (components only) | `MP1-pill` (+ `MP1O-pill-one`, `MP1T-pill-two`), `MP2-places` (+ `MP2L-places-20`, `MP2U-places-up`) |
+| Public — areas in Search | `AR1-near-you`, `AR2-search-town`, `AR3-town`, `AR4-county`, `AR5-search-same-name`, `AR6-city` |
+| Bottom bar without Map (two options) | `NB1-bar-activity`, `NB2-bar-reservations` |
 | Salon booking — regular customer | `R1-services-stylist-picked`, `R2-video`, `R3-pick-time`, `SV-included` |
 | Salon booking — first visit | `F1-services-everyone`, `F2-video`, `F3-choose-stylist`, `F4-pick-time` (+ offer states `F4C-pick-time-coupon`, `F4E-pick-time-event`) |
 | Coupons & Events tab | `CE1-coupons-events` |
 | Table booking — Food & Beverage | `TB1-pick-date`, `TB2-guests-time-any` (+ `TB2C-guests-time-coupon`, `TB2E-guests-time-event`), `TB3-details-any` (+ `TB3C-details-coupon`, `TB3E-details-event`), `TB4-booked` |
 | Account — convert to business | `BC1-overview`, `BC2-legal`, `BC3-category` (+ `BC3F-category-fnb`, `BC3S-category-entertainment`), `BC4-place-type` (+ `BC4F-place-type-fnb`, `BC4S-place-type-entertainment`), `BC5-details`, `BC6-hours`, `BC7-ready` |
 
-Ids with a `C` or `E` suffix are **states** of the screen before them (coupon or event chosen), not separate screens. In Convert to Business, `BC3` / `BC4` ids with an `F` or `S` suffix are the Food & Beverage or Entertainment (`SERVICES`) states. In Profile reviews, `RP1S`, `RP1F` and `RP1N` are states of `RP1` (the sort sheet, filters on, nothing matches). On the Map, `MP1O` / `MP1T` are the pill with one or two labels, and `MP2L` / `MP2U` the sheet with 20 places and pulled up.
+Ids with a `C` or `E` suffix are **states** of the screen before them (coupon or event chosen), not separate screens. In Convert to Business, `BC3` / `BC4` ids with an `F` or `S` suffix are the Food & Beverage or Entertainment (`SERVICES`) states. In Profile reviews, `RP1S`, `RP1F` and `RP1N` are states of `RP1` (the sort sheet, filters on, nothing matches). On the Map, `MP1O` / `MP1T` are the pill with one or two labels, and `MP2L` / `MP2U` the sheet with 20 places and pulled up. `NB1` and `NB2` are two options for the same bottom bar: build the chosen one.
 
 ## How to use the references
 
@@ -250,11 +262,11 @@ Copy this as the first message, adjusted for your app's repository:
 You are implementing new screens in our mobile app (Android + iOS). The complete design
 handoff is in design-handoff/ (README.md first). Follow it exactly:
 
-1. Read design-handoff/README.md and every file in design-handoff/docs/ (01–25) before writing code.
+1. Read design-handoff/README.md and every file in design-handoff/docs/ (01–26) before writing code.
 2. Map tokens.json into the app's theme (colours, type, radii, spacing). Do not add new values.
    Copy the images in design-handoff/assets/ into the app as they are (assets/tiles/README.md says
    where each file goes). Do not redraw, recolour or replace them.
-3. Build the shared components from docs/03-components.md first (C1–C101), then the screens from
+3. Build the shared components from docs/03-components.md first (C1–C106), then the screens from
    docs/04-screens.md, in the order: host services → host rooms → host team (TM1 → TM3, see
    docs/12-team.md) → host customers & rewards (CR1 → CR10, see docs/13-customers-rewards.md) →
    host reservations (RV1 → RV6, see docs/14-reservations.md) → public profiles (with their reviews,
@@ -264,7 +276,7 @@ handoff is in design-handoff/ (README.md first). Follow it exactly:
    host's create flow OF1 → OF13, see docs/20-coupons-events.md) →
    customer my activity (MA1 → MA6, see docs/15-my-activity.md) → customer video review (VR1 → VR6,
    see docs/23-video-review.md) → public search
-   (SR1 → SR6, see docs/16-search.md) → map labels and places (MP1 → MP2, see docs/25-map.md) → new post (NP1 → NP4, EP1 → EP2, see docs/17-new-post.md) → account
+   (SR1 → SR6, see docs/16-search.md) → map labels and places (MP1 → MP2, see docs/25-map.md) → areas (AR1 → AR6, see docs/26-areas.md) → new post (NP1 → NP4, EP1 → EP2, see docs/17-new-post.md) → account
    (AU1 → AU5, see docs/18-account.md) → convert to business (BC1 → BC7 with the BC3 / BC4 category
    states, see docs/21-business-conversion.md). The admin dashboard (AD1 → AD3, web, see
    docs/19-admin.md) is a separate web app: build it after the mobile app, or in its own repository.
@@ -284,12 +296,12 @@ handoff is in design-handoff/ (README.md first). Follow it exactly:
 
 1. **Put the handoff next to the code.** Copy `design-handoff/` into the root of the mobile app repository (or add this repository as a git submodule) so the agent can read the docs and open the screenshots.
 2. **Start Claude Code in the app repository** (`claude` in a terminal at the repo root, or a Claude Code session on claude.ai/code with the app repo attached).
-3. **Plan first.** Paste the prompt above and ask for a plan before code: theme mapping (tokens → theme), the component list C1–C101 with where each will live, and the screen order. Review the plan, then let it implement.
+3. **Plan first.** Paste the prompt above and ask for a plan before code: theme mapping (tokens → theme), the component list C1–C106 with where each will live, and the screen order. Review the plan, then let it implement.
 4. **One phase per session / pull request.** Use these follow-up prompts in order and review each PR against the screenshots before starting the next:
 
    | Phase | Prompt to paste |
    |---|---|
-   | 1 · Theme + components | "Phase 1: map tokens.json into the theme and build components C1–C101 from docs/03 with previews at 360, 390 and 430 width. No screens yet." |
+   | 1 · Theme + components | "Phase 1: map tokens.json into the theme and build components C1–C106 from docs/03 with previews at 360, 390 and 430 width. No screens yet." |
    | 2 · Host tools | "Phase 2: build HS1–HS4 and HR1–HR4 (docs/04, flow C in docs/05). Match screenshots/*/hs*.png and hr*.png." |
    | 2b · Team | "Phase 2b: build the Team page exactly as docs/12-team.md: TM1 team list grouped Active / Paused / Invites with one pinned Invite to team, TM2 invite-by-username sheet, TM3 team member (Active / Paused, services checklist = Who does it, Remove, Save changes). Replace the existing Team screen. Wire HP Team tile → TM1. Data per docs/06 (Team member, Team invite). Done = docs/12 §8 at small, medium and large." |
    | 2c · Customers & rewards | "Phase 2c: build the Customers & rewards page exactly as docs/13-customers-rewards.md: CR1 People tab (group tiles, pick people, Send reward), CR2 New reward (live ticket, 40-char message, duration chips), CR3 sent, CR4 Rewards tab (automatic rules with switches, sent rewards with Used by), CR5–CR8 the 4-step monthly rule (When on the F4 week strip, Who from visits in the month before the send, Reward, Check and turn on), CR9 edit, CR10 details. Replace the existing Customers and Send Loyalty Reward screens. Wire HP Customers tile → CR1. Data and the monthly send logic per docs/06 (Customer, Reward, Automatic reward rule). Done = docs/13 §13 at small, medium and large." |
@@ -308,6 +320,7 @@ handoff is in design-handoff/ (README.md first). Follow it exactly:
    | 14 · Video review | "Phase 14: build the customer's video review exactly as docs/23-video-review.md. Rate on an unrated done visit in My activity › History (MA3) opens VR1, full screen: the place card pinned at the top, the other cards centred below it, the button pinned at the bottom. VR1 five stars with their word (Next waits for a star); VR2 the same screen after a star with What you liked / What you didn't like (six aspect chips per category, optional, never both). VR3 Add a video? (optional): one slot for one video, never a list; Post review without a video. VR4 the one video with Change / Remove; Next or Post without video; the card keeps its size. VR5 the New post editor with the stars and +/- on the video, the Rate tool 'N / 5' on the side rail, title (0–30) and description (0–100) optional, Publish. Posting sends ReviewCreateRequest, sets myRating and returns to MA3 with ★ N and 'Review posted' (VR6). Data per docs/06 (Review) and A26. Done = docs/23 §12 at small, medium and large." |
    | 15 · Profile reviews | "Phase 15: build the reviews on a profile exactly as docs/24-profile-reviews.md. The profile header shows the rating once (★ average with one decimal · n reviews, or No reviews yet) and opens the Reviews tab. RP1: one sideways row of chips, the Sort chip (Newest by default; RP1S sheet with Newest / Oldest / Highest score / Lowest score, picking applies), With video, and ★ 5–★ 1 (one at a time, the active one moved to the front); with a filter on, the count line and Clear all; RP1N No reviews match with Clear filters. Every review is a card of the public video card size, two per row: with a video the poster, stars pill, reviewer, title and +/-; without, the stars and word, +/- rows, what · date. Any card opens the full-screen viewer (RP2 video / RP3 card) that swipes through the same filtered list, with Book (the profile's main action, Call for accommodation) and Report (three vertical dots, confirm, ReportReview). Data per docs/06 (Reviews on a profile) and A27. Done = docs/24 §10 at small, medium and large." |
    | 16 · Map labels and places | "Phase 16: build the map's labels and places exactly as docs/25-map.md, on the existing Map tab (do not change the map, its pins or the bottom nav). MP1: the pill floats 24 above the nav and shows only the labels with places in view, in the order Food & Drinks · Accommodations · Entertainment, each with its icon, its name and the count at the icon's corner (99+ from 100); with none, it is hidden. A label opens MP2: the places as avatars, 3 per row, nearest first, with one sticker at most, the name, the rating and the distance; the sheet keeps its height, scrolls and keeps loading; dragged up it stops 44 below the top, × brings it back, ← shows the pill again; a place opens PF1 / PS1 / PA1. Match screenshots/*/mp*.png." |
+   | 17 · Areas | "Phase 17: build Areas in Search exactly as docs/26-areas.md. AR1: Search starts with Near you, the area the person is in (a static picture of the map, not a live map) with the three labels and counts; the area name opens its profile. AR2 / AR5: areas come before places in the All tab, each with its kind and the area it is in, then “<area> is part of” the area above; the same name is grouped, the smaller first. AR3 / AR4 / AR6: one profile for every area: kind badge, “<Kind> · <area it is in>”, the labels added up, Open map (black, full width, no Follow); Inside (one section per kind, two biggest, See all) or Places for the smallest. Open map opens that area's map fitted to its border with the pill and sheet of docs/25-map.md. Bottom bar: the chosen option, NB1 (Activity) or NB2 (Reservations), takes the Map slot. Match screenshots/*/ar*.png and nb*.png." |
 
 5. **Verify every phase visually.** Run on an iPhone SE / 15 / 15 Pro Max simulator and 360 / ~393 / ~430-wide Android emulators, take screenshots, put them next to `screenshots/<size>/<id>.png` (overlay at 50 %), and go through `docs/09-acceptance-checklist.md`. Ask the agent to attach the screenshots and list any deviation in the PR description.
 6. **Keep open questions open.** If the agent hits anything in `docs/10-open-questions.md` (for example validation errors on TB3 or R3 offers), it adds a TODO and asks; it does not design it.

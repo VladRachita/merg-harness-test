@@ -63,6 +63,10 @@ Build these once and reuse them. Values are for the **medium** phone (390 × 844
 | Booking · In-app / By phone | `smartphone` / `phone` | Step done (overview) | `check` on `status.success` |
 | Map label · Food & Drinks | `utensils` | Map label · Accommodations | `bed-double` |
 | Map label · Entertainment | `sparkles` | Close the pulled-up places list | `x` |
+| Area · County | the SVG path in the HTML (an outline) | Area · City | `landmark` |
+| Area · Town | `building-2` | Area · Commune / Village | the SVG path in the HTML (two houses) / `house` |
+| Open map (areas) | `map` | Inside (area profile) | `layout-grid` |
+| Bottom bar A · Activity | `calendar-check` | Bottom bar B · Reservations | `calendar` with day dots (the SVG path in the HTML) |
 
 Stroke 1.8 at 20–26 px, 2–2.4 at 12–16 px. Filled: play, phone, star, more dots.
 
@@ -602,3 +606,23 @@ Optional "Brand" tone: tile `#EEEAFD`, icon `#5B3FD6`. Default is Mono.
 ## 101. Place avatar (map)
 - Round avatar 72 (photo or initials 26/700 on `avatarColor`) with a 2.5 white and a 2 `category.*` ring; one sticker over its top edge (coupon "<n>% OFF" `offer.coupon` or event `offer.event` + `ticket`, 20 tall, 10.5); the name 13.5/600 (one line), ★ rating 12/600 and the distance 12 secondary. Opens the place's profile.
 - Seen in: MP2, MP2L, MP2U. Full spec: `25-map.md` §3.
+
+## 102. Near you card
+- In Search before typing: head 52 ("Near you" 15/600 · kind icon + "<area> · <area it is in>" 13 secondary · chevron; opens the area's profile), a 140 picture of the map around the person (static, with their dot and a white **Open map** pill top right), then three label cells (icon 22 `category.*`, count 15/600, name 11.5).
+- Seen in: AR1. Full spec: `26-areas.md` §2.
+
+## 103. Area result
+- In search results, before places: a card with the area's picture (96), the area row (44 circle in `area.*` with the kind icon · name 15/600 · "<Kind> · <area it is in>" 12.5 · chevron) and the three label counts; a "<area> is part of" card with the area one level up; areas with the same name grouped in one card ("<n> areas named <name>"), the smaller first.
+- Seen in: AR2, AR5. Full spec: `26-areas.md` §3.
+
+## 104. Area profile header
+- The same at every level: top bar 56 (← · name · more) · picture 76 with the kind badge (28, `area.*`) · name 21/700 · "<Kind> · <area it is in>" 13 · the labels added up (icon 15 + count 17/500 over the name 12) · **Open map** (full width, 48, radius 14, `action.primary`). No Follow. Then the tabs: Inside · Videos · Places · Deals, or Videos · Places · Deals for the smallest areas.
+- Seen in: AR3, AR4, AR6. Full spec: `26-areas.md` §4.
+
+## 105. Inside sections
+- One section per kind of area inside: "<Kinds> · <n>" 15/600, a card with the two areas with the most places (C103 rows) and "See all <n> <kinds>" (48, 14/600, chevron). One plain list when there is only one kind.
+- Seen in: AR4. Full spec: `26-areas.md` §4.
+
+## 106. Bottom bar without Map
+- C9 without Map; its slot takes option **A · Activity** (`calendar-check`, My activity) or **B · Reservations** (calendar with day dots); the + stays in the middle; a dot (8, `status.warning`, ringed in `dark.navBar`) on the new slot when something waits.
+- Seen in: NB1, NB2 (and the bars of AR1–AR6, option A). Full spec: `26-areas.md` §5.

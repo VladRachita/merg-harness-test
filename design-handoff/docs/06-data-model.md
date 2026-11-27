@@ -417,6 +417,28 @@ MapPlace {
 - `MapLabelsQuery` and `MapPlacesQuery` run again when the map stops moving. Counts above 99 show "99+".
 - A place opens its profile by `category`: PF1 (FOOD_BEVERAGE), PS1 (SERVICES), PA1 (ACCOMMODATION).
 
+## Areas
+```ts
+Area {
+  id, name, altNames: string[],                       // official name with diacritics; other names people search
+  kind: "COUNTY" | "CITY" | "TOWN" | "COMMUNE" | "VILLAGE", // per country (RO: județ, municipiu, oraș, comună, sat)
+  parentId?, path: AreaRef[],                          // the areas above, top first
+  countryCode, outline, center, pictureUrl,            // outline: the border; pictureUrl: a static map image
+  counts: { FOOD_BEVERAGE, ACCOMMODATION, SERVICES, total },   // everything inside, added up
+  inside: { kind, count }[]                             // the areas one level down, per kind
+}
+AreaRef { id, name, kind }
+NearYouQuery { lat, lng } → { area: Area, pictureUrl }  // the smallest area with places that contains the person
+SearchPage.blocks += { type: "AREA", area: Area, partOf?: Area }
+                    | { type: "AREA_GROUP", name, areas: Area[] }   // same name, the smaller first
+AreaInsideQuery { areaId, kind?, cursor? }
+  → { sections: { kind, total, top: Area[] }[] }        // without kind: two per kind; with kind: See all, by places, with a cursor
+AreaPlacesQuery { areaId, cursor? } → { items: PlaceResult[], nextCursor? }
+Business.areaId                                        // the smallest area that contains its location
+```
+- Open map opens the area's map with `MapLabelsQuery` / `MapPlacesQuery` limited to `Area.outline` (`25-map.md`).
+- Search returns only areas with `counts.total > 0`.
+
 ## Account (create or sign in)
 ```ts
 EmailCheck { email } → { exists: boolean }                   // AU2: false → AU3 (create), true → sign in with the password

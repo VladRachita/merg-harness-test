@@ -105,3 +105,6 @@ Use this for every screen before calling it done.
 - [ ] **MP1**: the pill shows only the labels with places in view, in the fixed order, each with its icon, name and count (clear of the icon); hidden with none.
 - [ ] **MP2–MP2U**: a label opens its sheet (avatars 3 per row, nearest first, one sticker at most); the sheet keeps its height and scrolls; pulled up it stops 44 below the top; × brings it back, ← shows the pill; a place opens its profile.
 - [ ] Everything in `25-map.md` §8 (definition of done).
+- [ ] **AR1–AR6**: Near you (a picture, the area's name opens its profile); areas before places in search, with the area they are part of and same names grouped; one profile for every area (no Follow, black Open map, Inside by kind or Places).
+- [ ] **NB1 / NB2**: the bottom bar without Map, with the chosen option (Activity or Reservations), the + in the middle and the waiting dot.
+- [ ] Everything in `26-areas.md` §10 (definition of done).

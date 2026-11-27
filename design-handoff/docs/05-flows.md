@@ -328,3 +328,22 @@ Rules (details in `25-map.md` §1):
 - a label opens its sheet; the pill hides and the map keeps only that label's pins;
 - the sheet lists the places nearest first, keeps its height, scrolls and keeps loading; dragged up it covers the map, × brings it back, ← shows the pill again;
 - a place opens its profile.
+
+## U. Public — areas in Search
+
+```mermaid
+flowchart LR
+  S[Search] --> AR1[AR1 Near you]
+  AR1 -- area --> AR3[AR3 town profile]
+  S -- type --> AR2[AR2 area results]
+  AR2 -- the area --> AR3
+  AR2 -- part of --> AR4[AR4 county profile]
+  AR4 -- an area inside --> AR3
+  S -- same name --> AR5[AR5 grouped results] --> AR6[AR6 city profile]
+  AR3 -- Open map --> M[the area's map · flow T]
+```
+Rules (details in `26-areas.md` §1):
+- areas come before places in search, with the area they are part of; the same name is grouped, the smaller first;
+- one profile for every area: labels added up, Open map, Inside (by kind) or Places;
+- Open map opens that exact area's map, fitted to its border, with the labels pill and places sheet;
+- the bottom bar has no Map: option A (Activity) or B (Reservations) takes its slot.

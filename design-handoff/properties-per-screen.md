@@ -58,6 +58,7 @@ Types: `string`, `int`, `bool`, `money` = `{ amount: number, currency: "RON" }`,
 | Customer · Video review | `VR1-stars`, `VR2-details`, `VR3-add-video`, `VR4-video-added`, `VR5-on-video`, `VR6-posted` |
 | Public · Profile reviews | `RP1-reviews-tab` (+ `RP1S-sort`, `RP1F-filtered`, `RP1N-no-match`), `RP2-video-review`, `RP3-review-no-video` |
 | Public · Map (components only) | `MP1-pill` (+ `MP1O-pill-one`, `MP1T-pill-two`), `MP2-places` (+ `MP2L-places-20`, `MP2U-places-up`) |
+| Public · Areas | `AR1-near-you`, `AR2-search-town`, `AR3-town`, `AR4-county`, `AR5-search-same-name`, `AR6-city`; bottom bar options `NB1-bar-activity`, `NB2-bar-reservations` |
 | Public · Search | `SR1-start`, `SR2-no-results`, `SR3-all`, `SR4-videos`, `SR5-places`, `SR6-deals` |
 | Profile · New post | `NP1-pick-video`, `NP2-empty`, `NP3-written`, `NP4-tag-place`, `EP1-edit-post`, `EP2-delete-video` |
 | Account · Create or sign in | `AU1-profile-signed-out`, `AU2-email`, `AU3-create-account`, `AU4-date-of-birth`, `AU5-too-young` |
@@ -212,6 +213,16 @@ Full detail per screen is in the page sections below. ⚠ = a gap listed in §B.
 |---|---|---|
 | `MP1-pill`, `MP1O-pill-one`, `MP1T-pill-two` | `MapLabelsQuery{bounds}` → `MapLabel[]{category, count}` (only the categories with places in view) | a label → `MapPlacesQuery` |
 | `MP2-places`, `MP2L-places-20`, `MP2U-places-up` | `MapPlacesQuery{bounds, category, from, cursor?}` → `MapPlacesPage{items: MapPlace[], nextCursor}` · `MapPlace{name, avatarUrl?, initials, avatarColor, rating?, distanceMeters, offer?}` | — (a place opens its profile) |
+
+**Public · Areas**
+
+| Screen | Reads | Sends |
+|---|---|---|
+| `AR1-near-you` | `NearYouQuery{lat, lng}` → `{area: Area, pictureUrl}` (name, path, counts) | — (the area opens its profile; Open map opens its map) |
+| `AR2-search-town`, `AR5-search-same-name` | `SearchPage.blocks` of type `AREA{area, partOf?}` and `AREA_GROUP{name, areas[]}`, then places | — |
+| `AR3-town`, `AR6-city` | `Area{name, kind, path, counts, pictureUrl}` · `AreaPlacesQuery{areaId, cursor?}` → `PlaceResult[]` | — |
+| `AR4-county` | `Area{…, inside[]}` · `AreaInsideQuery{areaId}` → `sections[{kind, total, top[]}]`; See all: `AreaInsideQuery{areaId, kind, cursor?}` | — |
+| `NB1-bar-activity`, `NB2-bar-reservations` | the waiting dot: unseen My activity updates (A) or requests to answer (B) | — |
 
 **Public · Search**
 
@@ -2031,6 +2042,42 @@ The labels pill over the map and the places sheet of one label. Only these two c
 
 ---
 
+## Page: Public · Areas
+
+Areas (county, city, town, commune, village) in Search, with one profile each. Requests: `NearYouQuery`, the area blocks of `SearchPage`, `AreaInsideQuery`, `AreaPlacesQuery` (see `docs/06-data-model.md` → *Areas*). Open map uses the map requests of `docs/25-map.md`, limited to the area.
+
+### Screen 1 · Near you (`AR1-near-you`, board *1 · Search: Near you*)
+
+| Element | Field | Type | Notes |
+|---|---|---|---|
+| Area | `Area.name`, `Area.path` (the area it is in) | | "Râșnov · Brașov County"; opens the profile. |
+| Picture | `pictureUrl` | image | A static map image around the person (not a live map). |
+| Label counts | `Area.counts{FOOD_BEVERAGE, ACCOMMODATION, SERVICES}` | `int` | Food & Drinks · Accommodations · Entertainment. |
+
+### Screens 2 and 5 · Areas in the results (`AR2-search-town`, `AR5-search-same-name`)
+
+| Element | Field | Type | Notes |
+|---|---|---|---|
+| Area row | `Area.name`, `.kind`, `.path`, `.counts.total`, `.inside` | | "Town · Brașov County"; "County · 58 areas inside · 3,430 places". |
+| Part of | `partOf: Area` | | The area one level up. |
+| Same name | `AREA_GROUP{name, areas[]}` | | "<n> areas named <name>", the smaller first. |
+
+### Screens 3, 4, 6 · The area profile (`AR3-town`, `AR4-county`, `AR6-city`)
+
+| Element | Field | Type | Notes |
+|---|---|---|---|
+| Header | `Area.name`, `.kind`, `.path`, `.pictureUrl`, `.counts` | | Kind badge, "<Kind> · <area it is in>", the labels added up. |
+| Inside | `AreaInsideQuery` → `sections[{kind, total, top[2]}]` | | Only when `inside` is not empty; See all lists one kind by places. |
+| Places | `AreaPlacesQuery` → `PlaceResult[]` | | The smallest areas open on Places. |
+
+**Actions:** an area → its profile; a place → its profile; **Open map** → the area's map (fitted to `Area.outline`); scrolling loads the next page.
+
+### Bottom bar without Map (`NB1-bar-activity`, `NB2-bar-reservations`)
+
+Option A puts **Activity** (My activity) in the Map slot, option B **Reservations**. The dot shows when something waits: an unseen change in My activity (A) or a request to answer (B).
+
+---
+
 ## Page: Website · Landing page
 
 The MVP website: one static page (1440 × 900 on a computer, full scroll on a phone) that sends people to the stores. **It reads no data and sends nothing to the app's API.** See `docs/22-landing-page.md`.
@@ -2084,6 +2131,7 @@ The MVP website: one static page (1440 × 900 on a computer, full scroll on a ph
 | A26 | **Reviews** | `ReviewCreateRequest` creates a review of a DONE reservation. **Checks:** the reservation is the author's, DONE and not reviewed yet (one review per visit); `stars` 1–5 is required; `liked` / `disliked` are aspects of the place's category, never the same aspect in both; `title` (0–30) and `description` (0–100) only with a video; the video is one clip up to 100 MB, uploaded as in A20. **After:** `Reservation.myRating = stars` (MA3 shows ★ N instead of Rate). | VR1–VR6, MA3 |
 | A27 | **Reviews on a profile** | `ReviewsQuery` lists a business's reviews. **Sort:** NEWEST = `createdAt` newest first (the default), OLDEST, HIGHEST = `stars` high to low then newest, LOWEST = low to high then newest. **Filters:** `withVideo`, `stars` (one value); they combine with the sort. **Paging:** cursor, `total` = how many match. **Rating:** `stats.rating` = the average of `stars`, one decimal; `stats.reviewsCount` = the number of reviews. **Report:** `ReportReview` records the report for the platform team; the review stays visible. | RP1–RP3, PF1, PS1, PA1 |
 | A28 | **Map labels and places** | `MapLabelsQuery` counts the approved businesses whose location is inside `bounds`, per category, and returns only the categories with at least one. `MapPlacesQuery` lists the approved businesses of one category inside `bounds`, nearest to `from` first (then by name), with a cursor. **Offer on a place:** its active coupon with the biggest discount, else its next active event, else none. **Rating:** as A27. The client runs both again when the map stops moving. | MP1–MP2U |
+| A29 | **Areas** | Areas come from official administrative boundaries, loaded per country with its kinds (RO: județ → COUNTY, municipiu → CITY, oraș → TOWN, comună → COMMUNE, sat → VILLAGE). Each approved business gets the smallest area that contains its location (at approval and when its address changes); `counts` add up over everything inside. **Search:** case- and accent-insensitive on `name` and `altNames`; areas before places in the All tab; only areas with places; the same name grouped, the smaller first, each with the area it is in. **Near you:** the smallest area with places that contains the person. **Inside:** per kind, the two with the most places; See all by places with a cursor. | AR1–AR6 |
 
 ---
 
@@ -2155,6 +2203,7 @@ The MVP website: one static page (1440 × 900 on a computer, full scroll on a ph
 | **Review** | `ReviewCreateRequest { reservationId, stars (1–5), liked[], disliked[], videoUploadId?, title? (0–30), description? (0–100) }`; `Aspect` per category (FOOD_BEVERAGE: FOOD, SERVICE, PRICE, ATMOSPHERE, CLEAN_PLACE, WAITING_TIME · SERVICES: RESULT, STAFF, PRICE, CLEAN_PLACE, ON_TIME, ATMOSPHERE · ACCOMMODATION: ROOM, CLEAN_PLACE, STAFF, LOCATION, PRICE, QUIET); sets `Reservation.myRating` | VR1–VR6, MA3 |
 | **ReviewView** (on a profile) | `id`, `createdAt`, `stars`, `liked[]`, `disliked[]`, `author { name, avatarUrl?, avatarColor }`, `visit { what, date }`, `video? { url, thumbnailUrl }`, `title?`, `description?`; listed by `ReviewsQuery { businessId, sort NEWEST\|OLDEST\|HIGHEST\|LOWEST, withVideo?, stars?, cursor? }` → `{ items, total, nextCursor }`; `ReportReview { reviewId }` | RP1–RP3 |
 | **MapPlace** (map) | `businessId`, `name`, `avatarUrl?`, `initials`, `avatarColor`, `category`, `placeType`, `location { lat, lng }`, `distanceMeters`, `rating?`, `reviewsCount`, `offer? { kind COUPON\|EVENT, label }`; listed by `MapPlacesQuery { bounds, category, from, cursor? }`; counted by `MapLabelsQuery { bounds } → MapLabel { category, count }[]` | MP1–MP2U |
+| **Area** | `id`, `name`, `altNames[]`, `kind COUNTY\|CITY\|TOWN\|COMMUNE\|VILLAGE`, `parentId?`, `path[]`, `countryCode`, `outline`, `center`, `pictureUrl`, `counts { FOOD_BEVERAGE, ACCOMMODATION, SERVICES, total }`, `inside { kind, count }[]`; `Business.areaId`; read by `NearYouQuery`, the `AREA` / `AREA_GROUP` search blocks, `AreaInsideQuery`, `AreaPlacesQuery` | AR1–AR6 |
 | **Account** | `EmailCheck { email } → { exists }`; `UsernameCheck { username } → { available }`; `SignUpRequest { email, firstName, lastName, username, dateOfBirth, password }`; `MIN_AGE` (16) | AU2–AU5 |
 | **BusinessApplicationRequest** | `cui`, `certificateUploadId`, `category`, `placeType`, `offers[]` (0–6), `name`, `phone? { countryCode, number }`, `bookingChannel` IN_APP\|PHONE, `priceLevel` 1–4, `address { line, city, lat, lng }`, `maxPartySize`, `venueCapacity`, `servicesOffered` (10–1000), `openingHours` (7 days `{ open, from, to }`), `notifyWhenProcessed`, `termsAccepted`, `termsVersion` | BC1–BC7 |
 | **HostApplication** (from a person) | `business { name, category, type, city, address }`, `owner { name, email, phone }`, `documents`, `appliedAt`, `state` (see Admin) | BC7 → AD3 |
