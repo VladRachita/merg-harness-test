@@ -2,6 +2,8 @@
 
 The full spec of the **Public · Map** page in the design canvas: the pill of labels that floats over the map (**Food & Drinks**, **Accommodations**, **Entertainment**) and the sheet that lists the places of one label.
 
+If the bottom bar loses Map (`26-areas.md` §5), the same pill and sheet show on the map that **Open map** opens from an area, limited to that area.
+
 **Only these two components are in this handoff.** The map itself, its pins, the "you are here" dot, the location button, the map credit and the bottom navigation bar belong to the app's existing Map tab. They are not drawn here, so the references show the pill and the sheet on a plain background.
 
 Read `01`–`07` first; this file only adds what is specific to these components.

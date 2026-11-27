@@ -273,6 +273,33 @@ The sheet covers the map up to 44 below the top: ← · Food & Drinks · **×** 
 
 ---
 
+## Public — areas in Search
+
+Full spec, sizes and the bottom bar options: [`26-areas.md`](26-areas.md). Every area (county, city, town, commune, village) has one profile; Open map opens that area's map. Summary:
+
+### AR1-near-you · Search with Near you
+Search field → **Near you** · Râșnov · Brașov County › → a picture of the map with your dot and **Open map** → Food & Drinks 70 · Accommodations 46 · Entertainment 24 → Recent.
+
+### AR2-search-town · Search "râșnov"
+Râșnov (picture · Town · Brașov County · 70 / 46 / 24) → "Râșnov is part of" **Brașov County** (County · 58 areas inside · 3,430 places) → Pensiunea Cetate · Taverna Râșnov.
+
+### AR3-town · Town profile
+Râșnov · Town · Brașov County · 70 / 46 / 24 · **Open map** → Videos · **Places** · Deals → Pensiunea Cetate · Taverna Râșnov · Spa Râșnov.
+
+### AR4-county · County profile
+Brașov County · County · Romania · 58 areas inside · 1,940 / 610 / 880 · **Open map** → **Inside** · Videos · Places · Deals → Cities · 4 (Brașov 2,140 · Făgăraș 150 · See all 4 cities) · Towns · 6 (Râșnov 140 · Zărnești 88 · See all) · Communes · 48 (Hârman 44 · Sânpetru 31 · See all).
+
+### AR5-search-same-name · Search "brașov"
+"2 areas named Brașov": Brașov (City · in Brașov County · 2,140 places) · Brașov County (County · 58 areas inside · 3,430 places) → Hostel Brașov Centru · Brașov Coffee (Săcele).
+
+### AR6-city · City profile
+Brașov · City · Brașov County · 1,210 / 380 / 550 · **Open map** → Videos · **Places** · Deals → Maestro Bistro · Maestro Host · Maestro Rooms.
+
+### NB1-bar-activity · NB2-bar-reservations · Bottom bar without Map
+Home · Search · + · **Activity** · Profile (A), or Home · Search · + · **Reservations** · Profile (B); a dot when something waits.
+
+---
+
 ## Admin — web dashboard (desktop)
 
 Full spec: [`19-admin.md`](19-admin.md). A separate web app at 1440 × 900. Summary:

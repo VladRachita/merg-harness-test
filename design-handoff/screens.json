@@ -3959,6 +3959,247 @@
         "mp1-pill",
         "mp2l-places-20"
       ]
+    },
+    {
+      "id": "AR1-near-you",
+      "area": "public-areas",
+      "title": "Areas · Search with Near you",
+      "purpose": "Search before typing: Near you is the area the person is in (Râșnov · Brașov County), a picture of the map with the three labels and their counts; the area name opens its profile, Open map its map.",
+      "source": "AR-Start.dc.html",
+      "files": {
+        "small": {
+          "html": "screens/small/ar1-near-you.html",
+          "png": "screenshots/small/ar1-near-you.png",
+          "width": 360,
+          "height": 640
+        },
+        "medium": {
+          "html": "screens/medium/ar1-near-you.html",
+          "png": "screenshots/medium/ar1-near-you.png",
+          "width": 390,
+          "height": 844
+        },
+        "large": {
+          "html": "screens/large/ar1-near-you.html",
+          "png": "screenshots/large/ar1-near-you.png",
+          "width": 430,
+          "height": 932
+        }
+      },
+      "links_to": [
+        "ar2-search-town",
+        "ar3-town"
+      ]
+    },
+    {
+      "id": "AR2-search-town",
+      "area": "public-areas",
+      "title": "Areas · Search \"râșnov\"",
+      "purpose": "The area first (picture, kind and the area it is in, the three labels with counts), then \"Râșnov is part of\" Brașov County, then the places that match.",
+      "source": "AR-Search.dc.html",
+      "files": {
+        "small": {
+          "html": "screens/small/ar2-search-town.html",
+          "png": "screenshots/small/ar2-search-town.png",
+          "width": 360,
+          "height": 640
+        },
+        "medium": {
+          "html": "screens/medium/ar2-search-town.html",
+          "png": "screenshots/medium/ar2-search-town.png",
+          "width": 390,
+          "height": 844
+        },
+        "large": {
+          "html": "screens/large/ar2-search-town.html",
+          "png": "screenshots/large/ar2-search-town.png",
+          "width": 430,
+          "height": 932
+        }
+      },
+      "links_to": [
+        "ar3-town",
+        "ar4-county"
+      ]
+    },
+    {
+      "id": "AR3-town",
+      "area": "public-areas",
+      "title": "Areas · Town profile (Râșnov)",
+      "purpose": "The area profile at the smallest level with places: picture with the kind badge, Town · Brașov County, the labels added up, Open map, then Videos · Places · Deals (Places open).",
+      "source": "AR-Town.dc.html",
+      "files": {
+        "small": {
+          "html": "screens/small/ar3-town.html",
+          "png": "screenshots/small/ar3-town.png",
+          "width": 360,
+          "height": 640
+        },
+        "medium": {
+          "html": "screens/medium/ar3-town.html",
+          "png": "screenshots/medium/ar3-town.png",
+          "width": 390,
+          "height": 844
+        },
+        "large": {
+          "html": "screens/large/ar3-town.html",
+          "png": "screenshots/large/ar3-town.png",
+          "width": 430,
+          "height": 932
+        }
+      },
+      "links_to": [
+        "ar2-search-town"
+      ]
+    },
+    {
+      "id": "AR4-county",
+      "area": "public-areas",
+      "title": "Areas · County profile (Brașov County)",
+      "purpose": "The same profile for an area with areas inside: Inside · Videos · Places · Deals, Inside open: one section per kind (Cities · 4, Towns · 6, Communes · 48) with the two biggest and See all.",
+      "source": "AR-County.dc.html",
+      "files": {
+        "small": {
+          "html": "screens/small/ar4-county.html",
+          "png": "screenshots/small/ar4-county.png",
+          "width": 360,
+          "height": 640
+        },
+        "medium": {
+          "html": "screens/medium/ar4-county.html",
+          "png": "screenshots/medium/ar4-county.png",
+          "width": 390,
+          "height": 844
+        },
+        "large": {
+          "html": "screens/large/ar4-county.html",
+          "png": "screenshots/large/ar4-county.png",
+          "width": 430,
+          "height": 932
+        }
+      },
+      "links_to": [
+        "ar2-search-town",
+        "ar3-town",
+        "ar6-city"
+      ]
+    },
+    {
+      "id": "AR5-search-same-name",
+      "area": "public-areas",
+      "title": "Areas · Search \"brașov\" (one name, two areas)",
+      "purpose": "Areas with the same name in one group, \"2 areas named Brașov\", the smaller first: Brașov (city) and Brașov County, each with its kind and size; then the places that match.",
+      "source": "AR-SearchSame.dc.html",
+      "files": {
+        "small": {
+          "html": "screens/small/ar5-search-same-name.html",
+          "png": "screenshots/small/ar5-search-same-name.png",
+          "width": 360,
+          "height": 640
+        },
+        "medium": {
+          "html": "screens/medium/ar5-search-same-name.html",
+          "png": "screenshots/medium/ar5-search-same-name.png",
+          "width": 390,
+          "height": 844
+        },
+        "large": {
+          "html": "screens/large/ar5-search-same-name.html",
+          "png": "screenshots/large/ar5-search-same-name.png",
+          "width": 430,
+          "height": 932
+        }
+      },
+      "links_to": [
+        "ar4-county",
+        "ar6-city"
+      ]
+    },
+    {
+      "id": "AR6-city",
+      "area": "public-areas",
+      "title": "Areas · City profile (Brașov)",
+      "purpose": "The area profile of a city: City · Brașov County, the labels added up, Open map, its places (Maestro Bistro, Maestro Host, Maestro Rooms).",
+      "source": "AR-City.dc.html",
+      "files": {
+        "small": {
+          "html": "screens/small/ar6-city.html",
+          "png": "screenshots/small/ar6-city.png",
+          "width": 360,
+          "height": 640
+        },
+        "medium": {
+          "html": "screens/medium/ar6-city.html",
+          "png": "screenshots/medium/ar6-city.png",
+          "width": 390,
+          "height": 844
+        },
+        "large": {
+          "html": "screens/large/ar6-city.html",
+          "png": "screenshots/large/ar6-city.png",
+          "width": 430,
+          "height": 932
+        }
+      },
+      "links_to": [
+        "ar5-search-same-name"
+      ]
+    },
+    {
+      "id": "NB1-bar-activity",
+      "area": "navigation",
+      "title": "Bottom bar without Map · A · Activity",
+      "purpose": "Home · Search · + · Activity · Profile: Activity (My activity: bookings and rewards) takes the Map slot; the + stays in the middle; a dot when something waits.",
+      "source": "AR-Bar-Activity.dc.html",
+      "files": {
+        "small": {
+          "html": "screens/small/nb1-bar-activity.html",
+          "png": "screenshots/small/nb1-bar-activity.png",
+          "width": 360,
+          "height": 72
+        },
+        "medium": {
+          "html": "screens/medium/nb1-bar-activity.html",
+          "png": "screenshots/medium/nb1-bar-activity.png",
+          "width": 390,
+          "height": 72
+        },
+        "large": {
+          "html": "screens/large/nb1-bar-activity.html",
+          "png": "screenshots/large/nb1-bar-activity.png",
+          "width": 430,
+          "height": 72
+        }
+      },
+      "links_to": []
+    },
+    {
+      "id": "NB2-bar-reservations",
+      "area": "navigation",
+      "title": "Bottom bar without Map · B · Reservations",
+      "purpose": "Home · Search · + · Reservations · Profile: Reservations takes the Map slot; the + stays in the middle; a dot when a reservation waits.",
+      "source": "AR-Bar-Reservations.dc.html",
+      "files": {
+        "small": {
+          "html": "screens/small/nb2-bar-reservations.html",
+          "png": "screenshots/small/nb2-bar-reservations.png",
+          "width": 360,
+          "height": 72
+        },
+        "medium": {
+          "html": "screens/medium/nb2-bar-reservations.html",
+          "png": "screenshots/medium/nb2-bar-reservations.png",
+          "width": 390,
+          "height": 72
+        },
+        "large": {
+          "html": "screens/large/nb2-bar-reservations.html",
+          "png": "screenshots/large/nb2-bar-reservations.png",
+          "width": 430,
+          "height": 72
+        }
+      },
+      "links_to": []
     }
   ],
   "reference": {

@@ -45,6 +45,8 @@ Machine-readable values: [`../tokens.json`](../tokens.json). Map them once into 
 | `category.food` / `foodTint` | `#D9572B` / `#FBE7DE` | Map: Food & Drinks (`FOOD_BEVERAGE`) icon and place ring / its tinted circle |
 | `category.stay` / `stayTint` | `#2C6FD6` / `#E1ECFB` | Map: Accommodations (`ACCOMMODATION`) |
 | `category.fun` / `funTint` | `#7155E0` / `#ECE7FC` | Map: Entertainment (`SERVICES`); the colour is `brand.accent` |
+| `area.county` / `area.city` / `area.town` | `#4A5D8C` / `#3F5079` / `#5F6F98` | Areas: the kind circle and badge of a county, city, town |
+| `area.commune` / `area.village` | `#3E8E7A` / `#6E8C3E` | Areas: the kind circle and badge of a commune, village |
 
 ## Typography
 - Family: **Roboto** on Android, **system (SF Pro)** on iOS. Weights 400 / 500 / 600 / 700 / 800.
